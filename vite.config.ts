@@ -21,12 +21,17 @@ export default defineConfig(({mode}) => {
       hmr: process.env.DISABLE_HMR !== 'true',
     },
     build: {
-      chunkSizeWarningLimit: 2000,
+      chunkSizeWarningLimit: 3000,
+      cssCodeSplit: true,
       rollupOptions: {
         output: {
-          manualChunks: {
-            vendor: ['react', 'react-dom', 'react-router-dom'],
-            supabase: ['@supabase/supabase-js'],
+          manualChunks(id) {
+            if (id.includes('node_modules')) {
+              if (id.includes('react')) return 'vendor-react';
+              if (id.includes('lucide') || id.includes('motion')) return 'vendor-ui';
+              if (id.includes('supabase')) return 'vendor-db';
+              return 'vendor';
+            }
           }
         }
       }
