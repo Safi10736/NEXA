@@ -11,7 +11,14 @@ import { useCart } from '../CartContext';
 export default function ProductPage() {
   const { slug } = useParams();
   const { products, loading: productsLoading } = useProducts();
-  const product = products.find(p => p.slug === slug);
+  
+  // More robust matching: handle case-insensitivity and potential URI encoding differences
+  const product = products.find(p => {
+    const pSlug = p.slug?.toLowerCase().trim();
+    const currentSlug = slug?.toLowerCase().trim();
+    return pSlug === currentSlug;
+  });
+
   const [activeTab, setActiveTab] = useState<'details' | 'personalize'>('details');
   const [activeImage, setActiveImage] = useState(0);
   const [quantity, setQuantity] = useState(1);

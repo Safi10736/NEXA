@@ -146,7 +146,16 @@ export default function ProductForm({ initialData, onClose, onSave }: ProductFor
                             className="w-full bg-neutral-900 border border-neutral-800 rounded-2xl py-4 px-6 text-sm focus:ring-1 focus:ring-brand-accent outline-none"
                             placeholder="e.g. Lunar Marble Lamp"
                             value={formData.name}
-                            onChange={(e) => setFormData({...formData, name: e.target.value})}
+                            onChange={(e) => {
+                              const name = e.target.value;
+                              // Auto-generate slug
+                              const generatedSlug = name.toLowerCase()
+                                .trim()
+                                .replace(/[^\w\s-]/g, '')
+                                .replace(/[\s_-]+/g, '-')
+                                .replace(/^-+|-+$/g, '');
+                              setFormData({...formData, name, slug: generatedSlug});
+                            }}
                          />
                       </div>
                       <div className="space-y-2">
@@ -175,13 +184,13 @@ export default function ProductForm({ initialData, onClose, onSave }: ProductFor
                          />
                       </div>
                       <div className="space-y-2">
-                         <label className="text-[10px] font-bold uppercase tracking-widest text-neutral-500 ml-4">Slug</label>
+                         <label className="text-[10px] font-bold uppercase tracking-widest text-neutral-500 ml-4">Slug (URL Name)</label>
                          <input 
                             type="text" 
-                            className="w-full bg-neutral-900 border border-neutral-800 rounded-2xl py-4 px-6 text-sm focus:ring-1 focus:ring-brand-accent outline-none"
+                            className="w-full bg-neutral-900 border border-neutral-800 rounded-2xl py-4 px-6 text-sm focus:ring-1 focus:ring-brand-accent outline-none font-mono text-[10px]"
                             placeholder="lunar-marble-lamp"
                             value={formData.slug}
-                            onChange={(e) => setFormData({...formData, slug: e.target.value})}
+                            onChange={(e) => setFormData({...formData, slug: e.target.value.toLowerCase().replace(/\s+/g, '-')})}
                          />
                       </div>
                    </div>
