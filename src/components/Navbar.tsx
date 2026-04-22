@@ -1,15 +1,17 @@
 import { useState, useEffect } from 'react';
-import { Menu, X, ShoppingBag, Search, User, Globe, Instagram, Facebook, Twitter, Linkedin, Youtube } from 'lucide-react';
+import { Menu, X, ShoppingBag, Search, User, Globe, Instagram, Facebook, Twitter, Linkedin, Youtube, Heart } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Link, useLocation } from 'react-router-dom';
 import { cn } from '../lib/utils';
 
 import { useAuth } from '../AuthContext';
 import { useCart } from '../CartContext';
+import { useWishlist } from '../WishlistContext';
 
 export default function Navbar() {
   const { user } = useAuth();
   const { setIsCartOpen, cartCount, isDraggingProduct } = useCart();
+  const { wishlist } = useWishlist();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [lang, setLang] = useState<'EN' | 'BN'>('EN');
@@ -85,6 +87,22 @@ export default function Navbar() {
         <button className={cn("p-2 rounded-full transition-colors hidden sm:block", "hover:bg-neutral-100 text-neutral-900")}>
           <Search className="w-5 h-5" />
         </button>
+
+        <Link 
+          to="/shop" 
+          className={cn(
+            "relative p-2 rounded-full transition-colors",
+            "hover:bg-neutral-100 text-neutral-900"
+          )}
+          title="Wishlist"
+        >
+          <Heart className={cn("w-5 h-5", wishlist.length > 0 && "fill-red-500 text-red-500")} />
+          {wishlist.length > 0 && (
+            <span className="absolute top-1 right-1 w-4 h-4 bg-red-500 text-white text-[9px] flex items-center justify-center rounded-full font-bold">
+              {wishlist.length}
+            </span>
+          )}
+        </Link>
 
         <Link to="/profile" className={cn("p-2 rounded-full transition-colors overflow-hidden", "hover:bg-neutral-100")}>
           {user?.photoURL ? (

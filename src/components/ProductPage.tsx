@@ -307,6 +307,68 @@ export default function ProductPage() {
             </div>
           </section>
         )}
+
+        {/* User Reviews Section */}
+        <section className="mb-24 px-6 pt-12 border-t border-neutral-100">
+           <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-16 gap-8">
+              <div>
+                <span className="text-[10px] font-bold tracking-[.43em] uppercase text-brand-accent mb-4 block">Customer Voices</span>
+                <h2 className="text-4xl md:text-5xl font-light text-neutral-900 tracking-tighter serif italic text-balance">The Nexa Experience</h2>
+              </div>
+              <div className="flex flex-col items-end gap-2">
+                <div className="flex text-brand-accent gap-1">
+                  {[...Array(5)].map((_, i) => <Star key={i} className="w-5 h-5 fill-current" />)}
+                </div>
+                <p className="text-[10px] font-bold uppercase tracking-widest text-neutral-400">4.9 Average Based on 128 Reviews</p>
+              </div>
+           </div>
+
+           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+              {[
+                { name: "Sophia Martinez", rating: 5, date: "Mar 15, 2024", comment: "The attention to detail is breathtaking. The finish on this piece is unlike anything I've seen in retail stores. Truly artisan quality." },
+                { name: "James Wilson", rating: 5, date: "Mar 10, 2024", comment: "Fast shipping to London and excellent customer support. The packaging itself was a work of art. Highly recommended for luxury decor." },
+                { name: "Elena Rossi", rating: 5, date: "Feb 22, 2024", comment: "Fits perfectly in my minimalist living room. The warm glow it provides is exactly what I was looking for. A masterpiece." },
+                { name: "Marcus Thorne", rating: 4, date: "Feb 05, 2024", comment: "Exquisite design. One minor scratch on delivery but the support team replaced it within 48 hours without any hassle. Amazing service." },
+                { name: "Aria Vance", rating: 5, date: "Jan 28, 2024", comment: "Buying lighting online is always a risk, but Nexa made it seamless. The live preview was accurate and the real product exceeds expectations." }
+              ].map((review, i) => (
+                <motion.div 
+                  key={i}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.1 }}
+                  className="bg-white p-10 rounded-[2rem] border border-neutral-100 shadow-sm hover:shadow-xl transition-all group"
+                >
+                  <div className="flex justify-between items-start mb-6">
+                    <div className="flex flex-col gap-1">
+                      <span className="text-[11px] font-bold uppercase tracking-widest text-neutral-900">{review.name}</span>
+                      <span className="text-[9px] font-bold text-neutral-300 uppercase tracking-widest">{review.date}</span>
+                    </div>
+                    <div className="flex text-brand-accent gap-0.5">
+                      {[...Array(review.rating)].map((_, j) => <Star key={j} className="w-3 h-3 fill-current" />)}
+                    </div>
+                  </div>
+                  <p className="text-sm font-light text-neutral-500 italic leading-relaxed group-hover:text-neutral-700 transition-colors">
+                    "{review.comment}"
+                  </p>
+                  <div className="mt-8 pt-6 border-t border-neutral-50 flex items-center gap-2">
+                    <div className="w-1.5 h-1.5 rounded-full bg-green-500" />
+                    <span className="text-[8px] font-bold uppercase tracking-[0.2em] text-neutral-300">Verified Collector</span>
+                  </div>
+                </motion.div>
+              ))}
+              
+              {/* Write a Review Teaser */}
+              <div className="bg-brand-surface p-10 rounded-[2rem] border border-dashed border-neutral-200 flex flex-col items-center justify-center text-center group cursor-pointer hover:bg-white hover:border-brand-accent transition-all">
+                <div className="w-12 h-12 rounded-full bg-white flex items-center justify-center mb-6 group-hover:bg-brand-accent group-hover:text-white transition-colors shadow-sm">
+                  <Star className="w-5 h-5" />
+                </div>
+                <h4 className="text-[11px] font-bold uppercase tracking-widest text-neutral-900 mb-2">Share Your Experience</h4>
+                <p className="text-[9px] font-bold text-neutral-400 uppercase tracking-widest mb-6">Join our verified collectors community</p>
+                <button className="text-[10px] font-bold uppercase tracking-[0.3em] text-brand-accent border-b border-brand-accent/20 pb-1 group-hover:border-brand-accent transition-all">Write Review</button>
+              </div>
+           </div>
+        </section>
       </div>
     </div>
   );

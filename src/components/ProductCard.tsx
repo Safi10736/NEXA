@@ -6,9 +6,13 @@ import { Link } from 'react-router-dom';
 import { motion } from 'motion/react';
 
 import { useCart } from '../CartContext';
+import { useWishlist } from '../WishlistContext';
 
 export const ProductCard: React.FC<{ product: Product }> = ({ product }) => {
   const { addToCart, setIsDraggingProduct } = useCart();
+  const { toggleWishlist, isInWishlist } = useWishlist();
+
+  const isFavorited = isInWishlist(product.id);
 
   const containerVariants = {
     initial: {},
@@ -114,6 +118,23 @@ export const ProductCard: React.FC<{ product: Product }> = ({ product }) => {
                 >
                   <Eye className="w-6 h-6" />
                 </Link>
+
+                <button 
+                  onClick={(e) => {
+                    e.preventDefault();
+                    toggleWishlist(product.id);
+                  }}
+                  className={cn(
+                    "w-14 h-14 rounded-full flex items-center justify-center transition-all shadow-2xl active:scale-95",
+                    isFavorited 
+                      ? "bg-red-500 text-white" 
+                      : "bg-white text-neutral-900 hover:bg-red-50 hover:text-red-500"
+                  )}
+                  title={isFavorited ? "Remove from Wishlist" : "Add to Wishlist"}
+                >
+                  <Heart className={cn("w-6 h-6", isFavorited && "fill-current")} />
+                </button>
+
                 <button 
                   onClick={(e) => {
                     e.preventDefault();

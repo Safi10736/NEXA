@@ -25,6 +25,7 @@ import ProductCard from './components/ProductCard';
 import { AuthProvider, useAuth } from './AuthContext';
 import { CartProvider, useCart } from './CartContext';
 import { ProductProvider, useProducts } from './ProductContext';
+import { WishlistProvider } from './WishlistContext';
 import FlyToCartRenderer from './components/FlyToCart';
 import { useAdmin } from './hooks/useAdmin';
 
@@ -368,56 +369,58 @@ export default function App() {
     <AuthProvider>
       <ProductProvider>
         <CartProvider>
-          <BrowserRouter>
-            <ScrollToTop />
-            <div className="min-h-screen bg-brand-bg font-sans text-neutral-900 selection:bg-brand-accent selection:text-white">
-              <Navbar />
-              <FlyToCartRenderer />
-              
-              <Routes>
-                <Route path="/" element={<HomePage />} />
-                <Route path="/shop" element={<ShopPage />} />
-                <Route path="/gallery" element={<GalleryPage />} />
-                <Route path="/about" element={<AboutPage />} />
-                <Route path="/support" element={<SupportPage />} />
-                <Route path="/contact" element={<ContactPage />} />
-                <Route path="/product/:slug" element={<ProductPage />} />
-                <Route path="/profile" element={<AuthPage />} />
-                <Route path="/checkout" element={<CheckoutPage />} />
-                <Route path="/success" element={<SuccessPage />} />
+          <WishlistProvider>
+            <BrowserRouter>
+              <ScrollToTop />
+              <div className="min-h-screen bg-brand-bg font-sans text-neutral-900 selection:bg-brand-accent selection:text-white">
+                <Navbar />
+                <FlyToCartRenderer />
+                
+                <Routes>
+                  <Route path="/" element={<HomePage />} />
+                  <Route path="/shop" element={<ShopPage />} />
+                  <Route path="/gallery" element={<GalleryPage />} />
+                  <Route path="/about" element={<AboutPage />} />
+                  <Route path="/support" element={<SupportPage />} />
+                  <Route path="/contact" element={<ContactPage />} />
+                  <Route path="/product/:slug" element={<ProductPage />} />
+                  <Route path="/profile" element={<AuthPage />} />
+                  <Route path="/checkout" element={<CheckoutPage />} />
+                  <Route path="/success" element={<SuccessPage />} />
 
-                {/* Admin Routes */}
-                <Route path="/admin" element={<AdminDashboard />} />
-                <Route path="/admin/products" element={<AdminInventory />} />
-                <Route path="/admin/orders" element={<AdminOrders />} />
-                <Route path="/admin/customers" element={<AdminCustomers />} />
-                <Route path="/admin/settings" element={<AdminDashboard />} />
-              </Routes>
+                  {/* Admin Routes */}
+                  <Route path="/admin" element={<AdminDashboard />} />
+                  <Route path="/admin/products" element={<AdminInventory />} />
+                  <Route path="/admin/orders" element={<AdminOrders />} />
+                  <Route path="/admin/customers" element={<AdminCustomers />} />
+                  <Route path="/admin/settings" element={<AdminDashboard />} />
+                </Routes>
 
-              <Footer />
-              
-              <CartSidebarWrapper />
+                <Footer />
+                
+                <CartSidebarWrapper />
 
-              {/* Floating Auth Prompt for Guests */}
-              <AuthPrompt />
+                {/* Floating Auth Prompt for Guests */}
+                <AuthPrompt />
 
-              {/* Admin Quick Entry */}
-              <AdminQuickEntry />
+                {/* Admin Quick Entry */}
+                <AdminQuickEntry />
 
-              {/* Floating WhatsApp */}
-              <a 
-                href="https://wa.me/your-number" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="fixed bottom-8 right-8 z-[90] bg-[#25D366] text-white p-4 rounded-full shadow-2xl hover:scale-110 transition-transform flex items-center gap-2 group"
-              >
-                <MessageCircle className="w-6 h-6" />
-                <span className="max-w-0 overflow-hidden whitespace-nowrap group-hover:max-w-xs transition-all duration-500 text-xs font-bold uppercase tracking-widest">
-                  Support
-                </span>
-              </a>
-            </div>
-          </BrowserRouter>
+                {/* Floating WhatsApp */}
+                <a 
+                  href="https://wa.me/your-number" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="fixed bottom-8 right-8 z-[90] bg-[#25D366] text-white p-4 rounded-full shadow-2xl hover:scale-110 transition-transform flex items-center gap-2 group"
+                >
+                  <MessageCircle className="w-6 h-6" />
+                  <span className="max-w-0 overflow-hidden whitespace-nowrap group-hover:max-w-xs transition-all duration-500 text-xs font-bold uppercase tracking-widest">
+                    Support
+                  </span>
+                </a>
+              </div>
+            </BrowserRouter>
+          </WishlistProvider>
         </CartProvider>
       </ProductProvider>
     </AuthProvider>

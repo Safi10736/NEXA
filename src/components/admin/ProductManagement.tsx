@@ -49,13 +49,31 @@ export default function ProductForm({ initialData, onClose, onSave }: ProductFor
       const reader = new FileReader();
       reader.onloadend = () => {
         const base64String = reader.result as string;
-        const newImages = [...formData.images];
-        newImages[0] = base64String;
-        setFormData({ ...formData, images: newImages });
+        setFormData({ ...formData, images: [...formData.images, base64String] });
         setError(null);
       };
       reader.readAsDataURL(file);
     }
+  };
+
+  const addImageUrl = () => {
+    const urlInput = document.getElementById('new-image-url') as HTMLInputElement;
+    if (urlInput && urlInput.value) {
+      setFormData({ ...formData, images: [...formData.images, urlInput.value] });
+      urlInput.value = '';
+    }
+  };
+
+  const setPrimaryImage = (index: number) => {
+    const newImages = [...formData.images];
+    const [selected] = newImages.splice(index, 1);
+    newImages.unshift(selected);
+    setFormData({ ...formData, images: newImages });
+  };
+
+  const removeImage = (index: number) => {
+    const newImages = formData.images.filter((_: any, i: number) => i !== index);
+    setFormData({ ...formData, images: newImages });
   };
 
   const handleSave = () => {
@@ -334,41 +352,49 @@ export default function ProductForm({ initialData, onClose, onSave }: ProductFor
                   exit={{ opacity: 0, x: -20 }}
                   className="space-y-8"
                 >
-                   <div className="flex gap-4 p-1 bg-neutral-900 rounded-2xl w-fit">
-                      <button 
-                        onClick={() => setMediaSource('url')}
-                        className={`flex items-center gap-2 px-6 py-3 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all ${mediaSource === 'url' ? 'bg-neutral-800 text-white' : 'text-neutral-500 hover:text-white'}`}
-                      >
-                         <Globe className="w-4 h-4" />
-                         Image URL
-                      </button>
-                      <button 
-                        onClick={() => setMediaSource('device')}
-                        className={`flex items-center gap-2 px-6 py-3 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all ${mediaSource === 'device' ? 'bg-neutral-800 text-white' : 'text-neutral-500 hover:text-white'}`}
-                      >
-                         <Smartphone className="w-4 h-4" />
-                         From Device
-                      </button>
+                   <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+                      <div className="flex gap-4 p-1 bg-neutral-900 rounded-2xl w-fit">
+                        <button 
+                          onClick={() => setMediaSource('url')}
+                          className={`flex items-center gap-2 px-6 py-3 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all ${mediaSource === 'url' ? 'bg-neutral-800 text-white' : 'text-neutral-500 hover:text-white'}`}
+                        >
+                          <Globe className="w-4 h-4" />
+                          Add via URL
+                        </button>
+                        <button 
+                          onClick={() => setMediaSource('device')}
+                          className={`flex items-center gap-2 px-6 py-3 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all ${mediaSource === 'device' ? 'bg-neutral-800 text-white' : 'text-neutral-500 hover:text-white'}`}
+                        >
+                          <Smartphone className="w-4 h-4" />
+                          Upload File
+                        </button>
+                      </div>
+                      <p className="text-[9px] text-neutral-500 uppercase tracking-widest font-bold">
+                        {formData.images.length} Imagery Assets Added
+                      </p>
                    </div>
 
                    <div className="space-y-4">
-                      <label className="text-[10px] font-bold uppercase tracking-widest text-neutral-500 ml-4">
-                        {mediaSource === 'url' ? 'Main Image URL' : 'Upload Image'}
-                      </label>
-                      
                       {mediaSource === 'url' ? (
                         <div className="flex gap-4">
                           <input 
+                            id="new-image-url"
                             type="text" 
                             className="flex-1 bg-neutral-900 border border-neutral-800 rounded-2xl py-4 px-6 text-sm focus:ring-1 focus:ring-brand-accent outline-none"
-                            placeholder="https://images.unsplash.com/..."
-                            value={formData.images[0] || ''}
-                            onChange={(e) => {
-                              const newImages = [...formData.images];
-                              newImages[0] = e.target.value;
-                              setFormData({...formData, images: newImages});
+                            placeholder="Enter image URL (e.g. Unsplash link)..."
+                            onKeyPress={(e) => {
+                              if (e.key === 'Enter') {
+                                e.preventDefault();
+                                addImageUrl();
+                              }
                             }}
                           />
+                          <button 
+                            onClick={addImageUrl}
+                            className="px-8 bg-neutral-900 border border-neutral-800 rounded-2xl hover:bg-neutral-800 transition-all"
+                          >
+                            <Plus className="w-5 h-5 text-white" />
+                          </button>
                         </div>
                       ) : (
                         <div className="relative">
@@ -387,7 +413,7 @@ export default function ProductForm({ initialData, onClose, onSave }: ProductFor
                                 <Upload className="w-6 h-6 text-neutral-400 group-hover:text-brand-accent" />
                              </div>
                              <div className="text-center">
-                                <p className="text-[10px] font-bold text-white uppercase tracking-widest mb-1">Click to browse</p>
+                                <p className="text-[10px] font-bold text-white uppercase tracking-widest mb-1">Click to browse or drop</p>
                                 <p className="text-[8px] text-neutral-500 uppercase tracking-tighter">PNG, JPG or WebP (Max 1MB)</p>
                              </div>
                           </label>
@@ -395,27 +421,51 @@ export default function ProductForm({ initialData, onClose, onSave }: ProductFor
                       )}
                    </div>
 
-                   {formData.images[0] && (
-                     <div className="relative aspect-video rounded-3xl overflow-hidden border border-neutral-900 group">
-                        <img src={formData.images[0]} alt="Preview" className="w-full h-full object-cover" />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-8">
-                           <div className="flex-1">
-                             <p className="text-[10px] font-bold uppercase tracking-widest text-white/80">Main Visual Preview</p>
-                             <p className="text-[8px] text-white/40 uppercase tracking-tighter truncate max-w-xs">{formData.images[0]}</p>
-                           </div>
-                           <button 
-                            onClick={() => {
-                              const newImages = [...formData.images];
-                              newImages[0] = "";
-                              setFormData({...formData, images: newImages});
-                            }}
-                            className="p-3 bg-red-500/20 text-red-500 rounded-xl hover:bg-red-500 hover:text-white transition-all opacity-0 group-hover:opacity-100"
+                   {/* Image Library Grid */}
+                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-6">
+                      <AnimatePresence>
+                        {formData.images.map((img: string, idx: number) => (
+                           <motion.div 
+                             key={`${img}-${idx}`}
+                             layout
+                             initial={{ opacity: 0, scale: 0.9 }}
+                             animate={{ opacity: 1, scale: 1 }}
+                             exit={{ opacity: 0, scale: 0.9 }}
+                             className={cn(
+                               "relative aspect-square rounded-3xl overflow-hidden border transition-all group",
+                               idx === 0 ? "border-brand-accent shadow-[0_0_20px_rgba(212,175,55,0.2)]" : "border-neutral-900"
+                             )}
                            >
-                              <Trash2 className="w-4 h-4" />
-                           </button>
-                        </div>
-                     </div>
-                   )}
+                              <img src={img} alt="" className="w-full h-full object-cover" />
+                              
+                              {/* Overlay Actions */}
+                              <div className="absolute inset-0 bg-neutral-900/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-3">
+                                 {idx !== 0 && (
+                                   <button 
+                                      onClick={() => setPrimaryImage(idx)}
+                                      className="px-4 py-2 bg-white text-neutral-900 rounded-full text-[8px] font-bold uppercase tracking-widest hover:bg-brand-accent hover:text-white transition-all"
+                                   >
+                                      Make Primary
+                                   </button>
+                                 )}
+                                 <button 
+                                    onClick={() => removeImage(idx)}
+                                    className="p-3 bg-red-600 text-white rounded-full hover:bg-red-500 transition-all"
+                                 >
+                                    <Trash2 className="w-4 h-4" />
+                                 </button>
+                              </div>
+
+                              {/* Primary Badge */}
+                              {idx === 0 && (
+                                <div className="absolute top-4 left-4 px-3 py-1 bg-brand-accent text-white rounded-full text-[7px] font-bold uppercase tracking-widest shadow-xl">
+                                   Primary View
+                                </div>
+                              )}
+                           </motion.div>
+                        ))}
+                      </AnimatePresence>
+                   </div>
                 </motion.div>
               )}
            </AnimatePresence>
