@@ -1,14 +1,15 @@
 import React from 'react';
 import { Product } from '../types';
 import { formatPrice, cn } from '../lib/utils';
-import { ShoppingBag, Eye, Heart, Plus } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { ShoppingBag, Eye, Heart, Plus, Zap } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'motion/react';
 
 import { useCart } from '../CartContext';
 import { useWishlist } from '../WishlistContext';
 
 export const ProductCard: React.FC<{ product: Product }> = ({ product }) => {
+  const navigate = useNavigate();
   const { addToCart, setIsDraggingProduct } = useCart();
   const { toggleWishlist, isInWishlist } = useWishlist();
 
@@ -140,11 +141,12 @@ export const ProductCard: React.FC<{ product: Product }> = ({ product }) => {
                     e.preventDefault();
                     e.stopPropagation();
                     addToCart(product.id, 1, undefined, e);
+                    navigate('/checkout');
                   }}
-                  className="px-8 h-14 bg-white rounded-full flex items-center gap-3 text-neutral-900 hover:bg-brand-accent hover:text-white transition-all shadow-2xl text-[10px] font-bold uppercase tracking-widest active:scale-95"
+                  className="px-8 h-14 bg-brand-accent rounded-full flex items-center gap-3 text-white hover:bg-neutral-900 transition-all shadow-2xl text-[10px] font-bold uppercase tracking-widest active:scale-95 group/btn"
                 >
-                  <ShoppingBag className="w-5 h-5" />
-                  Add To Bag
+                  <Zap className="w-5 h-5 fill-current" />
+                  Buy Now
                 </button>
               </motion.div>
             </motion.div>

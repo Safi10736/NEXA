@@ -12,7 +12,7 @@ import {
   Globe,
   Smartphone
 } from 'lucide-react';
-import { formatPrice } from '../../lib/utils';
+import { formatPrice, cn } from '../../lib/utils';
 
 interface ProductFormProps {
   initialData?: any;

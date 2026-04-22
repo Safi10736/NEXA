@@ -8,6 +8,7 @@ import CartSidebar from './components/CartSidebar';
 import AuthPage from './components/AuthPage';
 import CheckoutPage from './components/CheckoutPage';
 import SuccessPage from './components/SuccessPage';
+import OrderTracker from './components/OrderTracker';
 import ShopPage from './components/ShopPage';
 import GalleryPage from './components/GalleryPage';
 import AboutPage from './components/AboutPage';
@@ -387,6 +388,7 @@ export default function App() {
                   <Route path="/profile" element={<AuthPage />} />
                   <Route path="/checkout" element={<CheckoutPage />} />
                   <Route path="/success" element={<SuccessPage />} />
+                  <Route path="/track" element={<OrderTracker />} />
 
                   {/* Admin Routes */}
                   <Route path="/admin" element={<AdminDashboard />} />

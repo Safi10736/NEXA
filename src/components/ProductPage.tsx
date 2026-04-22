@@ -1,15 +1,16 @@
 import React from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useProducts } from '../ProductContext';
 import { formatPrice, cn } from '../lib/utils';
 import { useState } from 'react';
-import { Star, Truck, ShieldCheck, RefreshCw, ShoppingBag, Plus, Minus, ArrowRight } from 'lucide-react';
+import { Star, Truck, ShieldCheck, RefreshCw, ShoppingBag, Plus, Minus, ArrowRight, Zap } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import ProductCard from './ProductCard';
 import { useCart } from '../CartContext';
 
 export default function ProductPage() {
   const { slug } = useParams();
+  const navigate = useNavigate();
   const { products, loading: productsLoading } = useProducts();
   
   // Ultra-robust matching: ignore spaces, hyphens and case for maximum compatibility
@@ -271,10 +272,20 @@ export default function ProductPage() {
                   </div>
                   <button 
                     onClick={(e) => addToCart(product.id, quantity, selectedVariant || undefined, e)}
-                    className="flex-1 py-5 bg-neutral-900 text-white font-bold uppercase text-[10px] tracking-[.3em] rounded-full flex items-center justify-center gap-3 hover:bg-brand-accent transition-all duration-500 shadow-xl group"
+                    className="flex-1 py-5 border border-neutral-900 text-neutral-900 font-bold uppercase text-[10px] tracking-[.3em] rounded-full flex items-center justify-center gap-3 hover:bg-neutral-900 hover:text-white transition-all duration-500 shadow-sm group"
                   >
                     <ShoppingBag className="w-4 h-4 transition-transform group-hover:-translate-y-1" />
-                    Finalize & Add to Bag
+                    Add to Bag
+                  </button>
+                  <button 
+                    onClick={(e) => {
+                      addToCart(product.id, quantity, selectedVariant || undefined, e);
+                      navigate('/checkout');
+                    }}
+                    className="flex-1 py-5 bg-brand-accent text-white font-bold uppercase text-[10px] tracking-[.3em] rounded-full flex items-center justify-center gap-3 hover:bg-neutral-900 transition-all duration-500 shadow-xl shadow-brand-accent/20 group"
+                  >
+                    <Zap className="w-4 h-4 fill-current transition-transform group-hover:scale-125" />
+                    Buy Now
                   </button>
                 </div>
                 <div className="flex justify-between items-center px-4">

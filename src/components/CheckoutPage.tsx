@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Check, ArrowLeft, CreditCard, Truck, Phone, User, Mail, MapPin, Loader2, Smartphone, Wallet, Banknote } from 'lucide-react';
+import { Check, ArrowLeft, CreditCard, Truck, Phone, User, Mail, MapPin, Loader2, Smartphone, Wallet, Banknote, ShieldCheck, Zap } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../AuthContext';
@@ -13,7 +13,6 @@ export default function CheckoutPage() {
   const { user } = useAuth();
   const { products } = useProducts();
   const { cart, cartTotal, clearCart, setIsCartOpen } = useCart();
-  const [step, setStep] = useState<'shipping' | 'payment'>('shipping');
   const [isSubmitting, setIsSubmitting] = useState(false);
   
   // Close cart on mount
@@ -32,17 +31,13 @@ export default function CheckoutPage() {
     address: '',
     city: '',
     zip: '',
-    paymentMethod: 'COD' as 'COD' | 'bKash' | 'Nagad' | 'Rocket',
-    txnId: ''
+    paymentMethod: 'COD' as 'COD' | 'bKash' | 'Nagad' | 'Rocket' | 'Stripe',
+    txnId: '',
+    isGuest: !user
   });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
-  const handleNextStep = (e: React.FormEvent) => {
-    e.preventDefault();
-    setStep('payment');
   };
 
   useEffect(() => {
@@ -65,11 +60,19 @@ export default function CheckoutPage() {
 
   const handleConfirm = async () => {
     if (isSubmitting) return;
-    if (cart.length === 0) {
-      alert("Your cart is empty.");
-      setIsSubmitting(false);
+    
+    // Basic Validation
+    if (!formData.firstName || !formData.phone || !formData.address) {
+      alert("Please fill in basic shipping details first.");
+      setIsHolding(false);
       return;
     }
+
+    if (cart.length === 0) {
+      alert("Your cart is empty.");
+      return;
+    }
+    
     setIsSubmitting(true);
 
     try {
@@ -96,397 +99,302 @@ export default function CheckoutPage() {
         }),
         total: cartTotal,
         status: 'Pending',
-        payment_status: 'pending',
-        payment_verified: false,
+        payment_status: formData.paymentMethod === 'COD' ? 'pending' : 'paid',
+        payment_verified: formData.paymentMethod === 'Stripe',
         method: formData.paymentMethod,
-        transaction_id: formData.txnId || `COD-${Math.random().toString(36).substring(2, 6).toUpperCase()}`,
+        transaction_id: formData.txnId || `${formData.paymentMethod}-${Math.random().toString(36).substring(2, 6).toUpperCase()}`,
         date: new Date().toLocaleDateString(),
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString()
       };
 
-      console.log("Submitting order:", orderData);
-
       // Save to Supabase
       const { error } = await supabase.from('orders').insert(orderData);
       
-      if (error) {
-        console.error("Supabase Insertion Error:", error);
-        throw new Error(`[${error.code}] ${error.message}`);
-      }
+      if (error) throw error;
       
       clearCart();
       navigate('/success');
     } catch (err: any) {
       console.error("Order submission failed:", err);
-      alert(`ERROR: ${err.message}\n\nএটি সাধারণত হয় যদি আপনার ডেটাবেসে 'orders' টেবলে পারমিশন না থাকে। দয়া করে আমার দেওয়া SQL কোডটি রান করুন।`);
+      alert(`Submission Error: ${err.message}`);
     } finally {
       setIsSubmitting(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-brand-bg pt-32 pb-24 px-6">
-      <div className="max-w-4xl mx-auto">
-        <button 
-          onClick={() => step === 'payment' ? setStep('shipping') : navigate(-1)}
-          className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-neutral-400 hover:text-neutral-900 transition-colors mb-12"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          Back to {step === 'payment' ? 'Shipping' : 'Store'}
-        </button>
+    <div className="min-h-screen bg-brand-bg pt-32 pb-24 px-6 md:px-12 lg:px-24">
+      <div className="max-w-7xl mx-auto">
+        <div className="flex justify-between items-end mb-16 border-b border-neutral-100 pb-12">
+          <div>
+            <span className="text-[10px] font-bold uppercase tracking-[0.4em] text-brand-accent mb-4 block">One-Click Checkout</span>
+            <h1 className="text-5xl font-light text-neutral-900 tracking-tighter serif italic text-balance">Finalize Your <span className="text-brand-accent underline underline-offset-8">Artifact</span></h1>
+          </div>
+          <button 
+            onClick={() => navigate(-1)}
+            className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-neutral-400 hover:text-neutral-900 transition-colors mb-2"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Return to Store
+          </button>
+        </div>
 
-        <div className="grid lg:grid-cols-5 gap-16">
-          {/* Main Form Area */}
-          <div className="lg:col-span-3">
-            <AnimatePresence mode="wait">
-              {step === 'shipping' ? (
-                <motion.div
-                  key="shipping"
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: 20 }}
-                >
-                  <div className="flex items-center gap-3 mb-8">
-                    <div className="w-10 h-10 rounded-full bg-brand-accent/10 flex items-center justify-center text-brand-accent">
-                      <Truck className="w-5 h-5" />
-                    </div>
-                    <h1 className="text-3xl font-light text-neutral-900 tracking-tighter">Shipping <span className="serif italic">Details</span></h1>
+        <div className="grid lg:grid-cols-12 gap-20">
+          {/* Main Form Fields */}
+          <div className="lg:col-span-8 space-y-16">
+            
+            {/* Step 1: Shipping */}
+            <section className="bg-white p-12 rounded-[3.5rem] border border-neutral-100 shadow-xl relative overflow-hidden">
+               <div className="flex items-center gap-4 mb-10">
+                  <div className="w-12 h-12 bg-brand-accent/10 rounded-2xl flex items-center justify-center text-brand-accent">
+                    <Truck className="w-6 h-6" />
                   </div>
+                  <h2 className="text-2xl font-light tracking-tighter serif italic">Fast Shipping Details</h2>
+               </div>
 
-                  <form onSubmit={handleNextStep} className="space-y-10">
-                    {/* Contact Section */}
-                    <div>
-                      <h3 className="text-xs font-bold uppercase tracking-[0.2em] text-neutral-300 mb-6 border-b border-neutral-50 pb-2">Contact Information</h3>
-                      <div className="grid grid-cols-2 gap-6 mb-6">
-                        <div className="space-y-2">
-                          <label className="text-[10px] font-bold uppercase tracking-widest text-neutral-400 ml-4">First Name</label>
-                          <div className="relative">
-                            <User className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-300" />
-                            <input 
-                              required
-                              name="firstName"
-                              value={formData.firstName}
-                              onChange={handleInputChange}
-                              type="text" 
-                              placeholder="John" 
-                              className="w-full bg-white border border-neutral-100 rounded-2xl px-12 py-4 focus:ring-2 focus:ring-brand-accent transition-all outline-none text-sm placeholder:opacity-30"
-                            />
-                          </div>
-                        </div>
-                        <div className="space-y-2">
-                          <label className="text-[10px] font-bold uppercase tracking-widest text-neutral-400 ml-4">Last Name</label>
-                          <div className="relative">
-                            <User className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-300" />
-                            <input 
-                              required
-                              name="lastName"
-                              value={formData.lastName}
-                              onChange={handleInputChange}
-                              type="text" 
-                              placeholder="Doe" 
-                              className="w-full bg-white border border-neutral-100 rounded-2xl px-12 py-4 focus:ring-2 focus:ring-brand-accent transition-all outline-none text-sm placeholder:opacity-30"
-                            />
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="grid grid-cols-2 gap-6">
-                        <div className="space-y-2">
-                          <label className="text-[10px] font-bold uppercase tracking-widest text-neutral-400 ml-4">Mobile Phone</label>
-                          <div className="relative">
-                            <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-300" />
-                            <input 
-                              required
-                              name="phone"
-                              value={formData.phone}
-                              onChange={handleInputChange}
-                              type="tel" 
-                              placeholder="+880" 
-                              className="w-full bg-white border border-neutral-100 rounded-2xl px-12 py-4 focus:ring-2 focus:ring-brand-accent transition-all outline-none text-sm"
-                            />
-                          </div>
-                        </div>
-                        <div className="space-y-2">
-                          <label className="text-[10px] font-bold uppercase tracking-widest text-neutral-400 ml-4">Email Address</label>
-                          <div className="relative">
-                            <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-300" />
-                            <input 
-                              required
-                              name="email"
-                              value={formData.email}
-                              onChange={handleInputChange}
-                              type="email" 
-                              placeholder="john@example.com" 
-                              className="w-full bg-white border border-neutral-100 rounded-2xl px-12 py-4 focus:ring-2 focus:ring-brand-accent transition-all outline-none text-sm placeholder:opacity-30"
-                            />
-                          </div>
-                        </div>
-                      </div>
+               <div className="grid md:grid-cols-2 gap-8 mb-8">
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-bold uppercase tracking-widest text-neutral-400 ml-4">Recipient Name</label>
+                    <div className="relative">
+                      <User className="absolute left-6 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-300" />
+                      <input 
+                        name="firstName"
+                        value={formData.firstName}
+                        onChange={handleInputChange}
+                        placeholder="e.g. Tanvir Rahman" 
+                        className="w-full bg-neutral-50/50 border border-neutral-100 rounded-3xl pl-14 pr-6 py-5 focus:ring-4 focus:ring-brand-accent/5 outline-none transition-all text-sm font-medium"
+                      />
                     </div>
-
-                    {/* Address Section */}
-                    <div>
-                      <h3 className="text-xs font-bold uppercase tracking-[0.2em] text-neutral-300 mb-6 border-b border-neutral-50 pb-2">Shipping Address</h3>
-                      <div className="space-y-6">
-                        <div className="space-y-2">
-                          <label className="text-[10px] font-bold uppercase tracking-widest text-neutral-400 ml-4">Street Address</label>
-                          <div className="relative">
-                            <MapPin className="absolute left-4 top-4 w-4 h-4 text-neutral-300" />
-                            <textarea 
-                              required
-                              name="address"
-                              value={formData.address}
-                              onChange={(e: any) => handleInputChange(e)}
-                              placeholder="Enter your detailed house address..." 
-                              className="w-full bg-white border border-neutral-100 rounded-2xl px-12 py-4 h-32 focus:ring-2 focus:ring-brand-accent transition-all outline-none text-sm resize-none placeholder:opacity-30"
-                            />
-                          </div>
-                        </div>
-
-                        <div className="grid grid-cols-2 gap-6">
-                          <div className="space-y-2">
-                            <label className="text-[10px] font-bold uppercase tracking-widest text-neutral-400 ml-4">City</label>
-                            <input 
-                              required
-                              name="city"
-                              value={formData.city}
-                              onChange={handleInputChange}
-                              type="text" 
-                              placeholder="e.g. Dhaka" 
-                              className="w-full bg-white border border-neutral-100 rounded-2xl px-6 py-4 focus:ring-2 focus:ring-brand-accent transition-all outline-none text-sm placeholder:opacity-30"
-                            />
-                          </div>
-                          <div className="space-y-2">
-                            <label className="text-[10px] font-bold uppercase tracking-widest text-neutral-400 ml-4">Postal / Zip Code</label>
-                            <input 
-                              required
-                              name="zip"
-                              value={formData.zip}
-                              onChange={handleInputChange}
-                              type="text" 
-                              placeholder="1234" 
-                              className="w-full bg-white border border-neutral-100 rounded-2xl px-6 py-4 focus:ring-2 focus:ring-brand-accent transition-all outline-none text-sm placeholder:opacity-30"
-                            />
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="pt-6">
-                      <button 
-                        type="submit"
-                        className="w-full py-5 bg-neutral-900 text-white rounded-full font-bold uppercase text-[10px] tracking-widest hover:bg-brand-accent transition-all shadow-xl"
-                      >
-                        Check & Select Payment
-                      </button>
-                    </div>
-                  </form>
-                </motion.div>
-              ) : (
-                <motion.div
-                  key="payment"
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -20 }}
-                >
-                  <div className="flex items-center gap-3 mb-8">
-                    <div className="w-10 h-10 rounded-full bg-brand-accent/10 flex items-center justify-center text-brand-accent">
-                      <CreditCard className="w-5 h-5" />
-                    </div>
-                    <h1 className="text-3xl font-light text-neutral-900 tracking-tighter">Secure <span className="serif italic">Payment</span></h1>
                   </div>
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-bold uppercase tracking-widest text-neutral-400 ml-4">Contact Phone</label>
+                    <div className="relative">
+                      <Phone className="absolute left-6 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-300" />
+                      <input 
+                        name="phone"
+                        value={formData.phone}
+                        onChange={handleInputChange}
+                        placeholder="+880 1XXX-XXXXXX" 
+                        className="w-full bg-neutral-50/50 border border-neutral-100 rounded-3xl pl-14 pr-6 py-5 focus:ring-4 focus:ring-brand-accent/5 outline-none transition-all text-sm font-medium"
+                      />
+                    </div>
+                  </div>
+               </div>
 
-                  <div className="space-y-8">
-                     <div className="grid grid-cols-1 gap-4">
-                        <label className="text-[10px] font-bold uppercase tracking-widest text-neutral-400 ml-4 mb-2 block">Choose Payment Method</label>
-                        
-                        {/* COD Option */}
-                        <button 
-                           onClick={() => setFormData({...formData, paymentMethod: 'COD'})}
-                           className={cn(
-                              "flex items-center gap-4 p-6 rounded-3xl border transition-all text-left",
-                              formData.paymentMethod === 'COD' ? "bg-neutral-900 border-neutral-900 text-white shadow-xl" : "bg-white border-neutral-100 text-neutral-900 hover:border-brand-accent"
-                           )}
-                        >
-                           <div className={cn("p-3 rounded-2xl", formData.paymentMethod === 'COD' ? "bg-white/10" : "bg-neutral-50")}>
-                              <Banknote className="w-5 h-5" />
-                           </div>
-                           <div className="flex-1">
-                              <h4 className="text-xs font-bold uppercase tracking-widest">Cash on Delivery</h4>
-                              <p className={cn("text-[9px] uppercase tracking-tighter mt-0.5", formData.paymentMethod === 'COD' ? "text-white/60" : "text-neutral-400")}>Pay when you receive the product</p>
-                           </div>
-                           {formData.paymentMethod === 'COD' && <Check className="w-4 h-4 text-brand-accent" />}
-                        </button>
+               <div className="space-y-2 mb-8">
+                  <label className="text-[10px] font-bold uppercase tracking-widest text-neutral-400 ml-4">Full Residence Address</label>
+                  <div className="relative">
+                    <MapPin className="absolute left-6 top-6 w-4 h-4 text-neutral-300" />
+                    <textarea 
+                      name="address"
+                      value={formData.address}
+                      onChange={handleInputChange}
+                      placeholder="Enter House, Road, Area and Sector details..." 
+                      className="w-full bg-neutral-50/50 border border-neutral-100 rounded-[2rem] pl-14 pr-6 py-5 h-32 focus:ring-4 focus:ring-brand-accent/5 outline-none transition-all text-sm font-medium resize-none"
+                    />
+                  </div>
+               </div>
 
-                        {/* bKash Option */}
-                        <button 
-                           onClick={() => setFormData({...formData, paymentMethod: 'bKash'})}
-                           className={cn(
-                              "flex items-center gap-4 p-6 rounded-3xl border transition-all text-left",
-                              formData.paymentMethod === 'bKash' ? "bg-[#D12053] border-[#D12053] text-white shadow-xl" : "bg-white border-neutral-100 text-neutral-900 hover:border-brand-accent"
-                           )}
-                        >
-                           <div className={cn("p-3 rounded-2xl", formData.paymentMethod === 'bKash' ? "bg-white/10" : "bg-neutral-50")}>
-                              <img src="https://upload.wikimedia.org/wikipedia/commons/8/8c/BKash_Logo.svg" className="h-5" alt="bKash" />
-                           </div>
-                           <div className="flex-1">
-                              <h4 className="text-xs font-bold uppercase tracking-widest">bKash Payment</h4>
-                              <p className={cn("text-[9px] uppercase tracking-tighter mt-0.5", formData.paymentMethod === 'bKash' ? "text-white/60" : "text-neutral-400")}>Fast & Secure Mobile Payment</p>
-                           </div>
-                           {formData.paymentMethod === 'bKash' && <Check className="w-4 h-4 text-white" />}
-                        </button>
+               <div className="grid grid-cols-2 gap-8">
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-bold uppercase tracking-widest text-neutral-400 ml-4">City / Zone</label>
+                    <select 
+                      name="city"
+                      value={formData.city}
+                      onChange={(e: any) => handleInputChange(e)}
+                      className="w-full bg-neutral-50/50 border border-neutral-100 rounded-3xl px-8 py-5 focus:ring-4 focus:ring-brand-accent/5 outline-none transition-all text-sm font-medium appearance-none"
+                    >
+                      <option value="">Select City</option>
+                      <option value="Dhaka">Dhaka (Inner)</option>
+                      <option value="Dhaka Outer">Dhaka (Outer)</option>
+                      <option value="Chittagong">Chittagong</option>
+                      <option value="Sylhet">Sylhet</option>
+                      <option value="Rajshahi">Rajshahi</option>
+                    </select>
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-bold uppercase tracking-widest text-neutral-400 ml-4">District Code</label>
+                    <input 
+                      name="zip"
+                      value={formData.zip}
+                      onChange={handleInputChange}
+                      placeholder="Zip Code" 
+                      className="w-full bg-neutral-50/50 border border-neutral-100 rounded-3xl px-8 py-5 focus:ring-4 focus:ring-brand-accent/5 outline-none transition-all text-sm font-medium"
+                    />
+                  </div>
+               </div>
+            </section>
 
-                        {/* Nagad Option */}
-                        <button 
-                           onClick={() => setFormData({...formData, paymentMethod: 'Nagad'})}
-                           className={cn(
-                              "flex items-center gap-4 p-6 rounded-3xl border transition-all text-left",
-                              formData.paymentMethod === 'Nagad' ? "bg-[#F7941D] border-[#F7941D] text-white shadow-xl" : "bg-white border-neutral-100 text-neutral-900 hover:border-brand-accent"
-                           )}
-                        >
-                           <div className={cn("p-3 rounded-2xl", formData.paymentMethod === 'Nagad' ? "bg-white/10" : "bg-neutral-50")}>
-                              <Wallet className="w-5 h-5" />
-                           </div>
-                           <div className="flex-1">
-                              <h4 className="text-xs font-bold uppercase tracking-widest">Nagad Payment</h4>
-                              <p className={cn("text-[9px] uppercase tracking-tighter mt-0.5", formData.paymentMethod === 'Nagad' ? "text-white/60" : "text-neutral-400")}>Official Digital Financial Service</p>
-                           </div>
-                           {formData.paymentMethod === 'Nagad' && <Check className="w-4 h-4 text-white" />}
-                        </button>
-                        
-                        {/* Rocket Option */}
-                        <button 
-                           onClick={() => setFormData({...formData, paymentMethod: 'Rocket'})}
-                           className={cn(
-                              "flex items-center gap-4 p-6 rounded-3xl border transition-all text-left",
-                              formData.paymentMethod === 'Rocket' ? "bg-[#8C3494] border-[#8C3494] text-white shadow-xl" : "bg-white border-neutral-100 text-neutral-900 hover:border-brand-accent"
-                           )}
-                        >
-                           <div className={cn("p-3 rounded-2xl", formData.paymentMethod === 'Rocket' ? "bg-white/10" : "bg-neutral-50")}>
-                              <Smartphone className="w-5 h-5" />
-                           </div>
-                           <div className="flex-1">
-                              <h4 className="text-xs font-bold uppercase tracking-widest">DBBL Rocket</h4>
-                              <p className={cn("text-[9px] uppercase tracking-tighter mt-0.5", formData.paymentMethod === 'Rocket' ? "text-white/60" : "text-neutral-400")}>Trustworthy Banking Experience</p>
-                           </div>
-                           {formData.paymentMethod === 'Rocket' && <Check className="w-4 h-4 text-white" />}
-                        </button>
-                     </div>
+            {/* Step 2: Payment */}
+            <section className="bg-white p-12 rounded-[3.5rem] border border-neutral-100 shadow-xl">
+               <div className="flex items-center gap-4 mb-10">
+                  <div className="w-12 h-12 bg-brand-accent/10 rounded-2xl flex items-center justify-center text-brand-accent">
+                    <ShieldCheck className="w-6 h-6" />
+                  </div>
+                  <h2 className="text-2xl font-light tracking-tighter serif italic text-balance">Secured Payment Architect</h2>
+               </div>
 
-                     {/* MFS Instructions & TXN ID Input */}
-                     {formData.paymentMethod !== 'COD' && (
-                        <motion.div 
-                           initial={{ opacity: 0, y: 10 }}
-                           animate={{ opacity: 1, y: 0 }}
-                           className="p-8 bg-brand-surface border border-brand-accent/20 rounded-3xl"
-                        >
-                           <div className="mb-6">
-                              <h4 className="text-xs font-bold uppercase tracking-widest text-brand-accent mb-2">Instructions</h4>
-                              <p className="text-[10px] text-neutral-600 leading-relaxed uppercase tracking-tighter">
-                                 1. Send money (Personal) to: <span className="font-bold text-neutral-900 tracking-wider">01940698304</span><br/>
-                                 2. Use your <span className="font-bold text-neutral-900">Phone Number</span> as reference.<br/>
-                                 3. Copy and paste the <span className="font-bold text-neutral-900">Transaction ID</span> below.
-                              </p>
-                           </div>
-                           
-                           <div className="space-y-2">
-                              <label className="text-[10px] font-bold uppercase tracking-widest text-neutral-400 ml-4">Transaction ID</label>
-                              <input 
-                                 required
-                                 type="text"
-                                 placeholder="e.g. 8N7K9L2M"
-                                 value={formData.txnId}
-                                 onChange={(e) => setFormData({...formData, txnId: e.target.value})}
-                                 className="w-full bg-white border border-neutral-100 rounded-2xl px-6 py-4 focus:ring-2 focus:ring-brand-accent transition-all outline-none text-sm placeholder:opacity-30 uppercase font-mono"
-                              />
-                           </div>
-                        </motion.div>
-                     )}
+               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 mb-10">
+                  {[
+                    { id: 'COD', label: 'Cash on Delivery', sub: 'Traditional', icon: Banknote, color: 'neutral-900' },
+                    { id: 'bKash', label: 'bKash', sub: 'Mobile Fund', icon: Smartphone, color: '[#D12053]' },
+                    { id: 'Nagad', label: 'Nagad', sub: 'Digital Wallet', icon: Wallet, color: '[#F7941D]' },
+                    { id: 'Rocket', label: 'Rocket', sub: 'Bank Deposit', icon: Smartphone, color: '[#8C3494]' },
+                    { id: 'Stripe', label: 'Card / International', sub: 'Flash Checkout', icon: CreditCard, color: 'blue-500' }
+                  ].map((p) => (
+                    <button 
+                      key={p.id}
+                      onClick={() => setFormData({...formData, paymentMethod: p.id as any})}
+                      className={cn(
+                        "p-6 rounded-[2rem] border-2 transition-all text-left flex flex-col justify-between h-40",
+                        formData.paymentMethod === p.id 
+                          ? `border-brand-accent bg-neutral-900 text-white shadow-xl` 
+                          : "border-neutral-50 bg-neutral-50/30 text-neutral-900 hover:border-neutral-200"
+                      )}
+                    >
+                      <div className={cn("w-10 h-10 rounded-2xl flex items-center justify-center", formData.paymentMethod === p.id ? "bg-white/10" : "bg-white shadow-sm")}>
+                        <p.icon className={cn("w-5 h-5", formData.paymentMethod === p.id ? "text-brand-accent" : "text-neutral-400")} />
+                      </div>
+                      <div>
+                        <h4 className="text-[10px] font-bold uppercase tracking-wider mb-1">{p.label}</h4>
+                        <p className={cn("text-[8px] uppercase tracking-tighter opacity-40")}>{p.sub}</p>
+                      </div>
+                    </button>
+                  ))}
+               </div>
 
-                     {/* Final Confirmation Button */}
-                     <div className="p-8 bg-white border border-neutral-100 rounded-3xl">
-                        <p className="text-sm text-neutral-600 mb-8 leading-relaxed">
-                           Total amount to be paid: <strong>{formatPrice(cartTotal)}</strong>. 
-                           {formData.paymentMethod === 'COD' ? ' You will pay when the delivery person arrives.' : ' Please ensure the Transaction ID is correct.'}
+               {/* MFS Verification Area */}
+               {formData.paymentMethod !== 'COD' && formData.paymentMethod !== 'Stripe' && (
+                 <motion.div 
+                   initial={{ opacity: 0, height: 0 }}
+                   animate={{ opacity: 1, height: 'auto' }}
+                   className="bg-neutral-50 p-8 rounded-[2rem] mb-10 border border-neutral-100"
+                 >
+                    <div className="flex gap-4 items-start mb-6">
+                      <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center text-brand-accent shadow-sm">!</div>
+                      <div>
+                        <p className="text-[10px] font-bold uppercase tracking-widest text-neutral-900 mb-2">Instructions for {formData.paymentMethod}</p>
+                        <p className="text-[9px] text-neutral-500 font-medium tracking-tight uppercase leading-relaxed">
+                          1. Dial *247# or open {formData.paymentMethod} App<br/>
+                          2. Send Money (Personal) amount: <strong>{formatPrice(cartTotal)}</strong><br/>
+                          3. To: <span className="text-neutral-900 font-bold tracking-widest">01940698304</span>
                         </p>
+                      </div>
+                    </div>
+                    <div className="space-y-4">
+                      <label className="text-[10px] font-bold uppercase tracking-widest text-neutral-400 ml-4">Enter Transaction ID (TrxID)</label>
+                      <input 
+                        name="txnId"
+                        value={formData.txnId}
+                        onChange={handleInputChange}
+                        placeholder="E.G. 8H7K2L..." 
+                        className="w-full bg-white border border-neutral-100 rounded-3xl px-8 py-5 focus:ring-4 focus:ring-brand-accent/5 outline-none transition-all text-sm font-mono tracking-widest uppercase"
+                      />
+                    </div>
+                 </motion.div>
+               )}
 
-                        <div className="relative">
-                           <div className="absolute inset-0 bg-neutral-100 rounded-full" />
-                           <div 
-                              className="absolute inset-y-0 left-0 bg-brand-accent rounded-full transition-all duration-75"
-                              style={{ width: `${holdProgress}%` }}
-                           />
-                           <button
-                             onMouseDown={() => {
-                               if (formData.paymentMethod !== 'COD' && !formData.txnId) {
-                                  alert("Please enter a Transaction ID for MFS payment.");
-                                  return;
-                               }
-                               setIsHolding(true);
-                             }}
-                             onMouseUp={() => setIsHolding(false)}
-                             onMouseLeave={() => setIsHolding(false)}
-                             onTouchStart={() => {
-                                if (formData.paymentMethod !== 'COD' && !formData.txnId) {
-                                   alert("Please enter a Transaction ID for MFS payment.");
-                                   return;
-                                }
-                                setIsHolding(true);
-                             }}
-                             onTouchEnd={() => setIsHolding(false)}
-                             className="relative w-full py-6 text-white font-bold uppercase text-[10px] tracking-[0.3em] z-10 select-none cursor-pointer overflow-hidden flex items-center justify-center gap-3"
-                           >
-                              {isSubmitting ? (
-                                <Loader2 className="w-4 h-4 animate-spin" />
-                              ) : isHolding ? 'Verifying...' : 'Hold to Confirm Order'}
-                              {holdProgress > 0 && <span className="text-[8px] opacity-70">{Math.round(holdProgress)}%</span>}
-                           </button>
-                        </div>
-                        
-                        <p className="mt-6 text-[8px] text-center text-neutral-400 uppercase tracking-widest font-bold">
-                           <Check className="inline-block w-3 h-3 mr-1" /> Nexa Luxury Guarantee Integrated
-                        </p>
-                     </div>
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
+               {formData.paymentMethod === 'Stripe' && (
+                  <motion.div 
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="p-10 border-2 border-dashed border-neutral-100 rounded-[2rem] text-center mb-10"
+                  >
+                     <CreditCard className="w-12 h-12 text-neutral-100 mx-auto mb-4" />
+                     <p className="text-[10px] font-bold uppercase tracking-widest text-neutral-400 mb-6">Secured Visa / Mastercard / Amex Gateway</p>
+                     <p className="text-[8px] text-neutral-300 font-bold uppercase tracking-[0.3em]">Redirection handled via Stripe Relay™</p>
+                  </motion.div>
+               )}
+            </section>
           </div>
 
-          {/* Sidebar Area */}
-          <div className="lg:col-span-2">
-            <div className="bg-white border border-neutral-100 rounded-3xl p-8 sticky top-32">
-              <h3 className="text-[10px] font-bold uppercase tracking-widest text-neutral-300 mb-8 pb-4 border-b border-neutral-50">Order Summary</h3>
-              
-              <div className="space-y-6 mb-8 max-h-72 overflow-y-auto">
-                {cart.map((item) => {
-                  const product = products.find(p => p.id === item.productId);
-                   if (!product) return null;
-                   return (
-                    <div key={`${item.productId}-${item.variantId}`} className="flex gap-4">
-                      <div className="w-16 h-16 rounded-xl overflow-hidden flex-shrink-0">
-                         <img src={product.images[0]} className="w-full h-full object-cover" />
+          {/* Right Sidebar: Summary and Final One-Click Confirm */}
+          <div className="lg:col-span-4 h-full">
+            <div className="sticky top-32 space-y-8">
+              <section className="bg-neutral-900 text-white p-12 rounded-[3.5rem] shadow-2xl relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-brand-accent/10 rounded-full translate-x-1/2 -translate-y-1/2 blur-2xl" />
+                
+                <h3 className="text-[10px] font-bold uppercase tracking-[.4em] text-brand-accent mb-10 border-b border-white/5 pb-6">Artifact Registry</h3>
+                
+                <div className="space-y-8 mb-12 max-h-60 overflow-y-auto custom-scrollbar">
+                  {cart.map((item) => {
+                    const product = products.find(p => p.id === item.productId);
+                    if (!product) return null;
+                    return (
+                      <div key={`${item.productId}-${item.variantId}`} className="flex gap-6 items-center">
+                        <div className="w-14 h-14 bg-white/5 rounded-2xl overflow-hidden flex-shrink-0 border border-white/10">
+                          <img src={product.images[0]} referrerPolicy="no-referrer" className="w-full h-full object-cover opacity-80" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <h4 className="text-[10px] font-bold uppercase tracking-widest truncate">{product.name}</h4>
+                          <div className="flex justify-between items-center mt-1">
+                            <span className="text-[8px] text-white/40 uppercase tracking-tighter">Qty: {item.quantity}</span>
+                            <span className="text-xs font-light tracking-tight">{formatPrice(product.price * item.quantity)}</span>
+                          </div>
+                        </div>
                       </div>
-                      <div className="flex-1 min-w-0">
-                         <h4 className="text-[10px] font-bold text-neutral-900 uppercase truncate">{product.name}</h4>
-                         <p className="text-[10px] text-neutral-400 uppercase">Qty: {item.quantity}</p>
-                         <p className="text-xs font-bold text-neutral-900 mt-1">{formatPrice(product.price * item.quantity)}</p>
-                      </div>
-                    </div>
-                   );
-                })}
-              </div>
+                    );
+                  })}
+                </div>
 
-              <div className="space-y-3 pt-8 border-t border-neutral-50">
-                <div className="flex justify-between text-[10px] font-bold uppercase tracking-widest text-neutral-400">
-                  <span>Shipping</span>
-                  <span>Calculated</span>
+                <div className="space-y-4 pt-10 border-t border-white/5">
+                  <div className="flex justify-between text-[10px] uppercase tracking-widest text-white/40 font-bold">
+                    <span>Vat / Tax</span>
+                    <span className="text-white/80">Included</span>
+                  </div>
+                  <div className="flex justify-between text-[10px] uppercase tracking-widest text-white/40 font-bold">
+                    <span>Logistics</span>
+                    <span className="text-white/80">Complimentary</span>
+                  </div>
+                  <div className="flex justify-between items-end pt-6">
+                    <span className="text-[11px] font-bold uppercase tracking-[0.4em] text-white/40">Total</span>
+                    <span className="text-4xl font-light tracking-tighter serif italic text-brand-accent">{formatPrice(cartTotal)}</span>
+                  </div>
                 </div>
-                <div className="flex justify-between text-xl font-light text-neutral-900 tracking-tighter pt-4">
-                   <span>Total</span>
-                   <span className="serif italic text-brand-accent">{formatPrice(cartTotal)}</span>
+              </section>
+
+              {/* Confirm Slider Replacement (One Click Confirm) */}
+              <div className="p-4 bg-white border border-neutral-100 rounded-[3rem] shadow-sm">
+                <div className="relative group">
+                  <div className={cn(
+                    "absolute inset-0 bg-brand-accent rounded-full blur-xl opacity-0 group-hover:opacity-20 transition-opacity",
+                    isSubmitting && "opacity-40 animate-pulse"
+                  )} />
+                  
+                  <div className="relative">
+                    <div 
+                      className="absolute inset-y-0 left-0 bg-brand-accent/10 rounded-full transition-all duration-75"
+                      style={{ width: `${holdProgress}%` }}
+                    />
+                    
+                    <button
+                       onMouseDown={() => setIsHolding(true)}
+                       onMouseUp={() => setIsHolding(false)}
+                       onMouseLeave={() => setIsHolding(false)}
+                       onTouchStart={() => setIsHolding(true)}
+                       onTouchEnd={() => setIsHolding(false)}
+                       disabled={isSubmitting}
+                       className={cn(
+                        "relative w-full py-6 bg-neutral-900 hover:bg-neutral-800 disabled:bg-neutral-300 text-white rounded-full font-bold uppercase text-[10px] tracking-[0.4em] transition-all flex items-center justify-center gap-3 overflow-hidden shadow-2xl",
+                        "active:scale-95 touch-none"
+                       )}
+                    >
+                       {isSubmitting ? (
+                          <Loader2 className="w-5 h-5 animate-spin" />
+                       ) : (
+                          <>
+                             <Zap className="w-4 h-4 fill-brand-accent text-brand-accent" />
+                             {isHolding ? "Validating..." : "Hold to Place Order"}
+                             {holdProgress > 0 && <span className="text-[8px] text-brand-accent ml-2">{Math.round(holdProgress)}%</span>}
+                          </>
+                       )}
+                    </button>
+                  </div>
                 </div>
+                <p className="mt-6 text-[9px] text-center text-neutral-300 uppercase tracking-widest italic font-medium">
+                   Secured by Nexa Quantum Encrypted Checkout
+                </p>
               </div>
             </div>
           </div>
