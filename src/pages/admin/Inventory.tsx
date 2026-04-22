@@ -78,15 +78,12 @@ export default function AdminInventory() {
   const handleDelete = async (id: string, name: string) => {
     if (!confirm(`Are you sure you want to delete ${name}?`)) return;
     try {
-      if (id.length > 5) {
-        const { error } = await supabase.from('products').delete().eq('id', id);
-        if (error) throw error;
-        await logAdminAction('DELETE_PRODUCT', id, { name });
-      } else {
-        alert("This is a system product and cannot be deleted, but it will be hidden if you override it in the database.");
-      }
+      const { error } = await supabase.from('products').delete().eq('id', id);
+      if (error) throw error;
+      await logAdminAction('DELETE_PRODUCT', id, { name });
     } catch (err) {
       console.error("Delete failed:", err);
+      alert("Failed to delete product. It might be a system product that isn't in your main database yet.");
     }
   };
 
@@ -185,36 +182,22 @@ export default function AdminInventory() {
                       </span>
                     </td>
                     <td className="px-8 py-6 text-right">
-                       <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                          {/* Quick Edit Icon */}
+                       <div className="flex justify-end gap-3 transition-opacity">
                           <button 
                             onClick={() => {
                               setEditingProduct(product);
                               setIsFormOpen(true);
                             }}
-                            className="p-2 bg-brand-accent/10 border border-brand-accent/20 rounded-lg transition-all text-brand-accent hover:bg-brand-accent hover:text-white"
-                            title="Quick Edit"
-                          >
-                            <Zap className="w-4 h-4" />
-                          </button>
-                          
-                          <button 
-                            className="p-2 hover:bg-neutral-800 rounded-lg transition-colors text-neutral-400 hover:text-white"
-                          >
-                            <Eye className="w-4 h-4" />
-                          </button>
-                          <button 
-                            onClick={() => {
-                              setEditingProduct(product);
-                              setIsFormOpen(true);
-                            }}
-                            className="p-2 hover:bg-neutral-800 rounded-lg transition-colors text-neutral-400 hover:text-white"
+                            className="p-3 bg-brand-accent/10 border border-brand-accent/20 rounded-xl transition-all text-brand-accent hover:bg-brand-accent hover:text-white flex items-center justify-center"
+                            title="Edit Product"
                           >
                             <Edit2 className="w-4 h-4" />
                           </button>
+                          
                           <button 
                             onClick={() => handleDelete(product.id, product.name)}
-                            className="p-2 hover:bg-red-500/10 rounded-lg transition-colors text-neutral-400 hover:text-red-500"
+                            className="p-3 bg-red-500/10 border border-red-500/20 rounded-xl transition-all text-red-500 hover:bg-red-500 hover:text-white flex items-center justify-center"
+                            title="Delete Product"
                           >
                             <Trash2 className="w-4 h-4" />
                           </button>

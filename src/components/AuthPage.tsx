@@ -157,34 +157,14 @@ export default function AuthPage() {
     setAuthError(null);
     setIsAuthenticating(true);
     try {
-      const { data, error } = await supabase.auth.signInWithOAuth({
+      const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-           redirectTo: window.location.origin,
-           skipBrowserRedirect: true
+           redirectTo: window.location.origin + '/profile',
         }
       });
       if (error) throw error;
-      
-      if (data?.url) {
-        // Open the Google Auth URL in a popup window
-        const popup = window.open(data.url, 'google_auth_popup', 'width=600,height=600');
-        
-        // Poll for the popup closure to refresh auth state
-        if (popup) {
-          const timer = setInterval(async () => {
-            if (popup.closed) {
-              clearInterval(timer);
-              // Check if user is now logged in
-              const { data: sessionData } = await supabase.auth.getSession();
-              if (sessionData.session) {
-                // Succesfully logged in
-                window.location.reload();
-              }
-            }
-          }, 1000);
-        }
-      }
+      // Note: This will redirect the entire page to Google for auth.
     } catch (error: any) {
       console.error(error);
       setAuthError(error.message);
