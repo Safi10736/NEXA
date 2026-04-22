@@ -132,57 +132,86 @@ export default function Navbar() {
             initial={{ opacity: 0, x: -100 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -100 }}
-            className="fixed inset-0 bg-white z-[60] p-10 flex flex-col justify-between"
+            className="fixed inset-0 bg-white z-[999] p-8 sm:p-12 flex flex-col justify-between h-screen w-screen overflow-y-auto"
           >
-            <div className="flex justify-between items-start">
+            <div className="flex justify-between items-start mb-8">
               <span className="text-3xl font-bold tracking-tighter uppercase text-neutral-900 italic serif">
                 Nexa
               </span>
-              <button onClick={() => setIsMenuOpen(false)}>
+              <button 
+                onClick={() => setIsMenuOpen(false)}
+                className="p-2 hover:bg-neutral-100 rounded-full transition-colors"
+                aria-label="Close menu"
+              >
                 <X className="w-8 h-8 text-neutral-900" />
               </button>
             </div>
 
-            <div className="flex flex-col gap-6 text-4xl font-light tracking-tight text-neutral-900">
-              {['New Arrivals', 'Lighting', 'Decor', 'Kitchen', 'Essentials'].map((item) => (
-                <Link
+            <div className="flex flex-col gap-8 text-5xl md:text-7xl font-light tracking-tighter text-neutral-900 mb-12">
+              {['New Arrivals', 'Lighting', 'Decor', 'Kitchen', 'Essentials'].map((item, i) => (
+                <motion.div
                   key={item}
-                  to="/shop"
-                  onClick={() => setIsMenuOpen(false)}
-                  className="hover:translate-x-4 transition-transform duration-500 serif italic hover:text-brand-accent"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.1 + i * 0.1 }}
                 >
-                  {item}
-                </Link>
+                  <Link
+                    to="/shop"
+                    onClick={() => setIsMenuOpen(false)}
+                    className="hover:translate-x-4 transition-transform duration-500 serif italic hover:text-brand-accent block"
+                  >
+                    {item}
+                  </Link>
+                </motion.div>
               ))}
             </div>
 
-            <div className="flex flex-col gap-6">
+            <div className="flex flex-col gap-10 mt-auto">
               <div className="h-px bg-neutral-100 w-full" />
-              <div className="flex justify-between items-center mb-4">
-                <div className="flex gap-4">
-                  <a href="https://www.facebook.com/share/1CiNRxyy6M/" target="_blank" rel="noopener noreferrer" className="p-2 border border-neutral-100 rounded-full transition-colors hover:bg-neutral-900 hover:text-white group">
-                    <Facebook className="w-5 h-5 text-neutral-900 group-hover:text-white" />
-                  </a>
-                  <a href="https://www.instagram.com/nexa_124?igsh=MXBoN2N3ZnJyenh1bw==" target="_blank" rel="noopener noreferrer" className="p-2 border border-neutral-100 rounded-full transition-colors hover:bg-neutral-900 hover:text-white group">
-                    <Instagram className="w-5 h-5 text-neutral-900 group-hover:text-white" />
-                  </a>
-                  <a href="#" target="_blank" rel="noopener noreferrer" className="p-2 border border-neutral-100 rounded-full transition-colors hover:bg-neutral-900 hover:text-white group">
-                    <Linkedin className="w-5 h-5 text-neutral-900 group-hover:text-white" />
-                  </a>
-                  <a href="#" target="_blank" rel="noopener noreferrer" className="p-2 border border-neutral-100 rounded-full transition-colors hover:bg-neutral-900 hover:text-white group">
-                    <Youtube className="w-5 h-5 text-neutral-900 group-hover:text-white" />
-                  </a>
+              
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
+                <div className="space-y-4">
+                  <h4 className="text-[10px] font-bold uppercase tracking-[0.3em] text-neutral-400">Follow Our Journey</h4>
+                  <div className="flex gap-4">
+                    <a href="https://www.facebook.com/share/1CiNRxyy6M/" target="_blank" rel="noopener noreferrer" className="p-3 border border-neutral-100 rounded-full transition-all hover:bg-neutral-900 hover:text-white group hover:shadow-xl">
+                      <Facebook className="w-5 h-5 text-neutral-900 group-hover:text-white" />
+                    </a>
+                    <a href="https://www.instagram.com/nexa_124?igsh=MXBoN2N3ZnJyenh1bw==" target="_blank" rel="noopener noreferrer" className="p-3 border border-neutral-100 rounded-full transition-all hover:bg-neutral-900 hover:text-white group hover:shadow-xl">
+                      <Instagram className="w-5 h-5 text-neutral-900 group-hover:text-white" />
+                    </a>
+                    <a href="#" target="_blank" rel="noopener noreferrer" className="p-3 border border-neutral-100 rounded-full transition-all hover:bg-neutral-900 hover:text-white group hover:shadow-xl">
+                      <Linkedin className="w-5 h-5 text-neutral-900 group-hover:text-white" />
+                    </a>
+                    <a href="#" target="_blank" rel="noopener noreferrer" className="p-3 border border-neutral-100 rounded-full transition-all hover:bg-neutral-900 hover:text-white group hover:shadow-xl">
+                      <Youtube className="w-5 h-5 text-neutral-900 group-hover:text-white" />
+                    </a>
+                  </div>
                 </div>
-                <div className="flex gap-4 text-[10px] font-bold uppercase tracking-widest text-neutral-400">
-                  <span>EN</span>
-                  <span className="opacity-20">|</span>
-                  <span>BN</span>
+
+                <div className="space-y-4">
+                  <h4 className="text-[10px] font-bold uppercase tracking-[0.3em] text-neutral-400">Language</h4>
+                  <div className="flex gap-4 text-[10px] font-bold uppercase tracking-widest">
+                    <button 
+                      onClick={() => setLang('EN')}
+                      className={cn("transition-colors", lang === 'EN' ? "text-neutral-900 underline underline-offset-4" : "text-neutral-300")}
+                    >
+                      EN
+                    </button>
+                    <span className="text-neutral-100">|</span>
+                    <button 
+                       onClick={() => setLang('BN')}
+                       className={cn("transition-colors", lang === 'BN' ? "text-neutral-900 underline underline-offset-4" : "text-neutral-300")}
+                    >
+                      BN
+                    </button>
+                  </div>
                 </div>
               </div>
-              <div className="flex justify-between items-center text-sm font-medium text-neutral-500 uppercase tracking-widest">
-                <span>Contact</span>
-                <span>Shipping</span>
-                <span>Returns</span>
+
+              <div className="flex justify-between items-center text-[10px] font-bold text-neutral-400 uppercase tracking-[0.3em] pb-4">
+                <Link to="/contact" onClick={() => setIsMenuOpen(false)} className="hover:text-neutral-900 transition-colors">Contact</Link>
+                <Link to="/support#shipping" onClick={() => setIsMenuOpen(false)} className="hover:text-neutral-900 transition-colors">Shipping</Link>
+                <Link to="/support#returns" onClick={() => setIsMenuOpen(false)} className="hover:text-neutral-900 transition-colors">Returns</Link>
               </div>
             </div>
           </motion.div>
