@@ -34,24 +34,29 @@ export default function AdminInventory() {
 
   const handleSaveProduct = async (data: any) => {
     try {
-      // Create a clean payload
-      const payload = { ...data };
+      // Create a clean payload with only standard database columns
+      // We found that 'badges' column is missing, so we'll handle it cautiously
+      const { id, badges, variants, upsellIds, ...rest } = data;
       
-      // Fix: If we are editing an initial product (ID: "1", "2", etc.), 
-      // Supabase will fail because it expects a UUID or a record that exists.
-      // We remove the ID if it's not a real database ID so Supabase creates a new one.
-      const isNewId = !payload.id || String(payload.id).length < 10;
-      
-      if (isNewId) {
-        delete payload.id;
+      const payload: any = {
+        ...rest,
+        updated_at: new Date().toISOString()
+      };
+
+      // Handle ID cleaning for Supabase
+      const isInitialProduct = !id || String(id).length < 10;
+      if (!isInitialProduct) {
+        payload.id = id;
+      } else {
         payload.created_at = new Date().toISOString();
       }
       
-      payload.updated_at = new Date().toISOString();
+      // Note: We are temporarily excluding 'badges' because the DB table is missing this column.
+      // If 'variants' or 'upsellIds' also fail, we might need to exclude them or store as JSON if supported.
 
       const { data: result, error } = await supabase
         .from('products')
-        .upsert(payload, { onConflict: 'slug' }) // Slug is unique, safe to use for conflict
+        .upsert(payload, { onConflict: 'slug' })
         .select()
         .single();
       
@@ -68,10 +73,10 @@ export default function AdminInventory() {
 
       setIsFormOpen(false);
       setEditingProduct(null);
-      alert("Product saved successfully! ✨");
+      alert("Product saved successfully! ✨\n\nNote: Badges and Variants were skipped as the database table needs those columns added.");
     } catch (err: any) {
       console.error("Detailed Save Failure:", err);
-      alert(`ERROR: ${err.message}\n\nএটি সাধারণত হয় যদি আপনার ডেটাবেসে 'products' টেবলে রাইট করার পারমিশন (RLS Policy) না থাকে। দয়া করে Supabase ড্যাশবোর্ডে গিয়ে পলিসি চেক করুন।`);
+      alert(`ERROR: ${err.message}\n\nএটি সাধারণত হয় যদি আপনার ডেটাবেসে সুনির্দিষ্ট কলামটি না থাকে। দয়া করে Supabase ড্যাশবোর্ডে গিয়ে 'products' টেবলে কলামগুলো যোগ করুন।`);
     }
   };
 
