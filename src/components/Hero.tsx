@@ -1,5 +1,6 @@
 import { motion } from 'motion/react';
 import { ArrowRight, ShoppingBag, Search } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 export default function Hero() {
   return (
@@ -7,12 +8,12 @@ export default function Hero() {
       {/* Background Image */}
       <div className="absolute inset-0 z-0">
         <img 
-          src="https://images.unsplash.com/photo-1556912177-859306029846?auto=format&fit=crop&q=80&w=2400"
+          src="https://images.unsplash.com/photo-1591147139223-846f3ae479a0?auto=format&fit=crop&q=80&w=2400"
           alt="Eco Kitchen" 
           className="w-full h-full object-cover"
           referrerPolicy="no-referrer"
         />
-        <div className="absolute inset-0 bg-black/10" />
+        <div className="absolute inset-0 bg-black/40" />
       </div>
 
       {/* Overlay Content */}
@@ -25,11 +26,10 @@ export default function Hero() {
             className="flex flex-col items-start"
           >
             <div className="flex gap-4 mb-8">
-               {['Shop', 'Bestsellers', 'Gallery', 'About'].map(item => (
-                 <button key={item} className="text-[10px] font-bold uppercase tracking-widest text-white/90 hover:text-white transition-colors">
-                   {item}
-                 </button>
-               ))}
+               <Link to="/shop" className="text-[10px] font-bold uppercase tracking-widest text-white/90 hover:text-white transition-colors">Shop</Link>
+               <button onClick={() => document.getElementById('bestsellers')?.scrollIntoView({ behavior: 'smooth' })} className="text-[10px] font-bold uppercase tracking-widest text-white/90 hover:text-white transition-colors">Bestsellers</button>
+               <Link to="/gallery" className="text-[10px] font-bold uppercase tracking-widest text-white/90 hover:text-white transition-colors">Gallery</Link>
+               <Link to="/about" className="text-[10px] font-bold uppercase tracking-widest text-white/90 hover:text-white transition-colors">About</Link>
             </div>
 
             <h1 className="text-5xl md:text-7xl font-light text-white leading-[1.1] mb-6 tracking-tight">
@@ -42,10 +42,13 @@ export default function Hero() {
               The eco-friendly kitchenware niche with a sense of urgency, much like the original banner. Let me know if you'd like adjustments!
             </p>
             
-            <button className="group px-8 py-3 bg-white text-neutral-900 rounded-full flex items-center gap-3 hover:bg-brand-accent hover:text-white transition-all duration-500 font-bold uppercase text-[9px] tracking-widest shadow-xl">
+            <Link 
+              to="/shop"
+              className="group px-8 py-3 bg-white text-neutral-900 rounded-full flex items-center gap-3 hover:bg-brand-accent hover:text-white transition-all duration-500 font-bold uppercase text-[9px] tracking-widest shadow-xl"
+            >
               Shop now
               <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
-            </button>
+            </Link>
           </motion.div>
 
           <div className="hidden lg:flex justify-end items-end pb-12">

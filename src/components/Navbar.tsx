@@ -59,10 +59,10 @@ export default function Navbar() {
         "hidden md:flex items-center gap-10 font-medium tracking-[0.15em] text-[10px] uppercase",
         showDarkNav ? "text-neutral-900/70" : "text-neutral-900/70"
       )}>
-        {['Lamps', 'Wall Art', 'Vases', 'Furniture', 'Accessories'].map((item) => (
+        {['Lighting', 'Decor', 'Kitchen', 'Essentials'].map((item) => (
           <Link
             key={item}
-            to="/"
+            to="/shop"
             className="hover:text-brand-accent transition-colors"
           >
             {item}
@@ -144,10 +144,10 @@ export default function Navbar() {
             </div>
 
             <div className="flex flex-col gap-6 text-4xl font-light tracking-tight text-neutral-900">
-              {['New Arrivals', 'Table Lamps', 'Wall Art', 'Vases', 'Furniture', 'Accessories'].map((item) => (
+              {['New Arrivals', 'Lighting', 'Decor', 'Kitchen', 'Essentials'].map((item) => (
                 <Link
                   key={item}
-                  to="/"
+                  to="/shop"
                   onClick={() => setIsMenuOpen(false)}
                   className="hover:translate-x-4 transition-transform duration-500 serif italic hover:text-brand-accent"
                 >

@@ -8,6 +8,9 @@ import CartSidebar from './components/CartSidebar';
 import AuthPage from './components/AuthPage';
 import CheckoutPage from './components/CheckoutPage';
 import SuccessPage from './components/SuccessPage';
+import ShopPage from './components/ShopPage';
+import GalleryPage from './components/GalleryPage';
+import AboutPage from './components/AboutPage';
 import AdminDashboard from './pages/admin/Dashboard';
 import AdminInventory from './pages/admin/Inventory';
 import AdminOrders from './pages/admin/Orders';
@@ -65,10 +68,10 @@ class ErrorBoundary extends Component<{children: ReactNode}, {hasError: boolean,
 
 function FeaturedCollections() {
   const items = [
-    { title: 'Explore CupEco', img: 'https://images.unsplash.com/photo-1544787210-22c66d137f6d?auto=format&fit=crop&q=80&w=400' },
-    { title: 'Explore Tealyvory', img: 'https://images.unsplash.com/photo-1517089531940-6a9b2488ad02?auto=format&fit=crop&q=80&w=400' },
-    { title: 'Explore NatureSip', img: 'https://images.unsplash.com/photo-1610631880197-484c399c922c?auto=format&fit=crop&q=80&w=400' },
-    { title: 'Explore FreshPitcher', img: 'https://images.unsplash.com/photo-1574672280600-4accfa5b6f98?auto=format&fit=crop&q=80&w=400' },
+    { title: 'Explore CupEco', img: 'https://images.unsplash.com/photo-1544787210-22c66d137f6d?auto=format&fit=crop&q=80&w=800' },
+    { title: 'Explore Tealyvory', img: 'https://images.unsplash.com/photo-1563245372-f21724e3856d?auto=format&fit=crop&q=80&w=800' },
+    { title: 'Explore NatureSip', img: 'https://images.unsplash.com/photo-1610631880197-484c399c922c?auto=format&fit=crop&q=80&w=800' },
+    { title: 'Explore FreshPitcher', img: 'https://images.unsplash.com/photo-1574672280600-4accfa5b6f98?auto=format&fit=crop&q=80&w=800' },
   ];
 
   return (
@@ -81,13 +84,13 @@ function FeaturedCollections() {
           transition={{ delay: i * 0.1 }}
           className="relative h-72 rounded-3xl overflow-hidden group cursor-pointer shadow-sm hover:shadow-xl transition-all"
         >
-          <img src={item.img} className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" />
+          <img src={item.img} referrerPolicy="no-referrer" className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" />
           <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-colors" />
           <div className="absolute inset-x-4 bottom-6 text-center">
             <h4 className="text-white text-xs font-bold uppercase tracking-widest mb-3 opacity-90 group-hover:opacity-100">{item.title}</h4>
-            <button className="bg-white/90 backdrop-blur-md px-4 py-1.5 rounded-full text-[7px] font-bold uppercase tracking-widest text-neutral-900 group-hover:bg-brand-accent group-hover:text-white transition-all">
+            <Link to="/shop" className="inline-block bg-white/90 backdrop-blur-md px-4 py-1.5 rounded-full text-[7px] font-bold uppercase tracking-widest text-neutral-900 group-hover:bg-brand-accent group-hover:text-white transition-all">
               Shop Now
-            </button>
+            </Link>
           </div>
         </motion.div>
       ))}
@@ -136,7 +139,7 @@ function SecondaryTeasers() {
                 'https://images.unsplash.com/photo-1610631880197-484c399c922c?auto=format&fit=crop&q=80&w=400',
                 'https://images.unsplash.com/photo-1544787210-22c66d137f6d?auto=format&fit=crop&q=80&w=400',
                 'https://images.unsplash.com/photo-1574672280600-4accfa5b6f98?auto=format&fit=crop&q=80&w=400',
-                'https://images.unsplash.com/photo-1517089531940-6a9b2488ad02?auto=format&fit=crop&q=80&w=400',
+                'https://images.unsplash.com/photo-1563245372-f21724e3856d?auto=format&fit=crop&q=80&w=400',
                 'https://images.unsplash.com/photo-1616489953149-8083070be0bc?auto=format&fit=crop&q=80&w=400'
               ].map((img, i) => (
                 <motion.div 
@@ -146,7 +149,7 @@ function SecondaryTeasers() {
                   transition={{ delay: i * 0.05 }}
                   className="aspect-square rounded-xl overflow-hidden cursor-pointer"
                 >
-                  <img src={img} className="w-full h-full object-cover hover:scale-110 transition-transform duration-700" />
+                  <img src={img} referrerPolicy="no-referrer" className="w-full h-full object-cover hover:scale-110 transition-transform duration-700" />
                 </motion.div>
               ))}
            </div>
@@ -161,9 +164,12 @@ function SecondaryTeasers() {
              Discover our commitment to sustainable materials, low-impact production, and ethical sourcing partnerships — all crafted to support a healthier planet and a greener lifestyle.
            </p>
            <div className="flex gap-4">
-              <button className="px-8 py-3 bg-neutral-900 text-white rounded-full text-[9px] font-bold uppercase tracking-widest hover:bg-brand-accent transition-all">
+              <Link 
+                to="/about"
+                className="px-8 py-3 bg-neutral-900 text-white rounded-full text-[9px] font-bold uppercase tracking-widest hover:bg-brand-accent transition-all inline-block"
+              >
                 Learn More
-              </button>
+              </Link>
            </div>
         </div>
       </div>
@@ -298,6 +304,9 @@ export default function App() {
                 
                 <Routes>
                   <Route path="/" element={<HomePage />} />
+                  <Route path="/shop" element={<ShopPage />} />
+                  <Route path="/gallery" element={<GalleryPage />} />
+                  <Route path="/about" element={<AboutPage />} />
                   <Route path="/product/:slug" element={<ProductPage />} />
                   <Route path="/profile" element={<AuthPage />} />
                   <Route path="/checkout" element={<CheckoutPage />} />
