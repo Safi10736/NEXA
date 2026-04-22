@@ -373,9 +373,9 @@ export default function CheckoutPage() {
                            <div className="mb-6">
                               <h4 className="text-xs font-bold uppercase tracking-widest text-brand-accent mb-2">Instructions</h4>
                               <p className="text-[10px] text-neutral-600 leading-relaxed uppercase tracking-tighter">
-                                 1. Send money to our official number: <span className="font-bold text-neutral-900">01XXX-XXXXXX</span><br/>
-                                 2. Use your Phone Number as reference.<br/>
-                                 3. Enter the <span className="font-bold text-neutral-900">Transaction ID</span> below.
+                                 1. Send money (Personal) to: <span className="font-bold text-neutral-900 tracking-wider">01940698304</span><br/>
+                                 2. Use your <span className="font-bold text-neutral-900">Phone Number</span> as reference.<br/>
+                                 3. Copy and paste the <span className="font-bold text-neutral-900">Transaction ID</span> below.
                               </p>
                            </div>
                            
