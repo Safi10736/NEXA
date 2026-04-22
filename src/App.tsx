@@ -1,0 +1,355 @@
+import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
+import { useState } from 'react';
+import { REVIEWS } from './constants';
+import Navbar from './components/Navbar';
+import Hero from './components/Hero';
+import ProductPage from './components/ProductPage';
+import CartSidebar from './components/CartSidebar';
+import AuthPage from './components/AuthPage';
+import CheckoutPage from './components/CheckoutPage';
+import SuccessPage from './components/SuccessPage';
+import AdminDashboard from './pages/admin/Dashboard';
+import AdminInventory from './pages/admin/Inventory';
+import AdminOrders from './pages/admin/Orders';
+import AdminCustomers from './pages/admin/Customers';
+import { Star, MessageCircle, Instagram, Twitter, Facebook, ArrowRight, User as UserIcon, ShieldCheck, BarChart3 } from 'lucide-react';
+import { motion } from 'motion/react';
+import { cn } from './lib/utils';
+import ProductCard from './components/ProductCard';
+
+import { AuthProvider, useAuth } from './AuthContext';
+import { CartProvider, useCart } from './CartContext';
+import { ProductProvider, useProducts } from './ProductContext';
+import FlyToCartRenderer from './components/FlyToCart';
+import { useAdmin } from './hooks/useAdmin';
+
+function FeaturedCollections() {
+  const items = [
+    { title: 'Explore CupEco', img: 'https://images.unsplash.com/photo-1544787210-22c66d137f6d?auto=format&fit=crop&q=80&w=400' },
+    { title: 'Explore Tealyvory', img: 'https://images.unsplash.com/photo-1517089531940-6a9b2488ad02?auto=format&fit=crop&q=80&w=400' },
+    { title: 'Explore NatureSip', img: 'https://images.unsplash.com/photo-1610631880197-484c399c922c?auto=format&fit=crop&q=80&w=400' },
+    { title: 'Explore FreshPitcher', img: 'https://images.unsplash.com/photo-1574672280600-4accfa5b6f98?auto=format&fit=crop&q=80&w=400' },
+  ];
+
+  return (
+    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 px-6 mt-12 mb-24">
+      {items.map((item, i) => (
+        <motion.div
+          key={i}
+          initial={{ opacity: 0, scale: 0.95 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          transition={{ delay: i * 0.1 }}
+          className="relative h-72 rounded-3xl overflow-hidden group cursor-pointer shadow-sm hover:shadow-xl transition-all"
+        >
+          <img src={item.img} className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" />
+          <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-colors" />
+          <div className="absolute inset-x-4 bottom-6 text-center">
+            <h4 className="text-white text-xs font-bold uppercase tracking-widest mb-3 opacity-90 group-hover:opacity-100">{item.title}</h4>
+            <button className="bg-white/90 backdrop-blur-md px-4 py-1.5 rounded-full text-[7px] font-bold uppercase tracking-widest text-neutral-900 group-hover:bg-brand-accent group-hover:text-white transition-all">
+              Shop Now
+            </button>
+          </div>
+        </motion.div>
+      ))}
+    </div>
+  );
+}
+
+function BestsellingSection() {
+  const { products } = useProducts();
+  return (
+    <section className="py-24 px-6 bg-brand-bg relative overflow-hidden">
+      <div className="max-w-7xl mx-auto">
+        <div className="flex justify-between items-end mb-12">
+          <div>
+            <span className="text-[10px] font-bold tracking-[0.43em] uppercase text-brand-muted mb-4 block">Eco Essentials Planet-Friendly</span>
+            <h2 className="text-4xl md:text-5xl font-light text-neutral-900 tracking-tighter">
+               Bestselling <span className="serif italic text-brand-accent">Products</span>
+            </h2>
+          </div>
+          <Link to="/" className="flex items-center gap-2 text-[9px] font-bold uppercase tracking-[0.2em] text-neutral-900 border-b border-neutral-200 pb-1 hover:border-brand-accent transition-all group">
+            More products
+            <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+          </Link>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+          {products.slice(0, 8).map((p) => (
+             <ProductCard key={p.id} product={p} />
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function SecondaryTeasers() {
+  return (
+    <section className="py-24 px-6 bg-brand-surface border-y border-neutral-100">
+      <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-24">
+        {/* Gallery Grid */}
+        <div>
+           <span className="text-[10px] font-bold tracking-[0.4em] uppercase text-brand-muted mb-8 block">Inspiration & Gallery</span>
+           <div className="grid grid-cols-3 gap-3">
+              {[
+                'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&q=80&w=400',
+                'https://images.unsplash.com/photo-1610631880197-484c399c922c?auto=format&fit=crop&q=80&w=400',
+                'https://images.unsplash.com/photo-1544787210-22c66d137f6d?auto=format&fit=crop&q=80&w=400',
+                'https://images.unsplash.com/photo-1574672280600-4accfa5b6f98?auto=format&fit=crop&q=80&w=400',
+                'https://images.unsplash.com/photo-1517089531940-6a9b2488ad02?auto=format&fit=crop&q=80&w=400',
+                'https://images.unsplash.com/photo-1616489953149-8083070be0bc?auto=format&fit=crop&q=80&w=400'
+              ].map((img, i) => (
+                <motion.div 
+                  key={i} 
+                  initial={{ opacity: 0 }} 
+                  whileInView={{ opacity: 1 }}
+                  transition={{ delay: i * 0.05 }}
+                  className="aspect-square rounded-xl overflow-hidden cursor-pointer"
+                >
+                  <img src={img} className="w-full h-full object-cover hover:scale-110 transition-transform duration-700" />
+                </motion.div>
+              ))}
+           </div>
+        </div>
+
+        {/* Brand Commitment Teaser */}
+        <div className="flex flex-col justify-center">
+           <h3 className="text-4xl font-light text-neutral-900 tracking-tighter mb-8 serif italic leading-tight">
+             Thoughtful, Planet-Prioritizing Ideas and Inspiration Gallery
+           </h3>
+           <p className="text-sm text-neutral-500 font-light leading-relaxed mb-10 max-w-sm">
+             Discover our commitment to sustainable materials, low-impact production, and ethical sourcing partnerships — all crafted to support a healthier planet and a greener lifestyle.
+           </p>
+           <div className="flex gap-4">
+              <button className="px-8 py-3 bg-neutral-900 text-white rounded-full text-[9px] font-bold uppercase tracking-widest hover:bg-brand-accent transition-all">
+                Learn More
+              </button>
+           </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function EnhancedReviewSection() {
+  return (
+    <section className="py-24 px-6 bg-brand-bg">
+      <div className="max-w-7xl mx-auto">
+        <div className="grid lg:grid-cols-4 gap-12 items-start">
+          {/* Big Rating Card */}
+          <div className="lg:col-span-1 bg-white border border-neutral-100 p-10 rounded-[2.5rem] shadow-sm flex flex-col items-center text-center">
+             <span className="text-6xl font-light text-neutral-900 tracking-tighter mb-4">4.9<span className="text-2xl text-neutral-300">/5</span></span>
+             <div className="flex text-brand-gold mb-4">
+                {[...Array(5)].map((_, i) => <Star key={i} className="w-4 h-4 fill-current" />)}
+             </div>
+             <p className="text-[8px] font-bold uppercase tracking-[0.2em] text-neutral-400">9k+ User Reviews For Our Award Winning Eco Products</p>
+          </div>
+
+          {/* Individual Reviews */}
+          <div className="lg:col-span-3 grid md:grid-cols-2 gap-8">
+            {REVIEWS.map((review) => (
+              <div key={review.id} className="p-8 bg-brand-surface rounded-2xl border border-neutral-100">
+                <div className="flex text-brand-gold mb-6">
+                   {[...Array(5)].map((_, i) => <Star key={i} className={cn("w-3 h-3 fill-current", i >= review.rating && "text-neutral-200")} />)}
+                </div>
+                <p className="text-sm font-light text-neutral-600 italic leading-relaxed mb-8">"{review.comment}"</p>
+                <div className="flex items-center gap-3">
+                   <div className="w-8 h-8 rounded-full bg-neutral-200 flex items-center justify-center text-[10px] font-bold uppercase">{review.userName[0]}</div>
+                   <div>
+                      <h4 className="text-[10px] font-bold text-neutral-900 uppercase tracking-tight">{review.userName}</h4>
+                      <p className="text-[8px] text-green-600 font-bold uppercase">Verified Buyer</p>
+                   </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function Footer() {
+  return (
+    <footer className="py-24 px-6 bg-brand-surface border-t border-neutral-100 flex flex-col items-center">
+      <div className="max-w-7xl w-full mx-auto flex flex-col items-center mb-16 text-center">
+         <p className="text-sm md:text-xl font-light text-neutral-400 italic max-w-2xl leading-relaxed mb-8 serif">
+           "Discover our commitment to sustainable materials, low-impact production, and ethical sourcing partnerships — all crafted to support a healthier planet and a greener kitchen."
+         </p>
+         <div className="flex gap-4 mb-20">
+             <div className="w-8 h-8 rounded-full bg-neutral-200" />
+             <div className="w-8 h-8 rounded-full bg-neutral-200" />
+             <div className="w-8 h-8 rounded-full bg-neutral-200" />
+         </div>
+      </div>
+      
+      <div className="max-w-7xl w-full mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-16 mb-20 text-neutral-900 border-t border-neutral-100 pt-20">
+        <div className="col-span-1 md:col-span-2 lg:col-span-1">
+          <Link to="/" className="text-3xl font-bold tracking-[0.2em] uppercase transition-colors serif italic text-brand-accent mb-8 block">
+            Nexa
+          </Link>
+          <p className="text-neutral-500 font-light text-xs leading-relaxed max-w-xs uppercase tracking-widest">
+            The world's most exquisite handcrafted lighting and luxury decor, delivered to your doorstep.
+          </p>
+          <div className="flex gap-6 mt-10">
+            <Instagram className="w-5 h-5 cursor-pointer hover:text-brand-accent transition-colors text-neutral-400" />
+            <Twitter className="w-5 h-5 cursor-pointer hover:text-brand-accent transition-colors text-neutral-400" />
+            <Facebook className="w-5 h-5 cursor-pointer hover:text-brand-accent transition-colors text-neutral-400" />
+          </div>
+        </div>
+        <div>
+          <h4 className="text-[10px] font-bold uppercase tracking-[0.4em] mb-8 text-neutral-300">Collections</h4>
+          <ul className="flex flex-col gap-4 text-[10px] font-bold uppercase tracking-[0.2em] text-neutral-400">
+            <li className="hover:text-brand-accent transition-colors cursor-pointer">New Arrivals</li>
+            <li className="hover:text-brand-accent transition-colors cursor-pointer">Lighting</li>
+            <li className="hover:text-brand-accent transition-colors cursor-pointer">Wall Decors</li>
+            <li className="hover:text-brand-accent transition-colors cursor-pointer">Our Story</li>
+          </ul>
+        </div>
+        <div>
+          <h4 className="text-[10px] font-bold uppercase tracking-[0.4em] mb-8 text-neutral-300">Support</h4>
+          <ul className="flex flex-col gap-4 text-[10px] font-bold uppercase tracking-[0.2em] text-neutral-400">
+            <li className="hover:text-brand-accent transition-colors cursor-pointer">Shipping Info</li>
+            <li className="hover:text-brand-accent transition-colors cursor-pointer">Returns & Exchanges</li>
+            <li className="hover:text-brand-accent transition-colors cursor-pointer">Contact Us</li>
+            <li className="hover:text-neutral-900 transition-colors cursor-pointer">Privacy Policy</li>
+            <li className="mt-2">
+              <Link to="/admin" className="text-brand-accent hover:text-neutral-900 transition-colors border-b border-brand-accent/20 pb-0.5">
+                Admin Portal
+              </Link>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div className="max-w-7xl w-full mx-auto border-t border-neutral-100 pt-12 flex flex-col md:flex-row justify-between items-center gap-6 text-center md:text-left">
+        <p className="text-[8px] text-neutral-400 uppercase tracking-[0.4em] font-bold">© 2026 Nexa Luxury Store. Handcrafted with obsession.</p>
+        <div className="flex gap-8 text-[8px] text-neutral-400 uppercase tracking-[0.4em] font-bold">
+          <span className="hover:text-neutral-900 transition-colors cursor-pointer">Terms</span>
+          <span className="hover:text-neutral-900 transition-colors cursor-pointer">Privacy</span>
+          <span className="hover:text-neutral-900 transition-colors cursor-pointer">Cookies</span>
+        </div>
+      </div>
+    </footer>
+  );
+}
+
+function HomePage() {
+  return (
+    <>
+      <Hero />
+      <FeaturedCollections />
+      <BestsellingSection />
+      <SecondaryTeasers />
+      <EnhancedReviewSection />
+    </>
+  );
+}
+
+export default function App() {
+  return (
+    <AuthProvider>
+      <ProductProvider>
+        <CartProvider>
+          <BrowserRouter>
+            <div className="min-h-screen bg-brand-bg font-sans text-neutral-900 selection:bg-brand-accent selection:text-white">
+              <Navbar />
+              <FlyToCartRenderer />
+              
+              <Routes>
+                <Route path="/" element={<HomePage />} />
+                <Route path="/product/:slug" element={<ProductPage />} />
+                <Route path="/profile" element={<AuthPage />} />
+                <Route path="/checkout" element={<CheckoutPage />} />
+                <Route path="/success" element={<SuccessPage />} />
+
+                {/* Admin Routes */}
+                <Route path="/admin" element={<AdminDashboard />} />
+                <Route path="/admin/products" element={<AdminInventory />} />
+                <Route path="/admin/orders" element={<AdminOrders />} />
+                <Route path="/admin/customers" element={<AdminCustomers />} />
+                <Route path="/admin/settings" element={<AdminDashboard />} />
+              </Routes>
+
+              <Footer />
+              
+              <CartSidebarWrapper />
+
+              {/* Floating Auth Prompt for Guests */}
+              <AuthPrompt />
+
+              {/* Admin Quick Entry */}
+              <AdminQuickEntry />
+
+              {/* Floating WhatsApp */}
+              <a 
+                href="https://wa.me/your-number" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="fixed bottom-8 right-8 z-[90] bg-[#25D366] text-white p-4 rounded-full shadow-2xl hover:scale-110 transition-transform flex items-center gap-2 group"
+              >
+                <MessageCircle className="w-6 h-6" />
+                <span className="max-w-0 overflow-hidden whitespace-nowrap group-hover:max-w-xs transition-all duration-500 text-xs font-bold uppercase tracking-widest">
+                  Support
+                </span>
+              </a>
+            </div>
+          </BrowserRouter>
+        </CartProvider>
+      </ProductProvider>
+    </AuthProvider>
+  );
+}
+
+function CartSidebarWrapper() {
+  const { isCartOpen, setIsCartOpen } = useCart();
+  return <CartSidebar isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />;
+}
+
+function AuthPrompt() {
+  const { user } = useAuth();
+  
+  if (user) return null;
+
+  return (
+    <motion.div
+      initial={{ x: 100, opacity: 0 }}
+      animate={{ x: 0, opacity: 1 }}
+      className="fixed bottom-28 right-8 z-[90]"
+    >
+      <Link 
+        to="/profile"
+        className="bg-brand-accent text-white p-4 rounded-full shadow-2xl hover:scale-110 transition-transform flex items-center gap-2 group border-4 border-white"
+      >
+        <UserIcon className="w-6 h-6" />
+        <span className="max-w-0 overflow-hidden whitespace-nowrap group-hover:max-w-xs transition-all duration-500 text-xs font-bold uppercase tracking-widest">
+          Login / Register
+        </span>
+      </Link>
+    </motion.div>
+  );
+}
+
+function AdminQuickEntry() {
+  const { isAdmin, loading } = useAdmin();
+  const { user } = useAuth();
+
+  if (loading || !user || !isAdmin) return null;
+
+  return (
+    <motion.div
+      initial={{ x: -100, opacity: 0 }}
+      animate={{ x: 0, opacity: 1 }}
+      className="fixed bottom-28 left-8 z-[90]"
+    >
+      <Link 
+        to="/admin"
+        className="bg-neutral-900 text-white p-4 rounded-full shadow-2xl hover:scale-110 transition-transform flex items-center gap-2 group border-4 border-brand-accent/20"
+      >
+        <ShieldCheck className="w-6 h-6 text-brand-accent" />
+        <span className="max-w-0 overflow-hidden whitespace-nowrap group-hover:max-w-xs transition-all duration-500 text-xs font-bold uppercase tracking-widest">
+          Admin Panel
+        </span>
+      </Link>
+    </motion.div>
+  );
+}
