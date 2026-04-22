@@ -22,6 +22,46 @@ import { CartProvider, useCart } from './CartContext';
 import { ProductProvider, useProducts } from './ProductContext';
 import FlyToCartRenderer from './components/FlyToCart';
 import { useAdmin } from './hooks/useAdmin';
+import React, { Component, ErrorInfo, ReactNode } from 'react';
+
+class ErrorBoundary extends Component<{children: ReactNode}, {hasError: boolean, error: Error | null}> {
+  constructor(props: {children: ReactNode}) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
+
+  static getDerivedStateFromError(error: Error) {
+    return { hasError: true, error };
+  }
+
+  componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+    console.error("Uncaught error:", error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="min-h-screen flex items-center justify-center bg-red-50 p-10">
+          <div className="bg-white p-8 rounded-2xl shadow-xl max-w-md w-full">
+            <h1 className="text-2xl font-bold text-red-600 mb-4">Oops! Something went wrong.</h1>
+            <p className="text-sm text-neutral-600 mb-6">The app encountered an error. Please try refreshing the page.</p>
+            <pre className="text-[10px] bg-neutral-100 p-4 rounded-lg overflow-auto max-h-40">
+              {this.state.error?.message}
+            </pre>
+            <button 
+              onClick={() => window.location.reload()}
+              className="mt-6 w-full py-3 bg-neutral-900 text-white rounded-full font-bold uppercase tracking-widest text-[10px]"
+            >
+              Refresh Page
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    return this.props.children;
+  }
+}
 
 function FeaturedCollections() {
   const items = [
@@ -247,56 +287,58 @@ function HomePage() {
 
 export default function App() {
   return (
-    <AuthProvider>
-      <ProductProvider>
-        <CartProvider>
-          <BrowserRouter>
-            <div className="min-h-screen bg-brand-bg font-sans text-neutral-900 selection:bg-brand-accent selection:text-white">
-              <Navbar />
-              <FlyToCartRenderer />
-              
-              <Routes>
-                <Route path="/" element={<HomePage />} />
-                <Route path="/product/:slug" element={<ProductPage />} />
-                <Route path="/profile" element={<AuthPage />} />
-                <Route path="/checkout" element={<CheckoutPage />} />
-                <Route path="/success" element={<SuccessPage />} />
+    <ErrorBoundary>
+      <AuthProvider>
+        <ProductProvider>
+          <CartProvider>
+            <BrowserRouter>
+              <div className="min-h-screen bg-brand-bg font-sans text-neutral-900 selection:bg-brand-accent selection:text-white">
+                <Navbar />
+                <FlyToCartRenderer />
+                
+                <Routes>
+                  <Route path="/" element={<HomePage />} />
+                  <Route path="/product/:slug" element={<ProductPage />} />
+                  <Route path="/profile" element={<AuthPage />} />
+                  <Route path="/checkout" element={<CheckoutPage />} />
+                  <Route path="/success" element={<SuccessPage />} />
 
-                {/* Admin Routes */}
-                <Route path="/admin" element={<AdminDashboard />} />
-                <Route path="/admin/products" element={<AdminInventory />} />
-                <Route path="/admin/orders" element={<AdminOrders />} />
-                <Route path="/admin/customers" element={<AdminCustomers />} />
-                <Route path="/admin/settings" element={<AdminDashboard />} />
-              </Routes>
+                  {/* Admin Routes */}
+                  <Route path="/admin" element={<AdminDashboard />} />
+                  <Route path="/admin/products" element={<AdminInventory />} />
+                  <Route path="/admin/orders" element={<AdminOrders />} />
+                  <Route path="/admin/customers" element={<AdminCustomers />} />
+                  <Route path="/admin/settings" element={<AdminDashboard />} />
+                </Routes>
 
-              <Footer />
-              
-              <CartSidebarWrapper />
+                <Footer />
+                
+                <CartSidebarWrapper />
 
-              {/* Floating Auth Prompt for Guests */}
-              <AuthPrompt />
+                {/* Floating Auth Prompt for Guests */}
+                <AuthPrompt />
 
-              {/* Admin Quick Entry */}
-              <AdminQuickEntry />
+                {/* Admin Quick Entry */}
+                <AdminQuickEntry />
 
-              {/* Floating WhatsApp */}
-              <a 
-                href="https://wa.me/your-number" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="fixed bottom-8 right-8 z-[90] bg-[#25D366] text-white p-4 rounded-full shadow-2xl hover:scale-110 transition-transform flex items-center gap-2 group"
-              >
-                <MessageCircle className="w-6 h-6" />
-                <span className="max-w-0 overflow-hidden whitespace-nowrap group-hover:max-w-xs transition-all duration-500 text-xs font-bold uppercase tracking-widest">
-                  Support
-                </span>
-              </a>
-            </div>
-          </BrowserRouter>
-        </CartProvider>
-      </ProductProvider>
-    </AuthProvider>
+                {/* Floating WhatsApp */}
+                <a 
+                  href="https://wa.me/your-number" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="fixed bottom-8 right-8 z-[90] bg-[#25D366] text-white p-4 rounded-full shadow-2xl hover:scale-110 transition-transform flex items-center gap-2 group"
+                >
+                  <MessageCircle className="w-6 h-6" />
+                  <span className="max-w-0 overflow-hidden whitespace-nowrap group-hover:max-w-xs transition-all duration-500 text-xs font-bold uppercase tracking-widest">
+                    Support
+                  </span>
+                </a>
+              </div>
+            </BrowserRouter>
+          </CartProvider>
+        </ProductProvider>
+      </AuthProvider>
+    </ErrorBoundary>
   );
 }
 

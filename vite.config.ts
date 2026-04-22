@@ -25,14 +25,7 @@ export default defineConfig(({mode}) => {
       cssCodeSplit: true,
       rollupOptions: {
         output: {
-          manualChunks(id) {
-            if (id.includes('node_modules')) {
-              if (id.includes('react')) return 'vendor-react';
-              if (id.includes('lucide') || id.includes('motion')) return 'vendor-ui';
-              if (id.includes('supabase')) return 'vendor-db';
-              return 'vendor';
-            }
-          }
+          // Simplified chunks to avoid potential bundling errors on Vercel
         }
       }
     }
