@@ -182,24 +182,24 @@ export default function AdminInventory() {
                       </span>
                     </td>
                     <td className="px-8 py-6 text-right">
-                       <div className="flex justify-end gap-3 transition-opacity">
+                       <div className="flex justify-end gap-3">
                           <button 
                             onClick={() => {
                               setEditingProduct(product);
                               setIsFormOpen(true);
                             }}
-                            className="p-3 bg-brand-accent/10 border border-brand-accent/20 rounded-xl transition-all text-brand-accent hover:bg-brand-accent hover:text-white flex items-center justify-center"
-                            title="Edit Product"
+                            className="flex items-center gap-2 px-4 py-2.5 bg-brand-accent text-white rounded-xl text-[9px] font-bold uppercase tracking-widest hover:opacity-90 transition-all shadow-lg shadow-brand-accent/20"
                           >
-                            <Edit2 className="w-4 h-4" />
+                            <Edit2 className="w-3.5 h-3.5" />
+                            Edit
                           </button>
                           
                           <button 
                             onClick={() => handleDelete(product.id, product.name)}
-                            className="p-3 bg-red-500/10 border border-red-500/20 rounded-xl transition-all text-red-500 hover:bg-red-500 hover:text-white flex items-center justify-center"
-                            title="Delete Product"
+                            className="flex items-center gap-2 px-4 py-2.5 bg-red-600 text-white rounded-xl text-[9px] font-bold uppercase tracking-widest hover:opacity-90 transition-all shadow-lg shadow-red-600/20"
                           >
-                            <Trash2 className="w-4 h-4" />
+                            <Trash2 className="w-3.5 h-3.5" />
+                            Delete
                           </button>
                        </div>
                     </td>
