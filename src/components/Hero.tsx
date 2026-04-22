@@ -3,7 +3,7 @@ import { ArrowRight, ShoppingBag, Search } from 'lucide-react';
 
 export default function Hero() {
   return (
-    <section className="relative h-[90vh] bg-neutral-100 overflow-hidden mt-20 mx-6 rounded-[3rem]">
+    <section className="relative h-screen bg-neutral-100 overflow-hidden">
       {/* Background Image */}
       <div className="absolute inset-0 z-0">
         <img 
@@ -65,23 +65,6 @@ export default function Hero() {
              </motion.div>
           </div>
         </div>
-      </div>
-
-      {/* Floating Top Nav within Hero - Mockup specific */}
-      <div className="absolute top-0 left-0 right-0 p-10 flex justify-center items-center pointer-events-none">
-          <div className="pointer-events-auto flex items-center gap-4">
-             <div className="relative">
-                <input 
-                  type="text" 
-                  placeholder="Search Product..." 
-                  className="bg-white/95 backdrop-blur-md rounded-full px-8 py-3 text-[10px] w-64 border-none shadow-xl focus:ring-2 focus:ring-brand-accent transition-all pl-12"
-                />
-                <Search className="w-4 h-4 absolute left-4 top-1/2 -translate-y-1/2 text-neutral-400" />
-             </div>
-             <button className="bg-white/95 backdrop-blur-md p-3 rounded-full shadow-xl hover:bg-brand-accent hover:text-white transition-all">
-                <ShoppingBag className="w-4 h-4" />
-             </button>
-          </div>
       </div>
     </section>
   );

@@ -30,7 +30,7 @@ export default function Navbar() {
     <nav
       className={cn(
         'fixed top-0 left-0 right-0 z-50 transition-all duration-300 px-6 py-4 flex items-center justify-between',
-        showDarkNav ? 'bg-brand-bg/95 backdrop-blur-md border-b border-neutral-100 py-3' : 'bg-transparent text-white'
+        showDarkNav ? 'bg-brand-bg/95 backdrop-blur-md border-b border-neutral-100 py-3' : 'bg-transparent'
       )}
     >
       <div className="flex items-center gap-8">
@@ -38,26 +38,26 @@ export default function Navbar() {
           onClick={() => setIsMenuOpen(true)}
           className={cn(
             "p-2 rounded-full transition-colors",
-            showDarkNav ? "hover:bg-neutral-100" : "hover:bg-white/10"
+            showDarkNav ? "hover:bg-neutral-100 text-neutral-900" : "hover:bg-white/10 text-neutral-900"
           )}
         >
-          <Menu className={cn('w-6 h-6', showDarkNav ? 'text-neutral-900' : 'text-white')} />
+          <Menu className="w-6 h-6" />
         </button>
 
         <Link to="/" className="group flex items-center gap-2">
           <span className={cn(
             'text-2xl font-bold tracking-[0.2em] uppercase transition-colors serif italic',
-            showDarkNav ? 'text-brand-accent' : 'text-white'
+            showDarkNav ? 'text-brand-accent' : 'text-neutral-900'
           )}>
             Nexa
           </span>
-          {!showDarkNav && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
+          {!showDarkNav && <div className="w-1.5 h-1.5 rounded-full bg-brand-accent" />}
         </Link>
       </div>
 
       <div className={cn(
         "hidden md:flex items-center gap-10 font-medium tracking-[0.15em] text-[10px] uppercase",
-        showDarkNav ? "text-neutral-900/70" : "text-white/80"
+        showDarkNav ? "text-neutral-900/70" : "text-neutral-900/70"
       )}>
         {['Lamps', 'Wall Art', 'Vases', 'Furniture', 'Accessories'].map((item) => (
           <Link
@@ -75,22 +75,22 @@ export default function Navbar() {
           onClick={() => setLang(l => l === 'EN' ? 'BN' : 'EN')}
           className={cn(
             "flex items-center gap-1.5 text-[10px] font-medium tracking-[.15em] border rounded-full px-3 py-1 transition-colors uppercase",
-            showDarkNav ? "border-neutral-200 text-neutral-900 hover:border-brand-accent" : "border-white/20 text-white hover:border-white"
+            showDarkNav ? "border-neutral-200 text-neutral-900 hover:border-brand-accent" : "border-neutral-200 text-neutral-900 hover:border-brand-accent"
           )}
         >
           <Globe className="w-3.5 h-3.5" />
           {lang}
         </button>
         
-        <button className={cn("p-2 rounded-full transition-colors hidden sm:block", showDarkNav ? "hover:bg-neutral-100 text-neutral-900" : "hover:bg-white/10 text-white")}>
+        <button className={cn("p-2 rounded-full transition-colors hidden sm:block", "hover:bg-neutral-100 text-neutral-900")}>
           <Search className="w-5 h-5" />
         </button>
 
-        <Link to="/profile" className={cn("p-2 rounded-full transition-colors overflow-hidden", showDarkNav ? "hover:bg-neutral-100" : "hover:bg-white/10")}>
+        <Link to="/profile" className={cn("p-2 rounded-full transition-colors overflow-hidden", "hover:bg-neutral-100")}>
           {user?.photoURL ? (
             <img src={user.photoURL} className="w-5 h-5 rounded-full object-cover" alt="Profile" />
           ) : (
-            <User className={cn("w-5 h-5", showDarkNav ? "text-neutral-900" : "text-white")} />
+            <User className={cn("w-5 h-5", "text-neutral-900")} />
           )}
         </Link>
 
@@ -99,7 +99,7 @@ export default function Navbar() {
           onClick={() => setIsCartOpen(true)}
           className={cn(
             "relative p-2 rounded-full transition-all duration-500",
-            showDarkNav ? "hover:bg-neutral-100 text-neutral-900" : "hover:bg-white/10 text-white",
+            showDarkNav ? "hover:bg-neutral-100 text-neutral-900" : "hover:bg-neutral-100 text-neutral-900",
             isDraggingProduct && "scale-125 bg-brand-accent text-white shadow-[0_0_30px_rgba(212,175,55,0.4)]"
           )}
         >
