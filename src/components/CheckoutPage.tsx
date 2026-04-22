@@ -65,12 +65,17 @@ export default function CheckoutPage() {
 
   const handleConfirm = async () => {
     if (isSubmitting) return;
+    if (cart.length === 0) {
+      alert("Your cart is empty.");
+      setIsSubmitting(false);
+      return;
+    }
     setIsSubmitting(true);
 
     try {
       // Prepare order data
       const orderData = {
-        user_id: user?.id || null, // Guest or User
+        user_id: user?.id || null,
         customer: `${formData.firstName} ${formData.lastName}`,
         email: formData.email,
         phone: formData.phone,
@@ -100,15 +105,21 @@ export default function CheckoutPage() {
         updated_at: new Date().toISOString()
       };
 
+      console.log("Submitting order:", orderData);
+
       // Save to Supabase
       const { error } = await supabase.from('orders').insert(orderData);
-      if (error) throw error;
+      
+      if (error) {
+        console.error("Supabase Insertion Error:", error);
+        throw new Error(`[${error.code}] ${error.message}`);
+      }
       
       clearCart();
       navigate('/success');
-    } catch (error) {
-      console.error("Order submission failed:", error);
-      alert("Something went wrong. Please try again.");
+    } catch (err: any) {
+      console.error("Order submission failed:", err);
+      alert(`ERROR: ${err.message}\n\nএটি সাধারণত হয় যদি আপনার ডেটাবেসে 'orders' টেবলে পারমিশন না থাকে। দয়া করে আমার দেওয়া SQL কোডটি রান করুন।`);
     } finally {
       setIsSubmitting(false);
     }
