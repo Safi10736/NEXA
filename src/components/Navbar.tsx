@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Menu, X, ShoppingBag, Search, User, Globe } from 'lucide-react';
+import { Menu, X, ShoppingBag, Search, User, Globe, Instagram, Facebook, Twitter } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Link, useLocation } from 'react-router-dom';
 import { cn } from '../lib/utils';
@@ -158,6 +158,21 @@ export default function Navbar() {
 
             <div className="flex flex-col gap-6">
               <div className="h-px bg-neutral-100 w-full" />
+              <div className="flex justify-between items-center mb-4">
+                <div className="flex gap-4">
+                  <a href="https://www.instagram.com/nexa_124?igsh=MXBoN2N3ZnJyenh1bw==" target="_blank" rel="noopener noreferrer" className="p-2 bg-neutral-100 rounded-full">
+                    <Instagram className="w-5 h-5 text-neutral-900" />
+                  </a>
+                  <a href="https://www.facebook.com/share/1CiNRxyy6M/" target="_blank" rel="noopener noreferrer" className="p-2 bg-neutral-100 rounded-full">
+                    <Facebook className="w-5 h-5 text-neutral-900" />
+                  </a>
+                </div>
+                <div className="flex gap-4 text-[10px] font-bold uppercase tracking-widest text-neutral-400">
+                  <span>EN</span>
+                  <span className="opacity-20">|</span>
+                  <span>BN</span>
+                </div>
+              </div>
               <div className="flex justify-between items-center text-sm font-medium text-neutral-500 uppercase tracking-widest">
                 <span>Contact</span>
                 <span>Shipping</span>
