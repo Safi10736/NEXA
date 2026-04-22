@@ -34,44 +34,44 @@ export default function AdminInventory() {
 
   const handleSaveProduct = async (data: any) => {
     try {
-      const payload = {
-        ...data,
-        updated_at: new Date().toISOString(),
-      };
-
-      // In Supabase, we check if the ID is a UUID
-      const isNew = !editingProduct || editingProduct.id.length < 5;
-
-      if (!isNew) {
-        const { error } = await supabase
-          .from('products')
-          .update(payload)
-          .eq('id', editingProduct.id);
-        
-        if (error) throw error;
-        
-        await logAdminAction('EDIT_PRODUCT', editingProduct.id, { 
-          name: data.name, 
-          changes: 'Updated via form' 
-        });
-      } else {
-        const { data: newDoc, error } = await supabase
-          .from('products')
-          .insert({
-            ...payload,
-            created_at: new Date().toISOString(),
-          })
-          .select()
-          .single();
-        
-        if (error) throw error;
-        await logAdminAction('ADD_PRODUCT', newDoc.id, { name: data.name });
+      // Create a clean payload
+      const payload = { ...data };
+      
+      // Fix: If we are editing an initial product (ID: "1", "2", etc.), 
+      // Supabase will fail because it expects a UUID or a record that exists.
+      // We remove the ID if it's not a real database ID so Supabase creates a new one.
+      const isNewId = !payload.id || String(payload.id).length < 10;
+      
+      if (isNewId) {
+        delete payload.id;
+        payload.created_at = new Date().toISOString();
       }
+      
+      payload.updated_at = new Date().toISOString();
+
+      const { data: result, error } = await supabase
+        .from('products')
+        .upsert(payload, { onConflict: 'slug' }) // Slug is unique, safe to use for conflict
+        .select()
+        .single();
+      
+      if (error) {
+        console.error("Supabase Error Details:", error);
+        throw new Error(`[${error.code}] ${error.message}`);
+      }
+      
+      const action = editingProduct ? 'EDIT_PRODUCT' : 'ADD_PRODUCT';
+      await logAdminAction(action, result.id, { 
+        name: data.name,
+        changes: editingProduct ? 'Updated details' : 'Added new product'
+      });
+
       setIsFormOpen(false);
       setEditingProduct(null);
-    } catch (err) {
-      console.error("Save failed:", err);
-      alert("Failed to save product. Please check your network or permissions.");
+      alert("Product saved successfully! ✨");
+    } catch (err: any) {
+      console.error("Detailed Save Failure:", err);
+      alert(`ERROR: ${err.message}\n\nএটি সাধারণত হয় যদি আপনার ডেটাবেসে 'products' টেবলে রাইট করার পারমিশন (RLS Policy) না থাকে। দয়া করে Supabase ড্যাশবোর্ডে গিয়ে পলিসি চেক করুন।`);
     }
   };
 
