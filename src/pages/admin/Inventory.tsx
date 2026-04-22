@@ -34,49 +34,64 @@ export default function AdminInventory() {
 
   const handleSaveProduct = async (data: any) => {
     try {
-      // Create a clean payload with only standard database columns
-      // We found that 'badges' column is missing, so we'll handle it cautiously
-      const { id, badges, variants, upsellIds, ...rest } = data;
-      
+      // 1. Prepare Basic Data (Only fields that almost always exist in a default table)
       const payload: any = {
-        ...rest,
+        name: data.name,
+        price: data.price,
+        images: data.images,
+        category: data.category,
         updated_at: new Date().toISOString()
       };
 
-      // Handle ID cleaning for Supabase
-      const isInitialProduct = !id || String(id).length < 10;
-      if (!isInitialProduct) {
-        payload.id = id;
+      // 2. Add extra fields ONLY if they are strings or numbers (safe fields)
+      if (data.description) payload.description = data.description;
+      if (data.stock !== undefined) payload.stock = data.stock;
+      if (data.slug) payload.slug = data.slug;
+
+      // 3. Handle ID logic
+      const isSystemProduct = !data.id || String(data.id).length < 5;
+      if (!isSystemProduct) {
+        payload.id = data.id;
       } else {
         payload.created_at = new Date().toISOString();
       }
-      
-      // Note: We are temporarily excluding 'badges' because the DB table is missing this column.
-      // If 'variants' or 'upsellIds' also fail, we might need to exclude them or store as JSON if supported.
 
+      console.log("Attempting save with payload:", payload);
+
+      // 4. Execute Upsert
+      // We use 'id' if we have it, otherwise Supabase will insert a new row
       const { data: result, error } = await supabase
         .from('products')
-        .upsert(payload, { onConflict: 'slug' })
+        .upsert(payload)
         .select()
         .single();
       
       if (error) {
-        console.error("Supabase Error Details:", error);
-        throw new Error(`[${error.code}] ${error.message}`);
+        console.error("Supabase Operation Failed:", error);
+        throw error;
       }
       
       const action = editingProduct ? 'EDIT_PRODUCT' : 'ADD_PRODUCT';
-      await logAdminAction(action, result.id, { 
-        name: data.name,
-        changes: editingProduct ? 'Updated details' : 'Added new product'
-      });
+      await logAdminAction(action, result.id, { name: data.name });
 
       setIsFormOpen(false);
       setEditingProduct(null);
-      alert("Product saved successfully! ✨\n\nNote: Badges and Variants were skipped as the database table needs those columns added.");
+      alert("Success! Product saved. ✨");
     } catch (err: any) {
-      console.error("Detailed Save Failure:", err);
-      alert(`ERROR: ${err.message}\n\nএটি সাধারণত হয় যদি আপনার ডেটাবেসে সুনির্দিষ্ট কলামটি না থাকে। দয়া করে Supabase ড্যাশবোর্ডে গিয়ে 'products' টেবলে কলামগুলো যোগ করুন।`);
+      console.error("Critical Save Error:", err);
+      
+      // Provide very specific guidance based on common error codes
+      let userFriendlyMessage = `Error Code: ${err.code}\nMessage: ${err.message}\n\n`;
+      
+      if (err.message.includes("badges") || err.message.includes("variants")) {
+        userFriendlyMessage += "আপনার ডেটাবেসে কলামগুলো এখনও তৈরি হয়নি। দয়া করে SQL Editor এ গিয়ে ওই ৩টি লাইন আবার রান (Run) দিন।";
+      } else if (err.code === "42501") {
+        userFriendlyMessage += "আপনার ডেটাবেসে সেভ করার পারমিশন (RLS Policy) নেই। Supabase এ গিয়ে Authentication > Policies চেক করুন।";
+      } else {
+        userFriendlyMessage += "একটি অজানা সমস্যা হয়েছে। এরর মেসেজটি দয়া করে আমাকে জানান।";
+      }
+      
+      alert(userFriendlyMessage);
     }
   };
 
