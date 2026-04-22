@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { BrowserRouter, Routes, Route, Link, useLocation } from 'react-router-dom';
 import { REVIEWS } from './constants';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
@@ -11,6 +11,8 @@ import SuccessPage from './components/SuccessPage';
 import ShopPage from './components/ShopPage';
 import GalleryPage from './components/GalleryPage';
 import AboutPage from './components/AboutPage';
+import SupportPage from './components/SupportPage';
+import ContactPage from './components/ContactPage';
 import AdminDashboard from './pages/admin/Dashboard';
 import AdminInventory from './pages/admin/Inventory';
 import AdminOrders from './pages/admin/Orders';
@@ -220,21 +222,21 @@ function Footer() {
         <div>
           <h4 className="text-[10px] font-bold uppercase tracking-[0.4em] mb-8 text-neutral-300">Collections</h4>
           <ul className="flex flex-col gap-4 text-[10px] font-bold uppercase tracking-[0.2em] text-neutral-400">
-            <li><Link to="/shop" className="hover:text-brand-accent transition-colors cursor-pointer">New Arrivals</Link></li>
-            <li><Link to="/shop" className="hover:text-brand-accent transition-colors cursor-pointer">Lighting</Link></li>
-            <li><Link to="/shop" className="hover:text-brand-accent transition-colors cursor-pointer">Wall Decors</Link></li>
-            <li><Link to="/about" className="hover:text-brand-accent transition-colors cursor-pointer">Our Story</Link></li>
+            <li><Link to="/shop" className="hover:text-brand-accent transition-all cursor-pointer hover:pl-2 flex items-center group"><span className="w-0 h-px bg-brand-accent group-hover:w-4 transition-all mr-0 group-hover:mr-2"></span>New Arrivals</Link></li>
+            <li><Link to="/shop" className="hover:text-brand-accent transition-all cursor-pointer hover:pl-2 flex items-center group"><span className="w-0 h-px bg-brand-accent group-hover:w-4 transition-all mr-0 group-hover:mr-2"></span>Lighting</Link></li>
+            <li><Link to="/shop" className="hover:text-brand-accent transition-all cursor-pointer hover:pl-2 flex items-center group"><span className="w-0 h-px bg-brand-accent group-hover:w-4 transition-all mr-0 group-hover:mr-2"></span>Wall Decors</Link></li>
+            <li><Link to="/about" className="hover:text-brand-accent transition-all cursor-pointer hover:pl-2 flex items-center group"><span className="w-0 h-px bg-brand-accent group-hover:w-4 transition-all mr-0 group-hover:mr-2"></span>Our Story</Link></li>
           </ul>
         </div>
         <div>
           <h4 className="text-[10px] font-bold uppercase tracking-[0.4em] mb-8 text-neutral-300">Support</h4>
           <ul className="flex flex-col gap-4 text-[10px] font-bold uppercase tracking-[0.2em] text-neutral-400">
-            <li><Link to="/" className="hover:text-brand-accent transition-colors cursor-pointer">Shipping Info</Link></li>
-            <li><Link to="/" className="hover:text-brand-accent transition-colors cursor-pointer">Returns & Exchanges</Link></li>
-            <li><Link to="/" className="hover:text-brand-accent transition-colors cursor-pointer">Contact Us</Link></li>
-            <li><Link to="/" className="hover:text-neutral-900 transition-colors cursor-pointer">Privacy Policy</Link></li>
+            <li><Link to="/support#shipping" className="hover:text-brand-accent transition-all cursor-pointer hover:pl-2 flex items-center group"><span className="w-0 h-px bg-brand-accent group-hover:w-4 transition-all mr-0 group-hover:mr-2"></span>Shipping Info</Link></li>
+            <li><Link to="/support#returns" className="hover:text-brand-accent transition-all cursor-pointer hover:pl-2 flex items-center group"><span className="w-0 h-px bg-brand-accent group-hover:w-4 transition-all mr-0 group-hover:mr-2"></span>Returns & Exchanges</Link></li>
+            <li><Link to="/contact" className="hover:text-brand-accent transition-all cursor-pointer hover:pl-2 flex items-center group"><span className="w-0 h-px bg-brand-accent group-hover:w-4 transition-all mr-0 group-hover:mr-2"></span>Contact Us</Link></li>
+            <li><Link to="/support#privacy" className="hover:text-neutral-900 transition-all cursor-pointer hover:pl-2 flex items-center group"><span className="w-0 h-px bg-neutral-900 group-hover:w-4 transition-all mr-0 group-hover:mr-2"></span>Privacy Policy</Link></li>
             <li className="mt-2">
-              <Link to="/admin" className="text-brand-accent hover:text-neutral-900 transition-colors border-b border-brand-accent/20 pb-0.5">
+              <Link to="/admin" className="text-brand-accent hover:text-neutral-900 transition-colors border-b border-brand-accent/20 pb-0.5 inline-block">
                 Admin Portal
               </Link>
             </li>
@@ -244,8 +246,8 @@ function Footer() {
       <div className="max-w-7xl w-full mx-auto border-t border-neutral-100 pt-12 flex flex-col md:flex-row justify-between items-center gap-6 text-center md:text-left">
         <p className="text-[8px] text-neutral-400 uppercase tracking-[0.4em] font-bold">© 2026 Nexa Luxury Store. Handcrafted with obsession.</p>
         <div className="flex gap-8 text-[8px] text-neutral-400 uppercase tracking-[0.4em] font-bold">
-          <span className="hover:text-neutral-900 transition-colors cursor-pointer">Terms</span>
-          <span className="hover:text-neutral-900 transition-colors cursor-pointer">Privacy</span>
+          <Link to="/support#terms" className="hover:text-neutral-900 transition-colors cursor-pointer">Terms</Link>
+          <Link to="/support#privacy" className="hover:text-neutral-900 transition-colors cursor-pointer">Privacy</Link>
           <span className="hover:text-neutral-900 transition-colors cursor-pointer">Cookies</span>
         </div>
       </div>
@@ -265,12 +267,30 @@ function HomePage() {
   );
 }
 
+function ScrollToTop() {
+  const { pathname, hash } = useLocation();
+
+  useEffect(() => {
+    if (hash) {
+      const element = document.getElementById(hash.slice(1));
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' });
+        return;
+      }
+    }
+    window.scrollTo(0, 0);
+  }, [pathname, hash]);
+
+  return null;
+}
+
 export default function App() {
   return (
     <AuthProvider>
       <ProductProvider>
         <CartProvider>
           <BrowserRouter>
+            <ScrollToTop />
             <div className="min-h-screen bg-brand-bg font-sans text-neutral-900 selection:bg-brand-accent selection:text-white">
               <Navbar />
               <FlyToCartRenderer />
@@ -280,6 +300,8 @@ export default function App() {
                 <Route path="/shop" element={<ShopPage />} />
                 <Route path="/gallery" element={<GalleryPage />} />
                 <Route path="/about" element={<AboutPage />} />
+                <Route path="/support" element={<SupportPage />} />
+                <Route path="/contact" element={<ContactPage />} />
                 <Route path="/product/:slug" element={<ProductPage />} />
                 <Route path="/profile" element={<AuthPage />} />
                 <Route path="/checkout" element={<CheckoutPage />} />
