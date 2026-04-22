@@ -17,7 +17,7 @@ import AdminDashboard from './pages/admin/Dashboard';
 import AdminInventory from './pages/admin/Inventory';
 import AdminOrders from './pages/admin/Orders';
 import AdminCustomers from './pages/admin/Customers';
-import { Star, MessageCircle, Instagram, Twitter, Facebook, ArrowRight, User as UserIcon, ShieldCheck, BarChart3 } from 'lucide-react';
+import { Star, MessageCircle, Instagram, Twitter, Facebook, ArrowRight, User as UserIcon, ShieldCheck, BarChart3, Linkedin, Youtube, Plus, Minus } from 'lucide-react';
 import { motion } from 'motion/react';
 import { cn } from './lib/utils';
 import ProductCard from './components/ProductCard';
@@ -178,78 +178,157 @@ function EnhancedReviewSection() {
 }
 
 function Footer() {
+  const [openSection, setOpenSection] = useState<string | null>(null);
+
+  const toggleSection = (id: string) => {
+    setOpenSection(openSection === id ? null : id);
+  };
+
+  const sections = [
+    {
+      id: 'help',
+      title: 'Help',
+      links: [
+        { label: 'Shipping Info', to: '/support#shipping' },
+        { label: 'Returns & Exchanges', to: '/support#returns' },
+        { label: 'Privacy Policy', to: '/support#privacy' },
+        { label: 'Exchange Policy', to: '/support#returns' },
+        { label: 'Terms & Conditions', to: '/support#terms' }
+      ]
+    },
+    {
+      id: 'about',
+      title: 'About',
+      links: [
+        { label: 'About Us', to: '/about' },
+        { label: 'Our Story', to: '/about' },
+        { label: 'Career', to: '#' }
+      ]
+    },
+    {
+      id: 'account',
+      title: 'Account',
+      links: [
+        { label: 'Login', to: '/profile' },
+        { label: 'Register', to: '/profile' },
+        { label: 'Admin Dashboard', to: '/admin' }
+      ]
+    },
+    {
+      id: 'contact',
+      title: 'Contact',
+      content: (
+        <div className="text-[10px] text-neutral-400 font-bold uppercase tracking-widest leading-loose text-left">
+          <p className="text-neutral-900 border-b border-neutral-100 mb-2 pb-1 inline-block">Corporate Office</p>
+          <p>Nexa Luxury Atelier, Level-5</p>
+          <p>Banani Crescent, Road No-12</p>
+          <p>Gulshan-02, Dhaka-1212</p>
+          <p className="mt-2 text-neutral-600">Phone: +880 1234 567 890</p>
+          <p className="text-neutral-400 font-medium">(10 AM - 8 PM)</p>
+          <p className="text-neutral-400 font-medium italic">(Closed on Govt. Holidays)</p>
+          <p className="mt-2 text-neutral-600">Email: concierge@nexastore.com</p>
+        </div>
+      )
+    },
+    {
+       id: 'stores',
+       title: 'Store Locations',
+       links: [{ label: 'Dhaka', to: '#' }, { label: 'Chittagong', to: '#' }]
+    }
+  ];
+
   return (
-    <footer className="py-24 px-6 bg-brand-surface border-t border-neutral-100 flex flex-col items-center">
-      <div className="max-w-7xl w-full mx-auto flex flex-col items-center mb-16 text-center">
-         <p className="text-sm md:text-xl font-light text-neutral-400 italic max-w-2xl leading-relaxed mb-8 serif">
-           "Discover our commitment to sustainable materials, low-impact production, and ethical sourcing partnerships — all crafted to support a healthier planet and a greener kitchen."
-         </p>
-         <div className="flex gap-4 mb-20">
-             <div className="w-8 h-8 rounded-full bg-neutral-200" />
-             <div className="w-8 h-8 rounded-full bg-neutral-200" />
-             <div className="w-8 h-8 rounded-full bg-neutral-200" />
-         </div>
+    <footer className="bg-white pt-24 pb-12 px-6 border-t border-neutral-100 flex flex-col items-center">
+      {/* Follow Us */}
+      <div className="flex flex-col items-center mb-16">
+        <h3 className="text-[10px] font-bold uppercase tracking-[0.4em] mb-10 text-neutral-900">Follow Us</h3>
+        <div className="flex gap-5">
+          {[
+            { icon: <Facebook className="w-5 h-5" />, href: "https://www.facebook.com/share/1CiNRxyy6M/" },
+            { icon: <Instagram className="w-5 h-5" />, href: "https://www.instagram.com/nexa_124?igsh=MXBoN2N3ZnJyenh1bw==" },
+            { icon: <Linkedin className="w-5 h-5" />, href: "#" },
+            { icon: <Youtube className="w-5 h-5" />, href: "#" }
+          ].map((social, i) => (
+            <a 
+              key={i} 
+              href={social.href} 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="w-12 h-12 rounded-full border border-neutral-200 flex items-center justify-center text-neutral-900 hover:bg-neutral-900 hover:text-white transition-all duration-500 shadow-sm hover:shadow-xl"
+            >
+              {social.icon}
+            </a>
+          ))}
+        </div>
+        <p className="mt-10 text-[10px] text-neutral-300 font-bold uppercase tracking-[0.3em]">TRAD/DNCC/021994/2026</p>
       </div>
-      
-      <div className="max-w-7xl w-full mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-16 mb-20 text-neutral-900 border-t border-neutral-100 pt-20">
-        <div className="col-span-1 md:col-span-2 lg:col-span-1">
-          <Link to="/" className="text-3xl font-bold tracking-[0.2em] uppercase transition-colors serif italic text-brand-accent mb-8 block">
-            Nexa
-          </Link>
-          <p className="text-neutral-500 font-light text-xs leading-relaxed max-w-xs uppercase tracking-widest">
-            The world's most exquisite handcrafted lighting and luxury decor, delivered to your doorstep.
-          </p>
-          <div className="flex gap-6 mt-10">
-            <a 
-              href="https://www.instagram.com/nexa_124?igsh=MXBoN2N3ZnJyenh1bw==" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="hover:text-brand-accent transition-colors text-neutral-400"
+
+      {/* Main Sections - Mobile Accordion / Desktop Grid */}
+      <div className="max-w-7xl w-full mx-auto md:grid md:grid-cols-5 md:gap-12 py-10 border-t border-b border-neutral-50">
+        {sections.map((section) => (
+          <div key={section.id} className="border-b md:border-b-0 border-neutral-50 last:border-b-0">
+            <button 
+              onClick={() => toggleSection(section.id)}
+              className="w-full flex justify-between items-center py-7 md:py-0 md:mb-10 text-left group"
             >
-              <Instagram className="w-5 h-5" />
-            </a>
-            <Twitter className="w-5 h-5 cursor-pointer hover:text-brand-accent transition-colors text-neutral-400" />
-            <a 
-              href="https://www.facebook.com/share/1CiNRxyy6M/" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="hover:text-brand-accent transition-colors text-neutral-400"
-            >
-              <Facebook className="w-5 h-5" />
-            </a>
+              <h4 className="text-[11px] font-bold uppercase tracking-[0.3em] text-neutral-900 group-hover:text-brand-accent transition-colors">{section.title}</h4>
+              <div className="md:hidden transition-transform duration-300" style={{ transform: openSection === section.id ? 'rotate(180deg)' : 'rotate(0deg)' }}>
+                {openSection === section.id ? <Minus className="w-4 h-4 text-neutral-400" /> : <Plus className="w-4 h-4 text-neutral-400" />}
+              </div>
+            </button>
+            
+            <div className={cn(
+              "md:block transition-all duration-500 overflow-hidden",
+              openSection === section.id ? "block pb-8" : "hidden md:block"
+            )}>
+               <div className="flex flex-col gap-5 text-[10px] font-bold uppercase tracking-[0.2em] text-neutral-400">
+                 {section.links?.map((link, i) => (
+                   <Link 
+                    key={i} 
+                    to={link.to} 
+                    className="hover:text-brand-accent transition-all cursor-pointer hover:pl-2 flex items-center group"
+                   >
+                     <span className="w-0 h-px bg-brand-accent group-hover:w-5 transition-all mr-0 group-hover:mr-2"></span>
+                     {link.label}
+                   </Link>
+                 ))}
+                 {section.content}
+               </div>
+            </div>
           </div>
-        </div>
-        <div>
-          <h4 className="text-[10px] font-bold uppercase tracking-[0.4em] mb-8 text-neutral-300">Collections</h4>
-          <ul className="flex flex-col gap-4 text-[10px] font-bold uppercase tracking-[0.2em] text-neutral-400">
-            <li><Link to="/shop" className="hover:text-brand-accent transition-all cursor-pointer hover:pl-2 flex items-center group"><span className="w-0 h-px bg-brand-accent group-hover:w-4 transition-all mr-0 group-hover:mr-2"></span>New Arrivals</Link></li>
-            <li><Link to="/shop" className="hover:text-brand-accent transition-all cursor-pointer hover:pl-2 flex items-center group"><span className="w-0 h-px bg-brand-accent group-hover:w-4 transition-all mr-0 group-hover:mr-2"></span>Lighting</Link></li>
-            <li><Link to="/shop" className="hover:text-brand-accent transition-all cursor-pointer hover:pl-2 flex items-center group"><span className="w-0 h-px bg-brand-accent group-hover:w-4 transition-all mr-0 group-hover:mr-2"></span>Wall Decors</Link></li>
-            <li><Link to="/about" className="hover:text-brand-accent transition-all cursor-pointer hover:pl-2 flex items-center group"><span className="w-0 h-px bg-brand-accent group-hover:w-4 transition-all mr-0 group-hover:mr-2"></span>Our Story</Link></li>
-          </ul>
-        </div>
-        <div>
-          <h4 className="text-[10px] font-bold uppercase tracking-[0.4em] mb-8 text-neutral-300">Support</h4>
-          <ul className="flex flex-col gap-4 text-[10px] font-bold uppercase tracking-[0.2em] text-neutral-400">
-            <li><Link to="/support#shipping" className="hover:text-brand-accent transition-all cursor-pointer hover:pl-2 flex items-center group"><span className="w-0 h-px bg-brand-accent group-hover:w-4 transition-all mr-0 group-hover:mr-2"></span>Shipping Info</Link></li>
-            <li><Link to="/support#returns" className="hover:text-brand-accent transition-all cursor-pointer hover:pl-2 flex items-center group"><span className="w-0 h-px bg-brand-accent group-hover:w-4 transition-all mr-0 group-hover:mr-2"></span>Returns & Exchanges</Link></li>
-            <li><Link to="/contact" className="hover:text-brand-accent transition-all cursor-pointer hover:pl-2 flex items-center group"><span className="w-0 h-px bg-brand-accent group-hover:w-4 transition-all mr-0 group-hover:mr-2"></span>Contact Us</Link></li>
-            <li><Link to="/support#privacy" className="hover:text-neutral-900 transition-all cursor-pointer hover:pl-2 flex items-center group"><span className="w-0 h-px bg-neutral-900 group-hover:w-4 transition-all mr-0 group-hover:mr-2"></span>Privacy Policy</Link></li>
-            <li className="mt-2">
-              <Link to="/admin" className="text-brand-accent hover:text-neutral-900 transition-colors border-b border-brand-accent/20 pb-0.5 inline-block">
-                Admin Portal
-              </Link>
-            </li>
-          </ul>
+        ))}
+      </div>
+
+      {/* Subscribe */}
+      <div className="max-w-2xl w-full mx-auto text-center py-24 px-6">
+        <h3 className="text-[12px] font-bold uppercase tracking-[0.5em] mb-6 text-neutral-900 underline underline-offset-[12px] decoration-neutral-100">Subscribe</h3>
+        <p className="text-neutral-400 text-[10px] font-bold uppercase tracking-[0.2em] mb-12">Be the first to know about special offers and new drops</p>
+        <div className="flex flex-col sm:flex-row gap-0 border border-neutral-100 p-1 rounded-sm focus-within:border-neutral-900 transition-colors">
+          <input 
+            type="email" 
+            placeholder="Enter your email address..." 
+            className="flex-1 px-8 py-5 focus:outline-none text-[10px] font-bold uppercase tracking-widest text-neutral-900 placeholder:text-neutral-300"
+          />
+          <button className="bg-neutral-900 text-white px-12 py-5 text-[10px] font-bold uppercase tracking-[0.3em] hover:bg-brand-accent transition-all">
+            Sign Up
+          </button>
         </div>
       </div>
-      <div className="max-w-7xl w-full mx-auto border-t border-neutral-100 pt-12 flex flex-col md:flex-row justify-between items-center gap-6 text-center md:text-left">
-        <p className="text-[8px] text-neutral-400 uppercase tracking-[0.4em] font-bold">© 2026 Nexa Luxury Store. Handcrafted with obsession.</p>
-        <div className="flex gap-8 text-[8px] text-neutral-400 uppercase tracking-[0.4em] font-bold">
-          <Link to="/support#terms" className="hover:text-neutral-900 transition-colors cursor-pointer">Terms</Link>
-          <Link to="/support#privacy" className="hover:text-neutral-900 transition-colors cursor-pointer">Privacy</Link>
-          <span className="hover:text-neutral-900 transition-colors cursor-pointer">Cookies</span>
+
+      {/* Payment & Copyright */}
+      <div className="max-w-7xl w-full mx-auto flex flex-col items-center gap-12 border-t border-neutral-50 pt-16">
+        <div className="flex flex-wrap justify-center items-center gap-10 opacity-30 grayscale hover:grayscale-0 transition-all duration-1000">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg" alt="Visa" className="h-4" referrerPolicy="no-referrer" />
+          <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" alt="Mastercard" className="h-7" referrerPolicy="no-referrer" />
+          <img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" alt="PayPal" className="h-4" referrerPolicy="no-referrer" />
+          <img src="https://upload.wikimedia.org/wikipedia/commons/b/b7/Google_Pay_Logo.svg" alt="Google Pay" className="h-5" referrerPolicy="no-referrer" />
+          <img src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_Pay_logo.svg" alt="Apple Pay" className="h-6" referrerPolicy="no-referrer" />
+          <img src="https://upload.wikimedia.org/wikipedia/commons/4/41/Stripe_logo%2C_revised_2016.svg" alt="Stripe" className="h-10" referrerPolicy="no-referrer" />
         </div>
+        <p className="text-[9px] text-neutral-300 uppercase tracking-[0.4em] font-bold text-center leading-loose">
+          © 2026 Nexa Luxury Store — Handcrafted with obsession. All rights reserved.
+          <Link to="/admin" className="ml-4 text-neutral-200 hover:text-brand-accent transition-colors underline underline-offset-4">Admin Access</Link>
+        </p>
       </div>
     </footer>
   );
