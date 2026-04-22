@@ -12,11 +12,10 @@ export default function ProductPage() {
   const { slug } = useParams();
   const { products, loading: productsLoading } = useProducts();
   
-  // More robust matching: handle case-insensitivity and potential URI encoding differences
+  // Ultra-robust matching: ignore spaces, hyphens and case for maximum compatibility
   const product = products.find(p => {
-    const pSlug = p.slug?.toLowerCase().trim();
-    const currentSlug = slug?.toLowerCase().trim();
-    return pSlug === currentSlug;
+    const normalize = (s: string) => String(s || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+    return normalize(p.slug) === normalize(slug || '');
   });
 
   const [activeTab, setActiveTab] = useState<'details' | 'personalize'>('details');
