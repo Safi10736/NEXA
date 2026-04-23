@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 
 export default function Hero() {
   return (
-    <section className="relative h-screen bg-neutral-100 overflow-hidden">
+    <section className="relative h-[85vh] md:h-[80vh] bg-neutral-100 overflow-hidden">
       {/* Background Image */}
       <div className="absolute inset-0 z-0">
         <img 
@@ -17,7 +17,7 @@ export default function Hero() {
       </div>
 
       {/* Overlay Content */}
-      <div className="relative z-10 h-full max-w-7xl mx-auto px-12 flex items-center">
+      <div className="relative z-10 h-full max-w-7xl mx-auto px-6 md:px-12 flex items-center pt-20">
         <div className="w-full grid lg:grid-cols-2">
           <motion.div
             initial={{ opacity: 0, x: -50 }}
@@ -25,21 +25,21 @@ export default function Hero() {
             transition={{ duration: 0.8 }}
             className="flex flex-col items-start"
           >
-            <div className="flex gap-4 mb-8">
+            <div className="flex gap-4 mb-6">
                <Link to="/shop" className="text-[10px] font-bold uppercase tracking-widest text-white/90 hover:text-white transition-colors">Shop</Link>
                <button onClick={() => document.getElementById('bestsellers')?.scrollIntoView({ behavior: 'smooth' })} className="text-[10px] font-bold uppercase tracking-widest text-white/90 hover:text-white transition-colors">Bestsellers</button>
                <Link to="/gallery" className="text-[10px] font-bold uppercase tracking-widest text-white/90 hover:text-white transition-colors">Gallery</Link>
                <Link to="/about" className="text-[10px] font-bold uppercase tracking-widest text-white/90 hover:text-white transition-colors">About</Link>
             </div>
 
-            <h1 className="text-5xl md:text-7xl font-light text-white leading-[1.1] mb-6 tracking-tight">
+            <h1 className="text-4xl md:text-6xl font-light text-white leading-[1.1] mb-6 tracking-tight">
               Eco-Friendly <br />
               <span className="serif italic">Kitchenware</span> for <br />
               a greener home
             </h1>
             
-            <p className="text-white/80 text-sm font-light mb-10 max-w-md leading-relaxed">
-              The eco-friendly kitchenware niche with a sense of urgency, much like the original banner. Let me know if you'd like adjustments!
+            <p className="text-white/80 text-xs md:text-sm font-light mb-8 max-w-md leading-relaxed">
+              Experience the fusion of natural aesthetics and modern functionality. Sustainable choices for a consciously curated lifestyle.
             </p>
             
             <Link 
