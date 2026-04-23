@@ -25,21 +25,40 @@ interface GalleryItem {
 }
 
 export default function AdminGallery() {
+  const [activeTab, setActiveTab] = useState<'gallery' | 'featured'>('gallery');
   const [items, setItems] = useState<GalleryItem[]>([]);
+  const [featured, setFeatured] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingItem, setEditingItem] = useState<GalleryItem | null>(null);
+  const [editingItem, setEditingItem] = useState<any>(null);
   const [newUrl, setNewUrl] = useState('');
+  const [newTitle, setNewTitle] = useState('');
   const [isHighlighted, setIsHighlighted] = useState(false);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
-
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   useEffect(() => {
-    fetchGallery();
-  }, []);
+    if (activeTab === 'gallery') {
+      fetchGallery();
+    } else {
+      fetchFeatured();
+    }
+  }, [activeTab]);
+
+  const fetchFeatured = async () => {
+    setLoading(true);
+    const { data, error } = await supabase
+      .from('featured_collections')
+      .select('*')
+      .order('slot_index', { ascending: true });
+
+    if (!error && data) {
+      setFeatured(data);
+    }
+    setLoading(false);
+  };
 
   const fetchGallery = async () => {
     setLoading(true);
@@ -62,73 +81,61 @@ export default function AdminGallery() {
     setLoading(false);
   };
 
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    setUploading(true);
-    const fileExt = file.name.split('.').pop();
-    const fileName = `${Math.random()}.${fileExt}`;
-    const filePath = `gallery/${fileName}`;
-
-    const { error: uploadError } = await supabase.storage
-      .from('gallery')
-      .upload(filePath, file);
-
-    if (uploadError) {
-      alert('Upload failed: ' + uploadError.message);
-      setUploading(false);
-      return;
-    }
-
-    const { data: { publicUrl } } = supabase.storage
-      .from('gallery')
-      .getPublicUrl(filePath);
-
-    setNewUrl(publicUrl);
-    setUploading(false);
-  };
-
   const handleSave = async () => {
     if (!newUrl) return;
-
-    // Check highlight limit
-    const currentHighlights = items.filter(i => i.is_highlighted).length;
-    if (isHighlighted && !editingItem?.is_highlighted && currentHighlights >= 6) {
-      alert('You can only highlight a maximum of 6 images. Please unhighlight another image first.');
-      return;
-    }
-
     setSaving(true);
 
-    if (editingItem) {
+    if (activeTab === 'featured') {
       const { error } = await supabase
-        .from('gallery')
+        .from('featured_collections')
         .update({ 
           image_url: newUrl,
-          is_highlighted: isHighlighted 
+          title: newTitle
         })
         .eq('id', editingItem.id);
       
       if (!error) {
-        setItems(items.map(item => item.id === editingItem.id ? { ...item, image_url: newUrl, is_highlighted: isHighlighted } : item));
+        setFeatured(featured.map(f => f.id === editingItem.id ? { ...f, image_url: newUrl, title: newTitle } : f));
       }
     } else {
-      const { data, error } = await supabase
-        .from('gallery')
-        .insert([{ 
-          image_url: newUrl,
-          is_highlighted: isHighlighted 
-        }])
-        .select();
+      // Gallery logic
+      const currentHighlights = items.filter(i => i.is_highlighted).length;
+      if (isHighlighted && !editingItem?.is_highlighted && currentHighlights >= 6) {
+        alert('You can only highlight a maximum of 6 images.');
+        setSaving(false);
+        return;
+      }
 
-      if (!error && data) {
-        setItems([data[0], ...items]);
+      if (editingItem) {
+        const { error } = await supabase
+          .from('gallery')
+          .update({ image_url: newUrl, is_highlighted: isHighlighted })
+          .eq('id', editingItem.id);
+        
+        if (!error) {
+          setItems(items.map(item => item.id === editingItem.id ? { ...item, image_url: newUrl, is_highlighted: isHighlighted } : item));
+        }
+      } else {
+        const { data, error } = await supabase
+          .from('gallery')
+          .insert([{ image_url: newUrl, is_highlighted: isHighlighted }])
+          .select();
+
+        if (!error && data) {
+          setItems([data[0], ...items]);
+        }
       }
     }
 
     setSaving(false);
     closeModal();
+  };
+
+  const openFeaturedModal = (item: any) => {
+    setEditingItem(item);
+    setNewUrl(item.image_url);
+    setNewTitle(item.title);
+    setIsModalOpen(true);
   };
 
   const toggleHighlight = async (item: GalleryItem) => {
@@ -188,24 +195,71 @@ export default function AdminGallery() {
     <AdminLayout>
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
         <div>
-          <h1 className="text-4xl font-light tracking-tighter mb-2">Studio <span className="serif italic text-brand-accent">Gallery</span></h1>
-          <p className="text-[10px] text-neutral-500 uppercase tracking-widest leading-relaxed">
-            Manage your visual assets. <span className="text-brand-accent">{highlightedCount}/6 Highlighting</span> slots occupied.
-          </p>
+          <h1 className="text-4xl font-light tracking-tighter mb-2">Studio <span className="serif italic text-brand-accent">Assets</span></h1>
+          <div className="flex gap-4 mt-6">
+            <button 
+              onClick={() => setActiveTab('gallery')}
+              className={cn(
+                "px-6 py-2 rounded-full text-[9px] font-bold uppercase tracking-widest transition-all",
+                activeTab === 'gallery' ? "bg-white text-black shadow-lg" : "bg-neutral-900 text-neutral-500 hover:text-white"
+              )}
+            >
+              Main Library
+            </button>
+            <button 
+              onClick={() => setActiveTab('featured')}
+              className={cn(
+                "px-6 py-2 rounded-full text-[9px] font-bold uppercase tracking-widest transition-all",
+                activeTab === 'featured' ? "bg-white text-black shadow-lg" : "bg-neutral-900 text-neutral-500 hover:text-white"
+              )}
+            >
+              Home Collections (4)
+            </button>
+          </div>
         </div>
-        <button 
-          onClick={() => openModal()}
-          className="flex items-center gap-4 px-10 py-5 bg-brand-accent text-white rounded-full text-[10px] font-bold uppercase tracking-widest shadow-xl shadow-brand-accent/20 hover:scale-105 transition-all"
-        >
-          <Plus className="w-4 h-4" />
-          Add To Library
-        </button>
+        {activeTab === 'gallery' && (
+          <button 
+            onClick={() => openModal()}
+            className="flex items-center gap-4 px-10 py-5 bg-brand-accent text-white rounded-full text-[10px] font-bold uppercase tracking-widest shadow-xl shadow-brand-accent/20 hover:scale-105 transition-all"
+          >
+            <Plus className="w-4 h-4" />
+            Add To Library
+          </button>
+        )}
       </div>
 
       {loading ? (
         <div className="flex flex-col items-center justify-center py-32 space-y-4">
           <div className="w-12 h-12 border-2 border-brand-accent border-t-transparent rounded-full animate-spin" />
           <p className="text-[8px] font-bold text-neutral-600 uppercase tracking-widest animate-pulse">Accessing Archive...</p>
+        </div>
+      ) : activeTab === 'featured' ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {featured.map((item, i) => (
+            <motion.div
+              key={item.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="group relative h-80 bg-neutral-950 border border-neutral-900 rounded-[2.5rem] overflow-hidden"
+            >
+              <img src={item.image_url} className="w-full h-full object-cover opacity-60 transition-transform duration-700 group-hover:scale-110" />
+              <div className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center p-8 text-center">
+                <span className="text-[8px] font-bold text-brand-accent uppercase tracking-widest mb-2">Slot {i + 1}</span>
+                <h3 className="text-white text-lg font-light serif italic mb-6">{item.title}</h3>
+                <button 
+                  onClick={() => openFeaturedModal(item)}
+                  className="px-6 py-2 bg-white text-black rounded-full text-[8px] font-bold uppercase tracking-widest hover:bg-brand-accent hover:text-white transition-all"
+                >
+                  Edit Slot
+                </button>
+              </div>
+            </motion.div>
+          ))}
+          {featured.length === 0 && (
+            <div className="col-span-full text-center py-12 text-neutral-500 uppercase text-[9px] tracking-widest">
+              No featured collections initialized.
+            </div>
+          )}
         </div>
       ) : errorMsg ? (
         <div className="bg-neutral-900/50 border border-brand-accent/20 rounded-[2.5rem] p-12 text-center max-w-2xl mx-auto my-12">
@@ -335,6 +389,20 @@ export default function AdminGallery() {
               <div className="p-12 space-y-12">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
                   <div className="space-y-8">
+                    {activeTab === 'featured' && (
+                      <div className="space-y-4">
+                        <label className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest flex items-center gap-2">
+                          Collection Title
+                        </label>
+                        <input 
+                          type="text" 
+                          value={newTitle}
+                          onChange={(e) => setNewTitle(e.target.value)}
+                          placeholder="e.g. Explore NatureSip" 
+                          className="w-full bg-neutral-900 border border-white/10 rounded-2xl py-5 px-6 text-xs focus:border-brand-accent outline-none placeholder:text-neutral-700"
+                        />
+                      </div>
+                    )}
                     <div className="space-y-4">
                       <label className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest flex items-center gap-2">
                         <Upload className="w-3 h-3" /> Source Selection

@@ -34,12 +34,29 @@ import FlyToCartRenderer from './components/FlyToCart';
 import { useAdmin } from './hooks/useAdmin';
 
 function FeaturedCollections() {
-  const items = [
-    { title: 'Explore CupEco', img: 'https://images.unsplash.com/photo-1544787210-22c66d137f6d?auto=format&fit=crop&q=80&w=800' },
-    { title: 'Explore Tealyvory', img: 'https://images.unsplash.com/photo-1563245372-f21724e3856d?auto=format&fit=crop&q=80&w=800' },
-    { title: 'Explore NatureSip', img: 'https://images.unsplash.com/photo-1610631880197-484c399c922c?auto=format&fit=crop&q=80&w=800' },
-    { title: 'Explore FreshPitcher', img: 'https://images.unsplash.com/photo-1574672280600-4accfa5b6f98?auto=format&fit=crop&q=80&w=800' },
-  ];
+  const [items, setItems] = useState<any[]>([]);
+
+  useEffect(() => {
+    const fetchFeatured = async () => {
+      const { data } = await supabase
+        .from('featured_collections')
+        .select('*')
+        .order('slot_index', { ascending: true });
+      
+      if (data && data.length > 0) {
+        setItems(data);
+      } else {
+        // Fallbacks
+        setItems([
+          { title: 'Explore CupEco', image_url: 'https://images.unsplash.com/photo-1544787210-22c66d137f6d?auto=format&fit=crop&q=80&w=800' },
+          { title: 'Explore Tealyvory', image_url: 'https://images.unsplash.com/photo-1563245372-f21724e3856d?auto=format&fit=crop&q=80&w=800' },
+          { title: 'Explore NatureSip', image_url: 'https://images.unsplash.com/photo-1610631880197-484c399c922c?auto=format&fit=crop&q=80&w=800' },
+          { title: 'Explore FreshPitcher', image_url: 'https://images.unsplash.com/photo-1574672280600-4accfa5b6f98?auto=format&fit=crop&q=80&w=800' },
+        ]);
+      }
+    };
+    fetchFeatured();
+  }, []);
 
   return (
     <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 px-6 mt-12 mb-24">
@@ -51,11 +68,11 @@ function FeaturedCollections() {
           transition={{ delay: i * 0.1 }}
           className="relative h-72 rounded-3xl overflow-hidden group cursor-pointer shadow-sm hover:shadow-xl transition-all"
         >
-          <img src={item.img} referrerPolicy="no-referrer" className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" />
+          <img src={item.image_url} referrerPolicy="no-referrer" className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" />
           <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-colors" />
           <div className="absolute inset-x-4 bottom-6 text-center">
-            <h4 className="text-white text-xs font-bold uppercase tracking-widest mb-3 opacity-90 group-hover:opacity-100">{item.title}</h4>
-            <Link to="/shop" className="inline-block bg-white/90 backdrop-blur-md px-4 py-1.5 rounded-full text-[7px] font-bold uppercase tracking-widest text-neutral-900 group-hover:bg-brand-accent group-hover:text-white transition-all">
+            <h4 className="text-white text-[10px] font-bold uppercase tracking-[0.3em] mb-4 opacity-90 group-hover:opacity-100">{item.title}</h4>
+            <Link to="/shop" className="inline-block bg-white/95 backdrop-blur-md px-6 py-2 rounded-full text-[8px] font-bold uppercase tracking-widest text-neutral-900 group-hover:bg-brand-accent group-hover:text-white transition-all shadow-xl">
               Shop Now
             </Link>
           </div>
