@@ -166,7 +166,25 @@ export default function AuthPage() {
         }
       });
       if (error) throw error;
-      // Note: This will redirect the entire page to Google for auth.
+    } catch (error: any) {
+      console.error(error);
+      setAuthError(error.message);
+    } finally {
+      setIsAuthenticating(false);
+    }
+  };
+
+  const handleFacebookSignIn = async () => {
+    setAuthError(null);
+    setIsAuthenticating(true);
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'facebook',
+        options: {
+           redirectTo: window.location.origin + '/profile',
+        }
+      });
+      if (error) throw error;
     } catch (error: any) {
       console.error(error);
       setAuthError(error.message);
@@ -1126,15 +1144,28 @@ export default function AuthPage() {
               <div className="flex-1 h-px bg-neutral-100" />
             </div>
 
-            <button 
-              type="button"
-              onClick={handleGoogleSignIn}
-              disabled={isAuthenticating}
-              className="w-full py-5 border-2 border-neutral-50 rounded-2xl flex items-center justify-center gap-4 text-[10px] font-bold uppercase tracking-widest text-neutral-900 hover:bg-neutral-50 transition-all duration-300 disabled:opacity-50"
-            >
-              <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" className="w-5 h-5 opacity-80" alt="Google" />
-              {isAuthenticating ? (lang === 'BN' ? 'যাচাই হচ্ছে...' : 'SYNCING_NODES...') : t('syncGoogle')}
-            </button>
+            <div className="grid grid-cols-2 gap-4">
+              <button 
+                type="button"
+                onClick={handleGoogleSignIn}
+                disabled={isAuthenticating}
+                className="py-5 border-2 border-neutral-50 rounded-2xl flex items-center justify-center gap-3 text-[10px] font-bold uppercase tracking-widest text-neutral-900 hover:bg-neutral-50 transition-all duration-300 disabled:opacity-50"
+              >
+                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" className="w-5 h-5 opacity-80" alt="Google" />
+                Google
+              </button>
+              <button 
+                type="button"
+                onClick={handleFacebookSignIn}
+                disabled={isAuthenticating}
+                className="py-5 border-2 border-neutral-50 rounded-2xl flex items-center justify-center gap-3 text-[10px] font-bold uppercase tracking-widest text-neutral-900 hover:bg-neutral-50 transition-all duration-300 disabled:opacity-50"
+              >
+                <svg className="w-5 h-5 text-[#1877F2]" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                </svg>
+                Facebook
+              </button>
+            </div>
           </form>
 
           <div className="mt-12 pt-10 border-t border-neutral-100 text-center relative z-10">

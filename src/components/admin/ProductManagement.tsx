@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion, AnimatePresence, Reorder } from 'motion/react';
 import { 
   X, 
   Upload, 
@@ -10,7 +10,8 @@ import {
   CheckCircle2,
   ShieldCheck,
   Globe,
-  Smartphone
+  Smartphone,
+  GripVertical
 } from 'lucide-react';
 import { formatPrice, cn } from '../../lib/utils';
 
@@ -38,22 +39,34 @@ export default function ProductForm({ initialData, onClose, onSave }: ProductFor
   const [activeTab, setActiveTab] = useState('basic');
   const [error, setError] = useState<string | null>(null);
   const [mediaSource, setMediaSource] = useState<'url' | 'device'>('url');
+  const [isDragging, setIsDragging] = useState(false);
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      if (file.size > 1024 * 1024) { // 1MB limit for Base64 (browser performance)
-        setError("Image is too large. Please use a link or an image under 1MB.");
+  const handleFiles = (files: FileList | null) => {
+    if (!files) return;
+    
+    setError(null);
+    const filesArray = Array.from(files);
+    
+    filesArray.forEach(file => {
+      // 2MB limit for base64 strings to maintain browser/db performance
+      if (file.size > 2 * 1024 * 1024) { 
+        setError("One or more images are too large (>2MB). Optimized images are recommended.");
         return;
       }
       const reader = new FileReader();
       reader.onloadend = () => {
         const base64String = reader.result as string;
-        setFormData({ ...formData, images: [...formData.images, base64String] });
-        setError(null);
+        setFormData((prev: any) => ({
+           ...prev,
+           images: [...prev.images, base64String]
+        }));
       };
       reader.readAsDataURL(file);
-    }
+    });
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    handleFiles(e.target.files);
   };
 
   const addImageUrl = () => {
@@ -299,10 +312,31 @@ export default function ProductForm({ initialData, onClose, onSave }: ProductFor
                          <label className="text-[10px] font-bold uppercase tracking-widest text-neutral-500 ml-4">Stock Quantity</label>
                          <input 
                             type="number" 
-                            className="w-full bg-neutral-900 border border-neutral-800 rounded-2xl py-4 px-6 text-sm focus:ring-1 focus:ring-brand-accent outline-none"
+                            min="0"
+                            step="1"
+                            className={cn(
+                              "w-full bg-neutral-900 border rounded-2xl py-4 px-6 text-sm focus:ring-1 outline-none transition-all",
+                              formData.stock < 0 ? "border-red-500 focus:ring-red-500" : "border-neutral-800 focus:ring-brand-accent"
+                            )}
                             value={formData.stock}
-                            onChange={(e) => setFormData({...formData, stock: Number(e.target.value)})}
+                            onChange={(e) => {
+                              const val = e.target.value;
+                              const num = parseInt(val, 10);
+                              
+                              if (val === '') {
+                                setFormData({...formData, stock: 0});
+                                return;
+                              }
+
+                              if (!isNaN(num)) {
+                                // Allow typing 0 or positive, but floor decimals to keep it an integer
+                                setFormData({...formData, stock: Math.max(0, Math.floor(num))});
+                              }
+                            }}
                          />
+                         {formData.stock < 0 && (
+                            <p className="text-[8px] text-red-500 uppercase font-bold ml-4 mt-1 italic tracking-widest">Quantity cannot be negative</p>
+                         )}
                       </div>
                       <div className="flex items-center gap-4 mt-8 px-4">
                          <div className={`p-2 rounded-lg ${formData.stock < 10 ? 'bg-red-500/10 text-red-500' : 'bg-green-500/10 text-green-500'}`}>
@@ -403,68 +437,90 @@ export default function ProductForm({ initialData, onClose, onSave }: ProductFor
                             id="file-upload" 
                             className="hidden" 
                             accept="image/*"
+                            multiple
                             onChange={handleFileChange}
                           />
                           <label 
                             htmlFor="file-upload"
-                            className="flex flex-col items-center justify-center gap-4 w-full h-48 bg-neutral-900 border-2 border-dashed border-neutral-800 rounded-[2rem] cursor-pointer hover:border-brand-accent transition-all group"
+                            onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
+                            onDragLeave={() => setIsDragging(false)}
+                            onDrop={(e) => {
+                              e.preventDefault();
+                              setIsDragging(false);
+                              handleFiles(e.dataTransfer.files);
+                            }}
+                            className={cn(
+                              "flex flex-col items-center justify-center gap-4 w-full h-48 bg-neutral-900 border-2 border-dashed rounded-[2rem] cursor-pointer transition-all group",
+                              isDragging ? "border-brand-accent bg-brand-accent/5" : "border-neutral-800 hover:border-brand-accent"
+                            )}
                           >
-                             <div className="p-4 bg-neutral-800 rounded-2xl group-hover:bg-brand-accent/10 transition-colors">
-                                <Upload className="w-6 h-6 text-neutral-400 group-hover:text-brand-accent" />
+                             <div className={cn(
+                               "p-4 rounded-2xl transition-colors",
+                               isDragging ? "bg-brand-accent/20" : "bg-neutral-800 group-hover:bg-brand-accent/10"
+                             )}>
+                                <Upload className={cn(
+                                  "w-6 h-6 transition-colors",
+                                  isDragging ? "text-brand-accent" : "text-neutral-400 group-hover:text-brand-accent"
+                                )} />
                              </div>
                              <div className="text-center">
-                                <p className="text-[10px] font-bold text-white uppercase tracking-widest mb-1">Click to browse or drop</p>
-                                <p className="text-[8px] text-neutral-500 uppercase tracking-tighter">PNG, JPG or WebP (Max 1MB)</p>
+                                <p className="text-[10px] font-bold text-white uppercase tracking-widest mb-1">
+                                  {isDragging ? 'Drop images now' : 'Click to browse or drop multiple images'}
+                                </p>
+                                <p className="text-[8px] text-neutral-500 uppercase tracking-tighter">PNG, JPG or WebP (Max 2MB per file)</p>
                              </div>
                           </label>
                         </div>
                       )}
                    </div>
 
-                   {/* Image Library Grid */}
-                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-6">
-                      <AnimatePresence>
+                   {/* Image Library Grid with Reordering */}
+                   <div className="space-y-4">
+                      <h4 className="text-[10px] font-bold uppercase tracking-widest text-neutral-500 ml-4">Manage & Reorder Gallery</h4>
+                      <Reorder.Group 
+                        axis="y" 
+                        values={formData.images} 
+                        onReorder={(newImages) => setFormData({ ...formData, images: newImages })}
+                        className="space-y-3"
+                      >
                         {formData.images.map((img: string, idx: number) => (
-                           <motion.div 
-                             key={`${img}-${idx}`}
-                             layout
-                             initial={{ opacity: 0, scale: 0.9 }}
-                             animate={{ opacity: 1, scale: 1 }}
-                             exit={{ opacity: 0, scale: 0.9 }}
-                             className={cn(
-                               "relative aspect-square rounded-3xl overflow-hidden border transition-all group",
-                               idx === 0 ? "border-brand-accent shadow-[0_0_20px_rgba(212,175,55,0.2)]" : "border-neutral-900"
-                             )}
+                           <Reorder.Item 
+                             key={img} 
+                             value={img}
+                             className="relative flex items-center gap-6 bg-neutral-900/50 p-4 rounded-3xl border border-neutral-900 group cursor-grab active:cursor-grabbing"
                            >
-                              <img src={img} alt="" className="w-full h-full object-cover" />
+                              <div className="p-2 text-neutral-700 group-hover:text-neutral-500 transition-colors">
+                                 <GripVertical className="w-5 h-5" />
+                              </div>
+
+                              <div className="w-16 h-16 rounded-2xl overflow-hidden flex-shrink-0 border border-neutral-800 bg-black">
+                                <img src={img} alt="" className="w-full h-full object-cover" />
+                              </div>
                               
-                              {/* Overlay Actions */}
-                              <div className="absolute inset-0 bg-neutral-900/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-3">
-                                 {idx !== 0 && (
-                                   <button 
-                                      onClick={() => setPrimaryImage(idx)}
-                                      className="px-4 py-2 bg-white text-neutral-900 rounded-full text-[8px] font-bold uppercase tracking-widest hover:bg-brand-accent hover:text-white transition-all"
-                                   >
-                                      Make Primary
-                                   </button>
-                                 )}
+                              <div className="flex-1 min-w-0">
+                                 <div className="flex items-center gap-3">
+                                    <span className="text-[10px] font-bold text-neutral-500 uppercase tracking-widest">Asset #{idx + 1}</span>
+                                    {idx === 0 && (
+                                      <span className="px-2 py-0.5 bg-brand-accent text-white rounded text-[6px] font-bold uppercase tracking-widest">Primary</span>
+                                    )}
+                                 </div>
+                                 <p className="text-[8px] text-neutral-600 truncate mt-1">
+                                    {img.startsWith('data:') ? `Local Upload (Base64)` : img}
+                                 </p>
+                              </div>
+
+                              <div className="flex items-center gap-2 pr-2">
                                  <button 
                                     onClick={() => removeImage(idx)}
-                                    className="p-3 bg-red-600 text-white rounded-full hover:bg-red-500 transition-all"
+                                    className="p-3 bg-red-600/10 text-red-600 rounded-full hover:bg-red-600 hover:text-white transition-all shadow-sm"
+                                    title="Remove Image"
                                  >
                                     <Trash2 className="w-4 h-4" />
                                  </button>
                               </div>
-
-                              {/* Primary Badge */}
-                              {idx === 0 && (
-                                <div className="absolute top-4 left-4 px-3 py-1 bg-brand-accent text-white rounded-full text-[7px] font-bold uppercase tracking-widest shadow-xl">
-                                   Primary View
-                                </div>
-                              )}
-                           </motion.div>
+                           </Reorder.Item>
                         ))}
-                      </AnimatePresence>
+                      </Reorder.Group>
                    </div>
                 </motion.div>
               )}
