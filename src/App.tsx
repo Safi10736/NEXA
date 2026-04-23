@@ -114,14 +114,14 @@ function SecondaryTeasers() {
       if (data && data.length > 0) {
         setGalleryImages(data.map(item => item.image_url));
       } else {
-        // Fallback defaults
+        // Fallback defaults for premium look
         setGalleryImages([
-          'https://kommodo.ai/i/pIJOjHu28VY0DSKWCNCq',
-          'https://kommodo.ai/i/xmEzOkjSVAMjQpYwfJkV',
-          'https://kommodo.ai/i/D29Qxc6zWTMo39XdvhfE',
-          'https://images.unsplash.com/photo-1542728928-1413ee093f59?auto=format&fit=crop&q=80&w=400',
-          'https://images.unsplash.com/photo-1616489953149-8083070be0bc?auto=format&fit=crop&q=80&w=400',
-          'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?auto=format&fit=crop&q=80&w=400'
+          'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&q=80&w=800',
+          'https://images.unsplash.com/photo-1600585154340-be6199f7a096?auto=format&fit=crop&q=80&w=800',
+          'https://images.unsplash.com/photo-1544787210-22c66d137f6d?auto=format&fit=crop&q=80&w=800',
+          'https://images.unsplash.com/photo-1563245372-f21724e3856d?auto=format&fit=crop&q=80&w=800',
+          'https://images.unsplash.com/photo-1613539824653-33924f0c4068?auto=format&fit=crop&q=80&w=800',
+          'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&q=80&w=800'
         ]);
       }
     };

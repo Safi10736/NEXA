@@ -7,70 +7,52 @@ export default function Hero() {
   const { t, lang } = useLanguage();
 
   return (
-    <section className="relative h-[85vh] md:h-[80vh] bg-neutral-100 overflow-hidden">
-      {/* Background Image */}
+    <section className="relative h-[90vh] flex items-center justify-center overflow-hidden bg-brand-surface">
+      {/* Background with Professional Overlay */}
       <div className="absolute inset-0 z-0">
+        <div className="absolute inset-0 bg-black/40 z-10" />
         <img 
-          src="https://images.unsplash.com/photo-1591147139223-846f3ae479a0?auto=format&fit=crop&q=80&w=2400"
-          alt="Eco Kitchen" 
-          className="w-full h-full object-cover"
+          src="https://images.unsplash.com/photo-1620808461872-9cc911043900?auto=format&fit=crop&q=85&w=2400" 
+          alt="Luxury Eco Home" 
+          className="w-full h-full object-cover scale-105 animate-slow-zoom"
           referrerPolicy="no-referrer"
         />
-        <div className="absolute inset-0 bg-black/40" />
       </div>
 
-      {/* Overlay Content */}
-      <div className="relative z-10 h-full max-w-7xl mx-auto px-6 md:px-12 flex items-center pt-20">
-        <div className="w-full grid lg:grid-cols-2">
-          <motion.div
-            initial={{ opacity: 0, x: -50 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8 }}
-            className="flex flex-col items-start"
-          >
-            <div className="flex gap-4 mb-6">
-               <Link to="/shop" className="text-[10px] font-bold uppercase tracking-widest text-white/90 hover:text-white transition-colors">{t('shop')}</Link>
-               <button onClick={() => document.getElementById('bestsellers')?.scrollIntoView({ behavior: 'smooth' })} className="text-[10px] font-bold uppercase tracking-widest text-white/90 hover:text-white transition-colors">{t('bestsellers')}</button>
-               <Link to="/gallery" className="text-[10px] font-bold uppercase tracking-widest text-white/90 hover:text-white transition-colors">{t('gallery')}</Link>
-               <Link to="/about" className="text-[10px] font-bold uppercase tracking-widest text-white/90 hover:text-white transition-colors">{t('about')}</Link>
-            </div>
-
-            <h1 className="text-4xl md:text-6xl font-light text-white leading-[1.1] mb-6 tracking-tight">
-              {t('heroTitlePart1')} <br />
-              <span className="serif italic">{t('heroTitlePart2')}</span> {lang === 'BN' ? '' : 'for'} <br />
-              {t('heroTitlePart3')}
-            </h1>
-            
-            <p className="text-white/80 text-xs md:text-sm font-light mb-8 max-w-md leading-relaxed">
-              {t('heroDesc')}
-            </p>
-            
-            <Link 
-              to="/shop"
-              className="group px-8 py-3 bg-white text-neutral-900 rounded-full flex items-center gap-3 hover:bg-brand-accent hover:text-white transition-all duration-500 font-bold uppercase text-[9px] tracking-widest shadow-xl"
-            >
-              {t('shopNow')}
-              <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
-            </Link>
-          </motion.div>
-
-          <div className="hidden lg:flex justify-end items-end pb-12">
-             <motion.div 
-               initial={{ opacity: 0, scale: 0.8 }}
-               animate={{ opacity: 1, scale: 1 }}
-               className="bg-white/10 backdrop-blur-xl border border-white/20 p-8 rounded-[2rem] text-white w-48 shadow-2xl"
-             >
-                <div className="flex flex-col gap-2">
-                   <div className="flex items-center gap-2">
-                      <div className="w-2 h-2 rounded-full bg-brand-accent animate-pulse" />
-                      <span className="text-[7px] font-bold uppercase tracking-widest opacity-60">{t('naturalSustainable')}</span>
-                   </div>
-                   <p className="text-[7px] font-bold uppercase tracking-widest mb-4">{t('ecoConscious')}</p>
-                   <span className="text-5xl font-light tracking-tighter serif italic">96%</span>
-                </div>
-             </motion.div>
+      <div className="relative z-20 text-center px-6 max-w-5xl mx-auto pt-20">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
+        >
+          <div className="flex items-center justify-center gap-4 mb-8">
+            <span className="h-[1px] w-8 bg-white/40" />
+            <span className="text-[9px] font-bold tracking-[0.4em] uppercase text-white/80">Est. 2024 • Organic Conscious Shop</span>
+            <span className="h-[1px] w-8 bg-white/40" />
           </div>
-        </div>
+
+          <h1 className="text-5xl md:text-8xl font-light text-white tracking-tighter mb-10 leading-[0.9] serif italic">
+             {t('heroTitlePart1')} <br />
+             {t('heroTitlePart2')} <br />
+             {t('heroTitlePart3')}
+          </h1>
+          
+          <p className="text-base md:text-lg text-white/70 font-light mb-12 max-w-2xl mx-auto leading-relaxed uppercase tracking-[0.1em]">
+            {t('heroDesc')}
+          </p>
+
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-8">
+            <Link to="/shop" className="group relative px-14 py-6 bg-white text-black rounded-full text-[10px] font-bold uppercase tracking-[0.2em] hover:bg-brand-accent hover:text-white transition-all duration-500 shadow-2xl overflow-hidden">
+              <span className="relative z-10 flex items-center gap-3">
+                {t('shopNow')}
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              </span>
+            </Link>
+            <Link to="/gallery" className="text-[10px] font-bold uppercase tracking-[0.2em] text-white hover:text-brand-accent transition-colors py-4 border-b border-white/20 hover:border-brand-accent">
+              Explore Our Story
+            </Link>
+          </div>
+        </motion.div>
       </div>
     </section>
   );
