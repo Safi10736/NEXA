@@ -13,7 +13,8 @@ import {
   Search,
   CheckCircle,
   AlertCircle,
-  ShieldCheck
+  ShieldCheck,
+  Image as ImageIcon
 } from 'lucide-react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
@@ -31,6 +32,7 @@ const navItems: NavItem[] = [
   { label: 'Inventory', href: '/admin/products', icon: Package },
   { label: 'Orders', href: '/admin/orders', icon: ShoppingBag },
   { label: 'Customers', href: '/admin/customers', icon: Users },
+  { label: 'Gallery', href: '/admin/gallery', icon: ImageIcon },
   { label: 'Settings', href: '/admin/settings', icon: Settings },
 ];
 

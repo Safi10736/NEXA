@@ -19,12 +19,14 @@ import AdminInventory from './pages/admin/Inventory';
 import AdminOrders from './pages/admin/Orders';
 import AdminCustomers from './pages/admin/Customers';
 import AdminSettings from './pages/admin/Settings';
+import AdminGallery from './pages/admin/Gallery';
 import { Star, MessageCircle, Instagram, Twitter, Facebook, ArrowRight, User as UserIcon, ShieldCheck, BarChart3, Linkedin, Youtube, Plus, Minus } from 'lucide-react';
 import { motion } from 'motion/react';
 import { cn } from './lib/utils';
 import ProductCard from './components/ProductCard';
 
 import { AuthProvider, useAuth } from './AuthContext';
+import { supabase } from './lib/supabase';
 import { CartProvider, useCart } from './CartContext';
 import { ProductProvider, useProducts } from './ProductContext';
 import { WishlistProvider } from './WishlistContext';
@@ -98,33 +100,58 @@ function BestsellingSection() {
 
 function SecondaryTeasers() {
   const { t, lang } = useLanguage();
+  const [galleryImages, setGalleryImages] = useState<string[]>([]);
+
+  useEffect(() => {
+    const fetchGallery = async () => {
+      const { data } = await supabase
+        .from('gallery')
+        .select('image_url')
+        .order('created_at', { ascending: false })
+        .limit(6);
+      
+      if (data && data.length > 0) {
+        setGalleryImages(data.map(item => item.image_url));
+      } else {
+        // Fallback defaults
+        setGalleryImages([
+          'https://kommodo.ai/i/pIJOjHu28VY0DSKWCNCq',
+          'https://kommodo.ai/i/xmEzOkjSVAMjQpYwfJkV',
+          'https://kommodo.ai/i/D29Qxc6zWTMo39XdvhfE',
+          'https://images.unsplash.com/photo-1542728928-1413ee093f59?auto=format&fit=crop&q=80&w=400',
+          'https://images.unsplash.com/photo-1616489953149-8083070be0bc?auto=format&fit=crop&q=80&w=400',
+          'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?auto=format&fit=crop&q=80&w=400'
+        ]);
+      }
+    };
+    fetchGallery();
+  }, []);
+
   return (
     <section className="py-24 px-6 bg-brand-surface border-y border-neutral-100">
       <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-24">
         {/* Gallery Grid */}
-        <div>
-           <span className="text-[10px] font-bold tracking-[0.4em] uppercase text-brand-muted mb-8 block">Inspiration & Gallery</span>
+        <Link to="/gallery" className="block group">
+           <span className="text-[10px] font-bold tracking-[0.4em] uppercase text-brand-muted mb-8 block group-hover:text-brand-accent transition-colors">Inspiration & Gallery</span>
            <div className="grid grid-cols-3 gap-3">
-              {[
-                'https://images.unsplash.com/photo-1542728928-1413ee093f59?auto=format&fit=crop&q=80&w=400',
-                'https://images.unsplash.com/photo-1616489953149-8083070be0bc?auto=format&fit=crop&q=80&w=400',
-                'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?auto=format&fit=crop&q=80&w=400',
-                '/input_file_0.png',
-                '/input_file_1.png',
-                '/input_file_2.png'
-              ].map((img, i) => (
+              {galleryImages.map((img, i) => (
                 <motion.div 
                   key={i} 
                   initial={{ opacity: 0 }} 
                   whileInView={{ opacity: 1 }}
                   transition={{ delay: i * 0.05 }}
-                  className="aspect-square rounded-xl overflow-hidden cursor-pointer"
+                  className="aspect-square rounded-xl overflow-hidden cursor-pointer bg-neutral-100 shadow-sm group-hover:shadow-xl transition-all"
                 >
-                  <img src={img} referrerPolicy="no-referrer" className="w-full h-full object-cover hover:scale-110 transition-transform duration-700" />
+                  <img 
+                    src={img} 
+                    referrerPolicy="no-referrer" 
+                    className="w-full h-full object-cover hover:scale-110 transition-transform duration-700"
+                    onError={(e) => { (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1560393464-5c69a73c5770?w=400&h=400&fit=crop'; }}
+                  />
                 </motion.div>
               ))}
            </div>
-        </div>
+        </Link>
 
         {/* Brand Commitment Teaser */}
         <div className="flex flex-col justify-center">
@@ -419,6 +446,7 @@ function AppContent() {
         <Route path="/admin/orders" element={<AdminOrders />} />
         <Route path="/admin/customers" element={<AdminCustomers />} />
         <Route path="/admin/settings" element={<AdminSettings />} />
+        <Route path="/admin/gallery" element={<AdminGallery />} />
       </Routes>
 
       <Footer />
