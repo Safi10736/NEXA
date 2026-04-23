@@ -187,7 +187,11 @@ export default function AuthPage() {
       if (error) throw error;
     } catch (error: any) {
       console.error(error);
-      setAuthError(error.message);
+      if (error.message?.includes('provider is not enabled')) {
+        setAuthError(lang === 'BN' ? 'ফেসবুক লগইন এই প্রোজেক্টে এখনো চালু করা হয়নি। দয়া করে Supabase ড্যাশবোর্ড থেকে এটি Enable করুন।' : 'Facebook login is not enabled in this project. Please enable it from the Supabase dashboard.');
+      } else {
+        setAuthError(error.message);
+      }
     } finally {
       setIsAuthenticating(false);
     }

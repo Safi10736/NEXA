@@ -18,6 +18,7 @@ import AdminDashboard from './pages/admin/Dashboard';
 import AdminInventory from './pages/admin/Inventory';
 import AdminOrders from './pages/admin/Orders';
 import AdminCustomers from './pages/admin/Customers';
+import AdminSettings from './pages/admin/Settings';
 import { Star, MessageCircle, Instagram, Twitter, Facebook, ArrowRight, User as UserIcon, ShieldCheck, BarChart3, Linkedin, Youtube, Plus, Minus } from 'lucide-react';
 import { motion } from 'motion/react';
 import { cn } from './lib/utils';
@@ -105,12 +106,12 @@ function SecondaryTeasers() {
            <span className="text-[10px] font-bold tracking-[0.4em] uppercase text-brand-muted mb-8 block">Inspiration & Gallery</span>
            <div className="grid grid-cols-3 gap-3">
               {[
-                'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&q=80&w=400',
-                'https://images.unsplash.com/photo-1610631880197-484c399c922c?auto=format&fit=crop&q=80&w=400',
-                'https://images.unsplash.com/photo-1544787210-22c66d137f6d?auto=format&fit=crop&q=80&w=400',
-                'https://images.unsplash.com/photo-1574672280600-4accfa5b6f98?auto=format&fit=crop&q=80&w=400',
-                'https://images.unsplash.com/photo-1563245372-f21724e3856d?auto=format&fit=crop&q=80&w=400',
-                'https://images.unsplash.com/photo-1616489953149-8083070be0bc?auto=format&fit=crop&q=80&w=400'
+                'https://images.unsplash.com/photo-1542728928-1413ee093f59?auto=format&fit=crop&q=80&w=400',
+                'https://images.unsplash.com/photo-1616489953149-8083070be0bc?auto=format&fit=crop&q=80&w=400',
+                'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?auto=format&fit=crop&q=80&w=400',
+                '/input_file_0.png',
+                '/input_file_1.png',
+                '/input_file_2.png'
               ].map((img, i) => (
                 <motion.div 
                   key={i} 
@@ -417,7 +418,7 @@ function AppContent() {
         <Route path="/admin/products" element={<AdminInventory />} />
         <Route path="/admin/orders" element={<AdminOrders />} />
         <Route path="/admin/customers" element={<AdminCustomers />} />
-        <Route path="/admin/settings" element={<AdminDashboard />} />
+        <Route path="/admin/settings" element={<AdminSettings />} />
       </Routes>
 
       <Footer />
