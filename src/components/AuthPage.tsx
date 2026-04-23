@@ -28,6 +28,7 @@ import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../AuthContext';
 import { formatPrice, cn } from '../lib/utils';
+import { useLanguage } from '../LanguageContext';
 
 type TabType = 'dashboard' | 'orders' | 'profile' | 'addresses' | 'settings';
 
@@ -35,6 +36,7 @@ export default function AuthPage() {
   const [isLogin, setIsLogin] = useState(true);
   const [activeTab, setActiveTab] = useState<TabType>('dashboard');
   const [orders, setOrders] = useState<any[]>([]);
+  const { t, lang } = useLanguage();
   const [loadingOrders, setLoadingOrders] = useState(false);
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -1040,12 +1042,12 @@ export default function AuthPage() {
               <span className="text-[8px] font-black text-brand-accent uppercase tracking-[0.3em]">NEXA_VOID Authentication</span>
             </div>
             <h3 className="text-4xl font-light text-neutral-900 tracking-tighter mb-3 serif italic">
-              {isLogin ? 'Protocol Activation' : 'Identity Synthesis'}
+              {isLogin ? t('protocolActivation') : t('identitySynthesis')}
             </h3>
             <p className="text-[10px] text-neutral-300 font-bold uppercase tracking-widest leading-relaxed max-w-sm">
               {isLogin 
-                ? 'Resume your curated researcher journey across the digital NEXA network.' 
-                : 'Establish your unique biometric designation and access global clearances.'}
+                ? (lang === 'BN' ? 'আপনার অ্যাকাউন্টে লগইন করে চমৎকার অভিজ্ঞতা উপভোগ করুন।' : 'Resume your curated researcher journey across the digital NEXA network.') 
+                : (lang === 'BN' ? 'নতুন অ্যাকাউন্ট তৈরি করে আমাদের প্রিমিয়াম সেবার অংশ হন।' : 'Establish your unique biometric designation and access global clearances.')}
             </p>
           </div>
 
@@ -1053,7 +1055,7 @@ export default function AuthPage() {
             <div className="space-y-4">
               {!isLogin && (
                 <div className="space-y-2.5">
-                  <label className="text-[9px] font-black text-neutral-900 uppercase tracking-widest ml-1 opacity-40">Identity Designation (Full Name)</label>
+                  <label className="text-[9px] font-black text-neutral-900 uppercase tracking-widest ml-1 opacity-40">{t('identityDesignation')}</label>
                   <div className="relative group">
                     <User className="absolute left-6 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-200 group-focus-within:text-brand-accent transition-colors" />
                     <input 
@@ -1069,7 +1071,7 @@ export default function AuthPage() {
               )}
               
               <div className="space-y-2.5">
-                <label className="text-[9px] font-black text-neutral-900 uppercase tracking-widest ml-1 opacity-40">Digital Hub (Email)</label>
+                <label className="text-[9px] font-black text-neutral-900 uppercase tracking-widest ml-1 opacity-40">{t('digitalHub')}</label>
                 <div className="relative group">
                   <Mail className="absolute left-6 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-200 group-focus-within:text-brand-accent transition-colors" />
                   <input 
@@ -1084,7 +1086,7 @@ export default function AuthPage() {
               </div>
 
               <div className="space-y-2.5">
-                <label className="text-[9px] font-black text-neutral-900 uppercase tracking-widest ml-1 opacity-40">Clearance Key (Password)</label>
+                <label className="text-[9px] font-black text-neutral-900 uppercase tracking-widest ml-1 opacity-40">{t('clearanceKey')}</label>
                 <div className="relative group">
                   <Lock className="absolute left-6 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-200 group-focus-within:text-brand-accent transition-colors" />
                   <input 
@@ -1113,7 +1115,7 @@ export default function AuthPage() {
                 className="group relative w-full py-6 bg-neutral-900 text-white font-bold uppercase text-[10px] tracking-[.4em] flex items-center justify-center gap-4 hover:bg-brand-accent transition-all duration-500 shadow-2xl rounded-2xl disabled:opacity-50 overflow-hidden"
               >
                 <div className="absolute inset-0 bg-white/10 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 skew-x-12"></div>
-                {isAuthenticating ? 'SYNCHRONIZING...' : (isLogin ? 'ACTIVATE PROTOCOL' : 'SYNTHESIZE IDENTITY')} 
+                {isAuthenticating ? (lang === 'BN' ? 'যাচাই হচ্ছে...' : 'SYNCHRONIZING...') : (isLogin ? t('activateProtocol') : t('synthesizeIdentity'))} 
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-2 transition-transform" />
               </button>
             </div>
@@ -1131,7 +1133,7 @@ export default function AuthPage() {
               className="w-full py-5 border-2 border-neutral-50 rounded-2xl flex items-center justify-center gap-4 text-[10px] font-bold uppercase tracking-widest text-neutral-900 hover:bg-neutral-50 transition-all duration-300 disabled:opacity-50"
             >
               <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" className="w-5 h-5 opacity-80" alt="Google" />
-              {isAuthenticating ? 'SYNCING_NODES...' : 'Sync via Google Network'}
+              {isAuthenticating ? (lang === 'BN' ? 'যাচাই হচ্ছে...' : 'SYNCING_NODES...') : t('syncGoogle')}
             </button>
           </form>
 
@@ -1141,8 +1143,8 @@ export default function AuthPage() {
               className="text-[10px] font-bold tracking-[0.2em] uppercase text-neutral-400 hover:text-brand-accent transition-colors"
             >
               {isLogin 
-                ? "New Researcher? Initialize Identity Synthesis" 
-                : "Existing Identity? Access Protocol Activation"}
+                ? t('newResearcher') 
+                : t('existingIdentity')}
             </button>
           </div>
 

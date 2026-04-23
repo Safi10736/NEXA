@@ -7,11 +7,13 @@ import { Star, Truck, ShieldCheck, RefreshCw, ShoppingBag, Plus, Minus, ArrowRig
 import { motion, AnimatePresence } from 'motion/react';
 import ProductCard from './ProductCard';
 import { useCart } from '../CartContext';
+import { useLanguage } from '../LanguageContext';
 
 export default function ProductPage() {
   const { slug } = useParams();
   const navigate = useNavigate();
   const { products, loading: productsLoading } = useProducts();
+  const { t, lang } = useLanguage();
   
   // Ultra-robust matching: ignore spaces, hyphens and case for maximum compatibility
   const product = products.find(p => {
@@ -95,7 +97,7 @@ export default function ProductPage() {
                 {/* Visual Label for Studio Mode */}
                 <div className="absolute top-6 right-6 px-4 py-2 bg-white/80 backdrop-blur-md border border-neutral-100 rounded-full flex items-center gap-2 shadow-sm">
                   <div className="w-2 h-2 rounded-full bg-brand-accent animate-pulse" />
-                  <span className="text-[8px] font-bold uppercase tracking-[0.2em] text-neutral-900">Live Preview</span>
+                  <span className="text-[8px] font-bold uppercase tracking-[0.2em] text-neutral-900">{lang === 'BN' ? 'লাইভ প্রিভিউ' : 'Live Preview'}</span>
                 </div>
 
                 {/* Draggable handle for main image */}
@@ -124,7 +126,7 @@ export default function ProductPage() {
                   whileHover={{ scale: 1.05 }}
                 >
                   <ShoppingBag className="w-5 h-5 mb-1" />
-                  <span className="text-[6px] font-bold uppercase tracking-widest opacity-60 group-hover/drag:opacity-100 italic serif">Drag</span>
+                  <span className="text-[6px] font-bold uppercase tracking-widest opacity-60 group-hover/drag:opacity-100 italic serif">{lang === 'BN' ? 'টানুন' : 'Drag'}</span>
                 </motion.div>
 
                 {/* Badges Overlay */}
@@ -140,9 +142,9 @@ export default function ProductPage() {
             
             {/* Design Note */}
             <div className="bg-neutral-50 border border-neutral-100 p-8 rounded-3xl">
-              <p className="text-[10px] text-neutral-300 font-bold uppercase tracking-[0.3em] mb-3">Artisan Note</p>
+              <p className="text-[10px] text-neutral-300 font-bold uppercase tracking-[0.3em] mb-3">{t('artisanNote')}</p>
               <p className="text-sm font-light text-neutral-500 italic leading-relaxed">
-                "Every artifact is unique. Minor variations in texture and hue are a testament to the handcrafted nature of the {product.name}."
+                {t('artisanNoteDesc')}
               </p>
             </div>
           </div>
@@ -158,7 +160,7 @@ export default function ProductPage() {
                   activeTab === 'details' ? "text-neutral-900" : "text-neutral-300 hover:text-neutral-500"
                 )}
               >
-                Information
+                {t('information')}
                 {activeTab === 'details' && <motion.div layoutId="tab-underline" className="absolute -bottom-[17px] left-0 right-0 h-0.5 bg-brand-accent" />}
               </button>
               <button 
@@ -168,7 +170,7 @@ export default function ProductPage() {
                   activeTab === 'personalize' ? "text-neutral-900" : "text-neutral-300 hover:text-neutral-500"
                 )}
               >
-                Personalization Studio
+                {t('personalizationStudio')}
                 {activeTab === 'personalize' && <motion.div layoutId="tab-underline" className="absolute -bottom-[17px] left-0 right-0 h-0.5 bg-brand-accent" />}
                 <div className="w-1.5 h-1.5 rounded-full bg-brand-accent" />
               </button>
@@ -190,18 +192,18 @@ export default function ProductPage() {
                       <div className="flex text-brand-accent">
                         {[...Array(5)].map((_, i) => <Star key={i} className="w-3.5 h-3.5 fill-current" />)}
                       </div>
-                      <span className="text-[10px] text-neutral-400 font-bold uppercase tracking-widest leading-none">(24 Premium Reviews)</span>
+                      <span className="text-[10px] text-neutral-400 font-bold uppercase tracking-widest leading-none">({lang === 'BN' ? '১২৮ টি প্রিমিয়াম রিভিউ' : '128 Premium Reviews'})</span>
                     </div>
                   </div>
                   <p className="text-neutral-600 font-light leading-relaxed mb-10 text-sm">{product.description}</p>
                   
                   <div className="bg-brand-surface p-8 rounded-2xl border border-neutral-100 mb-10">
-                    <h4 className="text-[10px] font-bold uppercase tracking-[.25em] text-neutral-300 mb-5">Technical Specifications</h4>
+                    <h4 className="text-[10px] font-bold uppercase tracking-[.25em] text-neutral-300 mb-5">{t('technicalSpecs')}</h4>
                     <div className="grid grid-cols-2 gap-4 text-[10px] font-bold uppercase tracking-widest text-neutral-500">
-                      <div>Material: Premium Artisan</div>
-                      <div>Weight: 2.5kg</div>
-                      <div>Origin: Handcrafted</div>
-                      <div>Warranty: 2 Years</div>
+                      <div>{lang === 'BN' ? 'উপাদান: প্রিমিয়াম কারিগর' : 'Material: Premium Artisan'}</div>
+                      <div>{lang === 'BN' ? 'ওজন: ২.৫ কেজি' : 'Weight: 2.5kg'}</div>
+                      <div>{lang === 'BN' ? 'উৎস: হস্তশিল্প' : 'Origin: Handcrafted'}</div>
+                      <div>{lang === 'BN' ? 'ওয়ারেন্টি: ২ বছর' : 'Warranty: 2 Years'}</div>
                     </div>
                   </div>
                 </motion.div>
@@ -214,15 +216,15 @@ export default function ProductPage() {
                   transition={{ duration: 0.3 }}
                 >
                   <div className="mb-10">
-                    <h1 className="text-3xl font-light text-neutral-900 tracking-tighter serif italic mb-2">Configure Your Piece</h1>
-                    <p className="text-[10px] text-neutral-300 font-bold uppercase tracking-widest">Select your desired finishes and options below.</p>
+                    <h1 className="text-3xl font-light text-neutral-900 tracking-tighter serif italic mb-2">{t('configurePiece')}</h1>
+                    <p className="text-[10px] text-neutral-300 font-bold uppercase tracking-widest">{lang === 'BN' ? 'নিচে থেকে আপনার পছন্দের ডিজাইন এবং অপশন সিলেক্ট করুন।' : 'Select your desired finishes and options below.'}</p>
                   </div>
 
                   {/* Variants */}
                   <div className="space-y-10 mb-12">
                     {product.variants?.map((v) => (
                       <div key={v.type}>
-                        <h4 className="text-[10px] font-bold uppercase tracking-[.25em] text-neutral-300 mb-5">{v.type} Selection</h4>
+                        <h4 className="text-[10px] font-bold uppercase tracking-[.25em] text-neutral-300 mb-5">{v.type} {lang === 'BN' ? 'সিলেকশন' : 'Selection'}</h4>
                         <div className="grid grid-cols-2 gap-4">
                           {v.options.map((opt) => (
                             <button
@@ -243,7 +245,7 @@ export default function ProductPage() {
                                 "text-[8px] tracking-[.2em]",
                                 selectedVariant === opt.id ? "text-brand-accent" : "text-neutral-400"
                               )}>
-                                {opt.priceModifier === 0 ? "Included" : `+${formatPrice(opt.priceModifier)}`}
+                                {opt.priceModifier === 0 ? (lang === 'BN' ? 'অন্তর্ভুক্ত' : 'Included') : `+${formatPrice(opt.priceModifier)}`}
                               </span>
                             </button>
                           ))}
@@ -253,7 +255,7 @@ export default function ProductPage() {
                     
                     {!product.variants && (
                         <div className="p-10 border border-dashed border-neutral-100 rounded-3xl text-center">
-                            <p className="text-[10px] font-bold uppercase tracking-widest text-neutral-300">No additional variants available for this masterpiece.</p>
+                            <p className="text-[10px] font-bold uppercase tracking-widest text-neutral-300">{lang === 'BN' ? 'এই পণ্যের জন্য কোন অতিরিক্ত ভেরিয়েন্ট নেই।' : 'No additional variants available for this masterpiece.'}</p>
                         </div>
                     )}
                   </div>
@@ -275,7 +277,7 @@ export default function ProductPage() {
                     className="flex-1 py-5 border border-neutral-900 text-neutral-900 font-bold uppercase text-[10px] tracking-[.3em] rounded-full flex items-center justify-center gap-3 hover:bg-neutral-900 hover:text-white transition-all duration-500 shadow-sm group"
                   >
                     <ShoppingBag className="w-4 h-4 transition-transform group-hover:-translate-y-1" />
-                    Add to Bag
+                    {t('addToBag')}
                   </button>
                   <button 
                     onClick={(e) => {
@@ -285,16 +287,16 @@ export default function ProductPage() {
                     className="flex-1 py-5 bg-brand-accent text-white font-bold uppercase text-[10px] tracking-[.3em] rounded-full flex items-center justify-center gap-3 hover:bg-neutral-900 transition-all duration-500 shadow-xl shadow-brand-accent/20 group"
                   >
                     <Zap className="w-4 h-4 fill-current transition-transform group-hover:scale-125" />
-                    Buy Now
+                    {t('buyNow')}
                   </button>
                 </div>
                 <div className="flex justify-between items-center px-4">
                   <div className="flex items-center gap-4 group/item">
                     <Truck className="w-4 h-4 text-brand-accent" />
-                    <span className="text-[8px] font-bold uppercase tracking-widest text-neutral-300">White Glove Delivery Available</span>
+                    <span className="text-[8px] font-bold uppercase tracking-widest text-neutral-300">{lang === 'BN' ? 'হোম ডেলিভারি পাওয়া যাবে' : 'White Glove Delivery Available'}</span>
                   </div>
                   <p className="text-[9px] font-bold uppercase tracking-[.4em] text-neutral-400">
-                    {product.stock > 0 ? `Stock: ${product.stock} units` : 'Exclusive Pre-order'}
+                    {product.stock > 0 ? `${t('stock')}: ${product.stock} ${t('units')}` : t('preOrder')}
                   </p>
                 </div>
               </div>
@@ -307,8 +309,8 @@ export default function ProductPage() {
           <section className="mb-24 px-6 pt-12 border-t border-neutral-100">
             <div className="flex justify-between items-end mb-12">
               <div>
-                <span className="text-[10px] font-bold tracking-[.43em] uppercase text-brand-accent mb-4 block">Handselected Additions</span>
-                <h2 className="text-4xl font-light text-neutral-900 tracking-tighter serif italic">Frequently Bought Together</h2>
+                <span className="text-[10px] font-bold tracking-[.43em] uppercase text-brand-accent mb-4 block">{t('handselectedAdditions')}</span>
+                <h2 className="text-4xl font-light text-neutral-900 tracking-tighter serif italic">{t('frequentlyBoughtTogether')}</h2>
               </div>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-12">
@@ -323,14 +325,14 @@ export default function ProductPage() {
         <section className="mb-24 px-6 pt-12 border-t border-neutral-100">
            <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-16 gap-8">
               <div>
-                <span className="text-[10px] font-bold tracking-[.43em] uppercase text-brand-accent mb-4 block">Customer Voices</span>
-                <h2 className="text-4xl md:text-5xl font-light text-neutral-900 tracking-tighter serif italic text-balance">The Nexa Experience</h2>
+                <span className="text-[10px] font-bold tracking-[.43em] uppercase text-brand-accent mb-4 block">{t('customerVoices')}</span>
+                <h2 className="text-4xl md:text-5xl font-light text-neutral-900 tracking-tighter serif italic text-balance">{t('nexaExperience')}</h2>
               </div>
               <div className="flex flex-col items-end gap-2">
                 <div className="flex text-brand-accent gap-1">
                   {[...Array(5)].map((_, i) => <Star key={i} className="w-5 h-5 fill-current" />)}
                 </div>
-                <p className="text-[10px] font-bold uppercase tracking-widest text-neutral-400">4.9 Average Based on 128 Reviews</p>
+                <p className="text-[10px] font-bold uppercase tracking-widest text-neutral-400">4.9 {lang === 'BN' ? 'গড় রেটিং ১২৮ টি রিভিউয়ের ভিত্তিতে' : 'Average Based on 128 Reviews'}</p>
               </div>
            </div>
 
@@ -364,7 +366,7 @@ export default function ProductPage() {
                   </p>
                   <div className="mt-8 pt-6 border-t border-neutral-50 flex items-center gap-2">
                     <div className="w-1.5 h-1.5 rounded-full bg-green-500" />
-                    <span className="text-[8px] font-bold uppercase tracking-[0.2em] text-neutral-300">Verified Collector</span>
+                    <span className="text-[8px] font-bold uppercase tracking-[0.2em] text-neutral-300">{t('verifiedCollector')}</span>
                   </div>
                 </motion.div>
               ))}
@@ -374,9 +376,9 @@ export default function ProductPage() {
                 <div className="w-12 h-12 rounded-full bg-white flex items-center justify-center mb-6 group-hover:bg-brand-accent group-hover:text-white transition-colors shadow-sm">
                   <Star className="w-5 h-5" />
                 </div>
-                <h4 className="text-[11px] font-bold uppercase tracking-widest text-neutral-900 mb-2">Share Your Experience</h4>
-                <p className="text-[9px] font-bold text-neutral-400 uppercase tracking-widest mb-6">Join our verified collectors community</p>
-                <button className="text-[10px] font-bold uppercase tracking-[0.3em] text-brand-accent border-b border-brand-accent/20 pb-1 group-hover:border-brand-accent transition-all">Write Review</button>
+                <h4 className="text-[11px] font-bold uppercase tracking-widest text-neutral-900 mb-2">{t('shareExperience')}</h4>
+                <p className="text-[9px] font-bold text-neutral-400 uppercase tracking-widest mb-6">{lang === 'BN' ? 'আমাদের ভেরিফাইড কালেক্টর কমিউনিটিতে যোগ দিন' : 'Join our verified collectors community'}</p>
+                <button className="text-[10px] font-bold uppercase tracking-[0.3em] text-brand-accent border-b border-brand-accent/20 pb-1 group-hover:border-brand-accent transition-all">{t('writeReview')}</button>
               </div>
            </div>
         </section>

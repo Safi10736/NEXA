@@ -7,9 +7,11 @@ import { motion } from 'motion/react';
 
 import { useCart } from '../CartContext';
 import { useWishlist } from '../WishlistContext';
+import { useLanguage } from '../LanguageContext';
 
 export const ProductCard: React.FC<{ product: Product }> = ({ product }) => {
   const navigate = useNavigate();
+  const { t, lang } = useLanguage();
   const { addToCart, setIsDraggingProduct } = useCart();
   const { toggleWishlist, isInWishlist } = useWishlist();
 
@@ -115,7 +117,7 @@ export const ProductCard: React.FC<{ product: Product }> = ({ product }) => {
                 <Link 
                   to={`/product/${product.slug}`}
                   className="w-14 h-14 bg-white rounded-full flex items-center justify-center text-neutral-900 hover:bg-brand-accent hover:text-white transition-all shadow-2xl active:scale-95"
-                  title="View Details"
+                  title={lang === 'BN' ? 'বিস্তারিত দেখুন' : 'View Details'}
                 >
                   <Eye className="w-6 h-6" />
                 </Link>
@@ -131,7 +133,7 @@ export const ProductCard: React.FC<{ product: Product }> = ({ product }) => {
                       ? "bg-red-500 text-white" 
                       : "bg-white text-neutral-900 hover:bg-red-50 hover:text-red-500"
                   )}
-                  title={isFavorited ? "Remove from Wishlist" : "Add to Wishlist"}
+                  title={isFavorited ? (lang === 'BN' ? 'উইশলিস্ট থেকে সরান' : 'Remove from Wishlist') : (lang === 'BN' ? 'উইশলিস্টে যোগ করুন' : 'Add to Wishlist')}
                 >
                   <Heart className={cn("w-6 h-6", isFavorited && "fill-current")} />
                 </button>
@@ -146,7 +148,7 @@ export const ProductCard: React.FC<{ product: Product }> = ({ product }) => {
                   className="px-8 h-14 bg-brand-accent rounded-full flex items-center gap-3 text-white hover:bg-neutral-900 transition-all shadow-2xl text-[10px] font-bold uppercase tracking-widest active:scale-95 group/btn"
                 >
                   <Zap className="w-5 h-5 fill-current" />
-                  Buy Now
+                  {t('buyNow')}
                 </button>
               </motion.div>
             </motion.div>

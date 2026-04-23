@@ -7,6 +7,7 @@ import { useAuth } from '../AuthContext';
 import { useCart } from '../CartContext';
 import { useProducts } from '../ProductContext';
 import { formatPrice, cn } from '../lib/utils';
+import { useLanguage } from '../LanguageContext';
 
 export default function CheckoutPage() {
   const navigate = useNavigate();
@@ -14,6 +15,7 @@ export default function CheckoutPage() {
   const { products } = useProducts();
   const { cart, cartTotal, clearCart, setIsCartOpen } = useCart();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { t, lang } = useLanguage();
   
   // Close cart on mount
   useEffect(() => {
@@ -129,14 +131,14 @@ export default function CheckoutPage() {
         <div className="flex justify-between items-end mb-16 border-b border-neutral-100 pb-12">
           <div>
             <span className="text-[10px] font-bold uppercase tracking-[0.4em] text-brand-accent mb-4 block">One-Click Checkout</span>
-            <h1 className="text-5xl font-light text-neutral-900 tracking-tighter serif italic text-balance">Finalize Your <span className="text-brand-accent underline underline-offset-8">Artifact</span></h1>
+            <h1 className="text-5xl font-light text-neutral-900 tracking-tighter serif italic text-balance">{t('finalizeArtifact')}</h1>
           </div>
           <button 
             onClick={() => navigate(-1)}
             className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-neutral-400 hover:text-neutral-900 transition-colors mb-2"
           >
             <ArrowLeft className="w-4 h-4" />
-            Return to Store
+            {t('returnToStore')}
           </button>
         </div>
 
@@ -150,12 +152,12 @@ export default function CheckoutPage() {
                   <div className="w-12 h-12 bg-brand-accent/10 rounded-2xl flex items-center justify-center text-brand-accent">
                     <Truck className="w-6 h-6" />
                   </div>
-                  <h2 className="text-2xl font-light tracking-tighter serif italic">Fast Shipping Details</h2>
+                  <h2 className="text-2xl font-light tracking-tighter serif italic">{t('shippingDetailsHeader')}</h2>
                </div>
 
                <div className="grid md:grid-cols-2 gap-8 mb-8">
                   <div className="space-y-2">
-                    <label className="text-[10px] font-bold uppercase tracking-widest text-neutral-400 ml-4">Recipient Name</label>
+                    <label className="text-[10px] font-bold uppercase tracking-widest text-neutral-400 ml-4">{t('recipientName')}</label>
                     <div className="relative">
                       <User className="absolute left-6 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-300" />
                       <input 
@@ -168,7 +170,7 @@ export default function CheckoutPage() {
                     </div>
                   </div>
                   <div className="space-y-2">
-                    <label className="text-[10px] font-bold uppercase tracking-widest text-neutral-400 ml-4">Contact Phone</label>
+                    <label className="text-[10px] font-bold uppercase tracking-widest text-neutral-400 ml-4">{t('contactPhone')}</label>
                     <div className="relative">
                       <Phone className="absolute left-6 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-300" />
                       <input 
@@ -183,7 +185,7 @@ export default function CheckoutPage() {
                </div>
 
                <div className="space-y-2 mb-8">
-                  <label className="text-[10px] font-bold uppercase tracking-widest text-neutral-400 ml-4">Full Residence Address</label>
+                  <label className="text-[10px] font-bold uppercase tracking-widest text-neutral-400 ml-4">{t('residenceAddress')}</label>
                   <div className="relative">
                     <MapPin className="absolute left-6 top-6 w-4 h-4 text-neutral-300" />
                     <textarea 
@@ -198,23 +200,23 @@ export default function CheckoutPage() {
 
                <div className="grid grid-cols-2 gap-8">
                   <div className="space-y-2">
-                    <label className="text-[10px] font-bold uppercase tracking-widest text-neutral-400 ml-4">City / Zone</label>
+                    <label className="text-[10px] font-bold uppercase tracking-widest text-neutral-400 ml-4">{t('cityZone')}</label>
                     <select 
                       name="city"
                       value={formData.city}
                       onChange={(e: any) => handleInputChange(e)}
                       className="w-full bg-neutral-50/50 border border-neutral-100 rounded-3xl px-8 py-5 focus:ring-4 focus:ring-brand-accent/5 outline-none transition-all text-sm font-medium appearance-none"
                     >
-                      <option value="">Select City</option>
-                      <option value="Dhaka">Dhaka (Inner)</option>
-                      <option value="Dhaka Outer">Dhaka (Outer)</option>
-                      <option value="Chittagong">Chittagong</option>
-                      <option value="Sylhet">Sylhet</option>
-                      <option value="Rajshahi">Rajshahi</option>
+                      <option value="">{t('selectCity')}</option>
+                      <option value="Dhaka">{lang === 'BN' ? 'ঢাকা (ভিতরে)' : 'Dhaka (Inner)'}</option>
+                      <option value="Dhaka Outer">{lang === 'BN' ? 'ঢাকা (বাইরে)' : 'Dhaka (Outer)'}</option>
+                      <option value="Chittagong">{lang === 'BN' ? 'চট্টগ্রাম' : 'Chittagong'}</option>
+                      <option value="Sylhet">{lang === 'BN' ? 'সিলেট' : 'Sylhet'}</option>
+                      <option value="Rajshahi">{lang === 'BN' ? 'রাজশাহী' : 'Rajshahi'}</option>
                     </select>
                   </div>
                   <div className="space-y-2">
-                    <label className="text-[10px] font-bold uppercase tracking-widest text-neutral-400 ml-4">District Code</label>
+                    <label className="text-[10px] font-bold uppercase tracking-widest text-neutral-400 ml-4">{t('districtCode')}</label>
                     <input 
                       name="zip"
                       value={formData.zip}
@@ -232,16 +234,16 @@ export default function CheckoutPage() {
                   <div className="w-12 h-12 bg-brand-accent/10 rounded-2xl flex items-center justify-center text-brand-accent">
                     <ShieldCheck className="w-6 h-6" />
                   </div>
-                  <h2 className="text-2xl font-light tracking-tighter serif italic text-balance">Secured Payment Architect</h2>
+                  <h2 className="text-2xl font-light tracking-tighter serif italic text-balance">{t('paymentArchitect')}</h2>
                </div>
 
                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 mb-10">
                   {[
-                    { id: 'COD', label: 'Cash on Delivery', sub: 'Traditional', icon: Banknote, color: 'neutral-900' },
-                    { id: 'bKash', label: 'bKash', sub: 'Mobile Fund', icon: Smartphone, color: '[#D12053]' },
-                    { id: 'Nagad', label: 'Nagad', sub: 'Digital Wallet', icon: Wallet, color: '[#F7941D]' },
-                    { id: 'Rocket', label: 'Rocket', sub: 'Bank Deposit', icon: Smartphone, color: '[#8C3494]' },
-                    { id: 'Stripe', label: 'Card / International', sub: 'Flash Checkout', icon: CreditCard, color: 'blue-500' }
+                    { id: 'COD', label: t('cashOnDelivery'), sub: lang === 'BN' ? 'সনাতন' : 'Traditional', icon: Banknote, color: 'neutral-900' },
+                    { id: 'bKash', label: 'bKash', sub: lang === 'BN' ? 'মোবাইল ফান্ড' : 'Mobile Fund', icon: Smartphone, color: '[#D12053]' },
+                    { id: 'Nagad', label: 'Nagad', sub: lang === 'BN' ? 'ডিজিটাল ওয়ালেট' : 'Digital Wallet', icon: Wallet, color: '[#F7941D]' },
+                    { id: 'Rocket', label: 'Rocket', sub: lang === 'BN' ? 'ব্যাংক ডিপোজিট' : 'Bank Deposit', icon: Smartphone, color: '[#8C3494]' },
+                    { id: 'Stripe', label: lang === 'BN' ? 'কার্ড / ইন্টারন্যাশনাল' : 'Card / International', sub: lang === 'BN' ? 'ফ্ল্যাশ চেকআউট' : 'Flash Checkout', icon: CreditCard, color: 'blue-500' }
                   ].map((p) => (
                     <button 
                       key={p.id}
@@ -274,16 +276,16 @@ export default function CheckoutPage() {
                     <div className="flex gap-4 items-start mb-6">
                       <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center text-brand-accent shadow-sm">!</div>
                       <div>
-                        <p className="text-[10px] font-bold uppercase tracking-widest text-neutral-900 mb-2">Instructions for {formData.paymentMethod}</p>
+                        <p className="text-[10px] font-bold uppercase tracking-widest text-neutral-900 mb-2">{lang === 'BN' ? `${formData.paymentMethod} এর নিয়মাবলী` : `Instructions for ${formData.paymentMethod}`}</p>
                         <p className="text-[9px] text-neutral-500 font-medium tracking-tight uppercase leading-relaxed">
-                          1. Dial *247# or open {formData.paymentMethod} App<br/>
-                          2. Send Money (Personal) amount: <strong>{formatPrice(cartTotal)}</strong><br/>
-                          3. To: <span className="text-neutral-900 font-bold tracking-widest">01940698304</span>
+                          1. {lang === 'BN' ? '*২৪৭# ডায়াল করুন অথবা অ্যাপটি খুলুন' : `Dial *247# or open ${formData.paymentMethod} App`}<br/>
+                          2. {lang === 'BN' ? 'Send Money করুন :' : 'Send Money (Personal) amount:'} <strong>{formatPrice(cartTotal)}</strong><br/>
+                          3. {lang === 'BN' ? 'প্রাপক মোবাইল নম্বর :' : 'To:'} <span className="text-neutral-900 font-bold tracking-widest">01940698304</span>
                         </p>
                       </div>
                     </div>
                     <div className="space-y-4">
-                      <label className="text-[10px] font-bold uppercase tracking-widest text-neutral-400 ml-4">Enter Transaction ID (TrxID)</label>
+                      <label className="text-[10px] font-bold uppercase tracking-widest text-neutral-400 ml-4">{lang === 'BN' ? 'Transaction ID (TrxID) দিন' : 'Enter Transaction ID (TrxID)'}</label>
                       <input 
                         name="txnId"
                         value={formData.txnId}
@@ -315,7 +317,7 @@ export default function CheckoutPage() {
               <section className="bg-neutral-900 text-white p-12 rounded-[3.5rem] shadow-2xl relative overflow-hidden">
                 <div className="absolute top-0 right-0 w-32 h-32 bg-brand-accent/10 rounded-full translate-x-1/2 -translate-y-1/2 blur-2xl" />
                 
-                <h3 className="text-[10px] font-bold uppercase tracking-[.4em] text-brand-accent mb-10 border-b border-white/5 pb-6">Artifact Registry</h3>
+                <h3 className="text-[10px] font-bold uppercase tracking-[.4em] text-brand-accent mb-10 border-b border-white/5 pb-6">{t('artifactRegistry')}</h3>
                 
                 <div className="space-y-8 mb-12 max-h-60 overflow-y-auto custom-scrollbar">
                   {cart.map((item) => {
@@ -341,14 +343,14 @@ export default function CheckoutPage() {
                 <div className="space-y-4 pt-10 border-t border-white/5">
                   <div className="flex justify-between text-[10px] uppercase tracking-widest text-white/40 font-bold">
                     <span>Vat / Tax</span>
-                    <span className="text-white/80">Included</span>
+                    <span className="text-white/80">{t('included')}</span>
                   </div>
                   <div className="flex justify-between text-[10px] uppercase tracking-widest text-white/40 font-bold">
-                    <span>Logistics</span>
-                    <span className="text-white/80">Complimentary</span>
+                    <span>{t('logistics')}</span>
+                    <span className="text-white/80">{t('complimentary')}</span>
                   </div>
                   <div className="flex justify-between items-end pt-6">
-                    <span className="text-[11px] font-bold uppercase tracking-[0.4em] text-white/40">Total</span>
+                    <span className="text-[11px] font-bold uppercase tracking-[0.4em] text-white/40">{t('totalText')}</span>
                     <span className="text-4xl font-light tracking-tighter serif italic text-brand-accent">{formatPrice(cartTotal)}</span>
                   </div>
                 </div>
@@ -385,7 +387,7 @@ export default function CheckoutPage() {
                        ) : (
                           <>
                              <Zap className="w-4 h-4 fill-brand-accent text-brand-accent" />
-                             {isHolding ? "Validating..." : "Hold to Place Order"}
+                             {isHolding ? t('validating') : t('holdToPlaceOrder')}
                              {holdProgress > 0 && <span className="text-[8px] text-brand-accent ml-2">{Math.round(holdProgress)}%</span>}
                           </>
                        )}

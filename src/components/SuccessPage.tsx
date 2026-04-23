@@ -2,9 +2,11 @@ import React from 'react';
 import { motion } from 'motion/react';
 import { Check, ArrowRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useLanguage } from '../LanguageContext';
 
 export default function SuccessPage() {
   const navigate = useNavigate();
+  const { t } = useLanguage();
 
   return (
     <div className="min-h-screen bg-brand-bg flex items-center justify-center px-6">
@@ -24,7 +26,7 @@ export default function SuccessPage() {
            transition={{ delay: 0.5 }}
         >
           <h1 className="text-3xl font-light text-neutral-900 tracking-tighter mb-4">
-            Thank you for <span className="serif italic">Purchase</span>
+            {t('thankYouPurchase')}
           </h1>
           <div className="flex gap-2 justify-center mb-10">
              {[...Array(4)].map((_, i) => (
@@ -32,7 +34,7 @@ export default function SuccessPage() {
              ))}
           </div>
           <p className="text-sm text-neutral-500 font-light leading-relaxed mb-12">
-            Your order has been received and is being processed for shipping. We've sent a confirmation email to your inbox.
+            {t('orderReceived')}
           </p>
 
           <div className="flex flex-col gap-4 w-full">
@@ -40,14 +42,14 @@ export default function SuccessPage() {
               onClick={() => navigate('/')}
               className="w-full py-5 bg-neutral-900 text-white rounded-full font-bold uppercase text-[10px] tracking-[0.3em] flex items-center justify-center gap-3 hover:bg-brand-accent transition-all duration-500 group shadow-xl"
             >
-              Continue Shopping
+              {t('continueShopping')}
               <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-2" />
             </button>
             <button 
               onClick={() => navigate('/track')}
               className="w-full py-5 bg-white border border-neutral-100 text-neutral-900 rounded-full font-bold uppercase text-[10px] tracking-[0.3em] flex items-center justify-center gap-3 hover:border-brand-accent transition-all duration-500 group"
             >
-              Track My Order
+              {t('trackMyOrder')}
             </button>
           </div>
         </motion.div>

@@ -64,18 +64,23 @@ function FeaturedCollections() {
 
 function BestsellingSection() {
   const { products } = useProducts();
+  const { t, lang } = useLanguage();
   return (
-    <section className="py-24 px-6 bg-brand-bg relative overflow-hidden">
+    <section id="bestsellers" className="py-24 px-6 bg-brand-bg relative overflow-hidden">
       <div className="max-w-7xl mx-auto">
         <div className="flex justify-between items-end mb-12">
           <div>
             <span className="text-[10px] font-bold tracking-[0.43em] uppercase text-brand-muted mb-4 block">Eco Essentials Planet-Friendly</span>
             <h2 className="text-4xl md:text-5xl font-light text-neutral-900 tracking-tighter">
-               Bestselling <span className="serif italic text-brand-accent">Products</span>
+               {lang === 'BN' ? (
+                 <>সেরা <span className="serif italic text-brand-accent">পণ্য</span></>
+               ) : (
+                 <>Bestselling <span className="serif italic text-brand-accent">Products</span></>
+               )}
             </h2>
           </div>
-          <Link to="/" className="flex items-center gap-2 text-[9px] font-bold uppercase tracking-[0.2em] text-neutral-900 border-b border-neutral-200 pb-1 hover:border-brand-accent transition-all group">
-            More products
+          <Link to="/shop" className="flex items-center gap-2 text-[9px] font-bold uppercase tracking-[0.2em] text-neutral-900 border-b border-neutral-200 pb-1 hover:border-brand-accent transition-all group">
+            {lang === 'BN' ? 'আরও পণ্য' : 'More products'}
             <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
           </Link>
         </div>
@@ -91,6 +96,7 @@ function BestsellingSection() {
 }
 
 function SecondaryTeasers() {
+  const { t, lang } = useLanguage();
   return (
     <section className="py-24 px-6 bg-brand-surface border-y border-neutral-100">
       <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-24">
@@ -122,17 +128,17 @@ function SecondaryTeasers() {
         {/* Brand Commitment Teaser */}
         <div className="flex flex-col justify-center">
            <h3 className="text-4xl font-light text-neutral-900 tracking-tighter mb-8 serif italic leading-tight">
-             Thoughtful, Planet-Prioritizing Ideas and Inspiration Gallery
+             {lang === 'BN' ? 'চিন্তাশীল, গ্রহ-বান্ধব আইডিয়া এবং অনুপ্রেরণা গ্যালারি' : 'Thoughtful, Planet-Prioritizing Ideas and Inspiration Gallery'}
            </h3>
            <p className="text-sm text-neutral-500 font-light leading-relaxed mb-10 max-w-sm">
-             Discover our commitment to sustainable materials, low-impact production, and ethical sourcing partnerships — all crafted to support a healthier planet and a greener lifestyle.
+             {lang === 'BN' ? 'টেকসই উপকরণ, কম-প্রভাব উৎপাদন এবং নৈতিক উৎস অংশীদারিত্বের প্রতি আমাদের প্রতিশ্রুতি আবিষ্কার করুন।' : 'Discover our commitment to sustainable materials, low-impact production, and ethical sourcing partnerships — all crafted to support a healthier planet and a greener lifestyle.'}
            </p>
            <div className="flex gap-4">
               <Link 
                 to="/about"
                 className="px-8 py-3 bg-neutral-900 text-white rounded-full text-[9px] font-bold uppercase tracking-widest hover:bg-brand-accent transition-all inline-block"
               >
-                Learn More
+                {lang === 'BN' ? 'আরও জানুন' : 'Learn More'}
               </Link>
            </div>
         </div>
@@ -181,6 +187,7 @@ function EnhancedReviewSection() {
 
 function Footer() {
   const [openSection, setOpenSection] = useState<string | null>(null);
+  const { t, lang } = useLanguage();
 
   const toggleSection = (id: string) => {
     setOpenSection(openSection === id ? null : id);
@@ -189,53 +196,52 @@ function Footer() {
   const sections = [
     {
       id: 'help',
-      title: 'Help',
+      title: t('help'),
       links: [
-        { label: 'Shipping Info', to: '/support#shipping' },
-        { label: 'Returns & Exchanges', to: '/support#returns' },
-        { label: 'Privacy Policy', to: '/support#privacy' },
-        { label: 'Exchange Policy', to: '/support#returns' },
-        { label: 'Terms & Conditions', to: '/support#terms' }
+        { label: t('shipping'), to: '/support#shipping' },
+        { label: t('returns'), to: '/support#returns' },
+        { label: lang === 'BN' ? 'প্রাইভেসি পলিসি' : 'Privacy Policy', to: '/support#privacy' },
+        { label: lang === 'BN' ? 'শর্তাবলী' : 'Terms & Conditions', to: '/support#terms' }
       ]
     },
     {
       id: 'about',
-      title: 'About',
+      title: t('about'),
       links: [
-        { label: 'About Us', to: '/about' },
-        { label: 'Our Story', to: '/about' },
-        { label: 'Career', to: '#' }
+        { label: lang === 'BN' ? 'আমাদের সম্পর্কে' : 'About Us', to: '/about' },
+        { label: lang === 'BN' ? 'আমাদের যাত্রা' : 'Our Story', to: '/about' },
+        { label: lang === 'BN' ? 'ক্যারিয়ার' : 'Career', to: '#' }
       ]
     },
     {
       id: 'account',
-      title: 'Account',
+      title: t('accountKey'),
       links: [
-        { label: 'Login', to: '/profile' },
-        { label: 'Register', to: '/profile' },
-        { label: 'Admin Dashboard', to: '/admin' }
+        { label: t('login'), to: '/profile' },
+        { label: lang === 'BN' ? 'নিবন্ধন' : 'Register', to: '/profile' },
+        { label: lang === 'BN' ? 'অ্যাডমিন ড্যাশবোর্ড' : 'Admin Dashboard', to: '/admin' }
       ]
     },
     {
       id: 'contact',
-      title: 'Contact',
+      title: t('contact'),
       content: (
         <div className="text-[10px] text-neutral-400 font-bold uppercase tracking-widest leading-loose text-left">
-          <p className="text-neutral-900 border-b border-neutral-100 mb-2 pb-1 inline-block">Corporate Office</p>
+          <p className="text-neutral-900 border-b border-neutral-100 mb-2 pb-1 inline-block">{t('dhakaOffice')}</p>
           <p>Nexa Luxury Atelier, Level-5</p>
           <p>Banani Crescent, Road No-12</p>
           <p>Gulshan-02, Dhaka-1212</p>
-          <p className="mt-2 text-neutral-600">Phone: +880 1234 567 890</p>
+          <p className="mt-2 text-neutral-600">{t('phone')}: +880 1234 567 890</p>
           <p className="text-neutral-400 font-medium">(10 AM - 8 PM)</p>
-          <p className="text-neutral-400 font-medium italic">(Closed on Govt. Holidays)</p>
-          <p className="mt-2 text-neutral-600">Email: concierge@nexastore.com</p>
+          <p className="text-neutral-400 font-medium italic">({lang === 'BN' ? 'সরকারি ছুটির দিনে বন্ধ' : 'Closed on Govt. Holidays'})</p>
+          <p className="mt-2 text-neutral-600">{t('email')}: concierge@nexastore.com</p>
         </div>
       )
     },
     {
        id: 'stores',
-       title: 'Store Locations',
-       links: [{ label: 'Dhaka', to: '#' }, { label: 'Chittagong', to: '#' }]
+       title: lang === 'BN' ? 'স্টোর লোকেশন' : 'Store Locations',
+       links: [{ label: lang === 'BN' ? 'ঢাকা' : 'Dhaka', to: '#' }, { label: lang === 'BN' ? 'চট্টগ্রাম' : 'Chittagong', to: '#' }]
     }
   ];
 
@@ -243,7 +249,7 @@ function Footer() {
     <footer className="bg-white pt-24 pb-12 px-6 border-t border-neutral-100 flex flex-col items-center">
       {/* Follow Us */}
       <div className="flex flex-col items-center mb-16">
-        <h3 className="text-[10px] font-bold uppercase tracking-[0.4em] mb-10 text-neutral-900">Follow Us</h3>
+        <h3 className="text-[10px] font-bold uppercase tracking-[0.4em] mb-10 text-neutral-900">{t('followUs')}</h3>
         <div className="flex gap-5">
           {[
             { icon: <Facebook className="w-5 h-5" />, href: "https://www.facebook.com/share/1CiNRxyy6M/" },
@@ -303,16 +309,16 @@ function Footer() {
 
       {/* Subscribe */}
       <div className="max-w-2xl w-full mx-auto text-center py-24 px-6">
-        <h3 className="text-[12px] font-bold uppercase tracking-[0.5em] mb-6 text-neutral-900 underline underline-offset-[12px] decoration-neutral-100">Subscribe</h3>
-        <p className="text-neutral-400 text-[10px] font-bold uppercase tracking-[0.2em] mb-12">Be the first to know about special offers and new drops</p>
+        <h3 className="text-[12px] font-bold uppercase tracking-[0.5em] mb-6 text-neutral-900 underline underline-offset-[12px] decoration-neutral-100">{t('subscribe')}</h3>
+        <p className="text-neutral-400 text-[10px] font-bold uppercase tracking-[0.2em] mb-12">{t('subscribeDesc')}</p>
         <div className="flex flex-col sm:flex-row gap-0 border border-neutral-100 p-1 rounded-sm focus-within:border-neutral-900 transition-colors">
           <input 
             type="email" 
-            placeholder="Enter your email address..." 
+            placeholder={lang === 'BN' ? 'আপনার ইমেইল ঠিকানা দিন...' : 'Enter your email address...'}
             className="flex-1 px-8 py-5 focus:outline-none text-[10px] font-bold uppercase tracking-widest text-neutral-900 placeholder:text-neutral-300"
           />
           <button className="bg-neutral-900 text-white px-12 py-5 text-[10px] font-bold uppercase tracking-[0.3em] hover:bg-brand-accent transition-all">
-            Sign Up
+            {t('signUp')}
           </button>
         </div>
       </div>
@@ -365,67 +371,78 @@ function ScrollToTop() {
   return null;
 }
 
+import { LanguageProvider, useLanguage } from './LanguageContext';
+
 export default function App() {
   return (
-    <AuthProvider>
-      <ProductProvider>
-        <CartProvider>
-          <WishlistProvider>
-            <BrowserRouter>
-              <ScrollToTop />
-              <div className="min-h-screen bg-brand-bg font-sans text-neutral-900 selection:bg-brand-accent selection:text-white">
-                <Navbar />
-                <FlyToCartRenderer />
-                
-                <Routes>
-                  <Route path="/" element={<HomePage />} />
-                  <Route path="/shop" element={<ShopPage />} />
-                  <Route path="/gallery" element={<GalleryPage />} />
-                  <Route path="/about" element={<AboutPage />} />
-                  <Route path="/support" element={<SupportPage />} />
-                  <Route path="/contact" element={<ContactPage />} />
-                  <Route path="/product/:slug" element={<ProductPage />} />
-                  <Route path="/profile" element={<AuthPage />} />
-                  <Route path="/checkout" element={<CheckoutPage />} />
-                  <Route path="/success" element={<SuccessPage />} />
-                  <Route path="/track" element={<OrderTracker />} />
+    <LanguageProvider>
+      <AuthProvider>
+        <ProductProvider>
+          <CartProvider>
+            <WishlistProvider>
+              <BrowserRouter>
+                <AppContent />
+              </BrowserRouter>
+            </WishlistProvider>
+          </CartProvider>
+        </ProductProvider>
+      </AuthProvider>
+    </LanguageProvider>
+  );
+}
 
-                  {/* Admin Routes */}
-                  <Route path="/admin" element={<AdminDashboard />} />
-                  <Route path="/admin/products" element={<AdminInventory />} />
-                  <Route path="/admin/orders" element={<AdminOrders />} />
-                  <Route path="/admin/customers" element={<AdminCustomers />} />
-                  <Route path="/admin/settings" element={<AdminDashboard />} />
-                </Routes>
+function AppContent() {
+  const { t, lang } = useLanguage();
+  
+  return (
+    <div className="min-h-screen bg-brand-bg font-sans text-neutral-900 selection:bg-brand-accent selection:text-white">
+      <Navbar />
+      <FlyToCartRenderer />
+      
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/shop" element={<ShopPage />} />
+        <Route path="/gallery" element={<GalleryPage />} />
+        <Route path="/about" element={<AboutPage />} />
+        <Route path="/support" element={<SupportPage />} />
+        <Route path="/contact" element={<ContactPage />} />
+        <Route path="/product/:slug" element={<ProductPage />} />
+        <Route path="/profile" element={<AuthPage />} />
+        <Route path="/checkout" element={<CheckoutPage />} />
+        <Route path="/success" element={<SuccessPage />} />
+        <Route path="/track" element={<OrderTracker />} />
 
-                <Footer />
-                
-                <CartSidebarWrapper />
+        {/* Admin Routes */}
+        <Route path="/admin" element={<AdminDashboard />} />
+        <Route path="/admin/products" element={<AdminInventory />} />
+        <Route path="/admin/orders" element={<AdminOrders />} />
+        <Route path="/admin/customers" element={<AdminCustomers />} />
+        <Route path="/admin/settings" element={<AdminDashboard />} />
+      </Routes>
 
-                {/* Floating Auth Prompt for Guests */}
-                <AuthPrompt />
+      <Footer />
+      
+      <CartSidebarWrapper />
 
-                {/* Admin Quick Entry */}
-                <AdminQuickEntry />
+      {/* Floating Auth Prompt for Guests */}
+      <AuthPrompt />
 
-                {/* Floating WhatsApp */}
-                <a 
-                  href="https://wa.me/your-number" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="fixed bottom-8 right-8 z-[90] bg-[#25D366] text-white p-4 rounded-full shadow-2xl hover:scale-110 transition-transform flex items-center gap-2 group"
-                >
-                  <MessageCircle className="w-6 h-6" />
-                  <span className="max-w-0 overflow-hidden whitespace-nowrap group-hover:max-w-xs transition-all duration-500 text-xs font-bold uppercase tracking-widest">
-                    Support
-                  </span>
-                </a>
-              </div>
-            </BrowserRouter>
-          </WishlistProvider>
-        </CartProvider>
-      </ProductProvider>
-    </AuthProvider>
+      {/* Admin Quick Entry */}
+      <AdminQuickEntry />
+
+      {/* Floating WhatsApp */}
+      <a 
+        href="https://wa.me/your-number" 
+        target="_blank" 
+        rel="noopener noreferrer"
+        className="fixed bottom-8 right-8 z-[90] bg-[#25D366] text-white p-4 rounded-full shadow-2xl hover:scale-110 transition-transform flex items-center gap-2 group"
+      >
+        <MessageCircle className="w-6 h-6" />
+        <span className="max-w-0 overflow-hidden whitespace-nowrap group-hover:max-w-xs transition-all duration-500 text-xs font-bold uppercase tracking-widest">
+          {t('contact')}
+        </span>
+      </a>
+    </div>
   );
 }
 

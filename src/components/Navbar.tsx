@@ -7,14 +7,15 @@ import { cn } from '../lib/utils';
 import { useAuth } from '../AuthContext';
 import { useCart } from '../CartContext';
 import { useWishlist } from '../WishlistContext';
+import { useLanguage } from '../LanguageContext';
 
 export default function Navbar() {
   const { user } = useAuth();
   const { setIsCartOpen, cartCount, isDraggingProduct } = useCart();
   const { wishlist } = useWishlist();
+  const { lang, setLang, t } = useLanguage();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [lang, setLang] = useState<'EN' | 'BN'>('EN');
   const location = useLocation();
 
   useEffect(() => {
@@ -61,13 +62,18 @@ export default function Navbar() {
         "hidden md:flex items-center gap-10 font-medium tracking-[0.15em] text-[10px] uppercase",
         showDarkNav ? "text-neutral-900/70" : "text-neutral-900/70"
       )}>
-        {['Lighting', 'Decor', 'Kitchen', 'Essentials'].map((item) => (
+        {[
+          { label: t('lighting'), id: 'Lighting' },
+          { label: t('decor'), id: 'Decor' },
+          { label: t('kitchen'), id: 'Kitchen' },
+          { label: t('essentials'), id: 'Essentials' }
+        ].map((item) => (
           <Link
-            key={item}
+            key={item.id}
             to="/shop"
             className="hover:text-brand-accent transition-colors"
           >
-            {item}
+            {item.label}
           </Link>
         ))}
       </div>
