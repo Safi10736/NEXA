@@ -107,6 +107,7 @@ function SecondaryTeasers() {
       const { data } = await supabase
         .from('gallery')
         .select('image_url')
+        .eq('is_highlighted', true)
         .order('created_at', { ascending: false })
         .limit(6);
       
