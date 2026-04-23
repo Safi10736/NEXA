@@ -35,19 +35,28 @@ export default function AdminGallery() {
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
   useEffect(() => {
     fetchGallery();
   }, []);
 
   const fetchGallery = async () => {
     setLoading(true);
+    setErrorMsg(null);
     const { data, error } = await supabase
       .from('gallery')
       .select('*')
       .order('is_highlighted', { ascending: false })
       .order('created_at', { ascending: false });
 
-    if (!error && data) {
+    if (error) {
+      if (error.code === '42P01') {
+        setErrorMsg('The "gallery" table does not exist in your database yet.');
+      } else {
+        console.error(error);
+      }
+    } else if (data) {
       setItems(data);
     }
     setLoading(false);
@@ -197,6 +206,23 @@ export default function AdminGallery() {
         <div className="flex flex-col items-center justify-center py-32 space-y-4">
           <div className="w-12 h-12 border-2 border-brand-accent border-t-transparent rounded-full animate-spin" />
           <p className="text-[8px] font-bold text-neutral-600 uppercase tracking-widest animate-pulse">Accessing Archive...</p>
+        </div>
+      ) : errorMsg ? (
+        <div className="bg-neutral-900/50 border border-brand-accent/20 rounded-[2.5rem] p-12 text-center max-w-2xl mx-auto my-12">
+          <AlertCircle className="w-16 h-16 text-brand-accent mx-auto mb-6" />
+          <h2 className="text-2xl font-light mb-4">Database Table <span className="serif italic text-brand-accent">Missing</span></h2>
+          <p className="text-sm text-neutral-400 font-light leading-relaxed mb-10">
+            It seems the "gallery" table has not been created yet. Please refresh your Supabase dashboard or create the table manually with columns: 
+            <code className="block mt-4 p-4 bg-black rounded-xl text-brand-accent text-[10px] font-mono">
+              image_url (text), is_highlighted (bool), created_at (timestamptz)
+            </code>
+          </p>
+          <button 
+            onClick={fetchGallery}
+            className="px-12 py-5 bg-white text-black rounded-full text-[10px] font-bold uppercase tracking-widest hover:bg-brand-accent hover:text-white transition-all shadow-xl"
+          >
+            Retry Connection
+          </button>
         </div>
       ) : (
         <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
