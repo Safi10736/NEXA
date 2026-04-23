@@ -138,6 +138,33 @@ export default function AdminGallery() {
     setIsModalOpen(true);
   };
 
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploading(true);
+    const fileExt = file.name.split('.').pop();
+    const fileName = `${Math.random()}.${fileExt}`;
+    const filePath = `gallery/${fileName}`;
+
+    const { error: uploadError } = await supabase.storage
+      .from('gallery')
+      .upload(filePath, file);
+
+    if (uploadError) {
+      alert('Upload failed: ' + uploadError.message);
+      setUploading(false);
+      return;
+    }
+
+    const { data: { publicUrl } } = supabase.storage
+      .from('gallery')
+      .getPublicUrl(filePath);
+
+    setNewUrl(publicUrl);
+    setUploading(false);
+  };
+
   const toggleHighlight = async (item: GalleryItem) => {
     const currentHighlights = items.filter(i => i.is_highlighted).length;
     
