@@ -10,7 +10,10 @@ import {
   ArrowRight,
   Info,
   Image as ImageIcon,
-  Palette
+  Palette,
+  Upload,
+  Loader2,
+  CheckCircle2
 } from 'lucide-react';
 import AdminLayout from '../../components/admin/AdminLayout';
 import { supabase } from '../../lib/supabase';
@@ -22,6 +25,8 @@ export default function AdminSettings() {
   const { user } = useAuth();
   const { settings, updateSettings } = useAppearance();
   const [activeCategory, setActiveCategory] = useState('notifications');
+  const [uploading, setUploading] = useState<string | null>(null);
+  const [uploadError, setUploadError] = useState<string | null>(null);
   const [preferences, setPreferences] = useState({
     emailOrderAlerts: true,
     marketingEmails: false,
@@ -41,6 +46,44 @@ export default function AdminSettings() {
   const togglePreference = (key: keyof typeof preferences) => {
     setPreferences(prev => ({ ...prev, [key]: !prev[key] }));
     setSuccess(false);
+  };
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>, key: 'heroBannerUrl' | 'loginSidebarUrl') => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      setUploadError('Image size must be less than 5MB');
+      return;
+    }
+
+    setUploading(key);
+    setUploadError(null);
+
+    try {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${Math.random().toString(36).substring(2)}-${Date.now()}.${fileExt}`;
+      const filePath = `site-assets/${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('assets')
+        .upload(filePath, file);
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('assets')
+        .getPublicUrl(filePath);
+
+      setTempSettings(prev => ({ ...prev, [key]: publicUrl }));
+      setSuccess(false);
+    } catch (err: any) {
+      console.error('Upload error:', err);
+      setUploadError(err.message || 'Error uploading image');
+    } finally {
+      setUploading(null);
+    }
   };
 
   const handleSave = async () => {
@@ -194,20 +237,36 @@ export default function AdminSettings() {
                            <h4 className="text-[10px] font-bold uppercase tracking-widest text-white">Hero Home Banner</h4>
                            <span className="text-[8px] text-neutral-500 uppercase font-mono tracking-tighter">Primary Node Background</span>
                         </div>
-                        <div className="relative group">
-                          <ImageIcon className="absolute left-6 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-700 group-focus-within:text-brand-accent transition-colors" />
-                          <input 
-                            type="text"
-                            value={tempSettings.heroBannerUrl}
-                            onChange={(e) => setTempSettings(prev => ({ ...prev, heroBannerUrl: e.target.value }))}
-                            placeholder="IMAGE URL (.JPG / .PNG)"
-                            className="w-full pl-16 pr-6 py-5 bg-neutral-900 border border-neutral-800 rounded-2xl text-[10px] font-bold tracking-widest uppercase text-white placeholder:text-neutral-700 focus:outline-none focus:border-brand-accent transition-all"
-                          />
+                        <div className="flex gap-2">
+                          <div className="relative group flex-1">
+                            <ImageIcon className="absolute left-6 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-700 group-focus-within:text-brand-accent transition-colors" />
+                            <input 
+                              type="text"
+                              value={tempSettings.heroBannerUrl}
+                              onChange={(e) => setTempSettings(prev => ({ ...prev, heroBannerUrl: e.target.value }))}
+                              placeholder="IMAGE URL (.JPG / .PNG)"
+                              className="w-full pl-16 pr-6 py-5 bg-neutral-900 border border-neutral-800 rounded-2xl text-[10px] font-bold tracking-widest uppercase text-white placeholder:text-neutral-700 focus:outline-none focus:border-brand-accent transition-all"
+                            />
+                          </div>
+                          <label className="flex items-center justify-center w-16 bg-neutral-900 border border-neutral-800 rounded-2xl cursor-pointer hover:border-brand-accent hover:text-brand-accent transition-all group">
+                            <input type="file" className="hidden" accept="image/*" onChange={(e) => handleFileUpload(e, 'heroBannerUrl')} disabled={!!uploading} />
+                            {uploading === 'heroBannerUrl' ? (
+                              <Loader2 className="w-5 h-5 animate-spin" />
+                            ) : (
+                              <Upload className="w-5 h-5 opacity-40 group-hover:opacity-100" />
+                            )}
+                          </label>
                         </div>
                         {tempSettings.heroBannerUrl && (
                           <div className="px-4">
-                            <div className="h-32 w-full rounded-2xl overflow-hidden border border-neutral-800">
+                            <div className="h-32 w-full rounded-2xl overflow-hidden border border-neutral-800 relative">
                                <img src={tempSettings.heroBannerUrl} className="w-full h-full object-cover opacity-50" referrerPolicy="no-referrer" />
+                               <div className="absolute inset-0 flex items-center justify-center">
+                                  <div className="px-3 py-1 bg-black/60 backdrop-blur-md rounded-full border border-white/10 flex items-center gap-2">
+                                     <CheckCircle2 className="w-3 h-3 text-green-500" />
+                                     <span className="text-[7px] text-white font-bold uppercase tracking-widest leading-none">PREVIEW LOADED</span>
+                                  </div>
+                               </div>
                             </div>
                           </div>
                         )}
@@ -219,24 +278,47 @@ export default function AdminSettings() {
                            <h4 className="text-[10px] font-bold uppercase tracking-widest text-white">Login Branding Sidebar</h4>
                            <span className="text-[8px] text-neutral-500 uppercase font-mono tracking-tighter">Authentication Portal Visual</span>
                         </div>
-                        <div className="relative group">
-                          <ImageIcon className="absolute left-6 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-700 group-focus-within:text-brand-accent transition-colors" />
-                          <input 
-                            type="text"
-                            value={tempSettings.loginSidebarUrl}
-                            onChange={(e) => setTempSettings(prev => ({ ...prev, loginSidebarUrl: e.target.value }))}
-                            placeholder="IMAGE URL (.JPG / .PNG)"
-                            className="w-full pl-16 pr-6 py-5 bg-neutral-900 border border-neutral-800 rounded-2xl text-[10px] font-bold tracking-widest uppercase text-white placeholder:text-neutral-700 focus:outline-none focus:border-brand-accent transition-all"
-                          />
+                        <div className="flex gap-2">
+                          <div className="relative group flex-1">
+                            <ImageIcon className="absolute left-6 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-700 group-focus-within:text-brand-accent transition-colors" />
+                            <input 
+                              type="text"
+                              value={tempSettings.loginSidebarUrl}
+                              onChange={(e) => setTempSettings(prev => ({ ...prev, loginSidebarUrl: e.target.value }))}
+                              placeholder="IMAGE URL (.JPG / .PNG)"
+                              className="w-full pl-16 pr-6 py-5 bg-neutral-900 border border-neutral-800 rounded-2xl text-[10px] font-bold tracking-widest uppercase text-white placeholder:text-neutral-700 focus:outline-none focus:border-brand-accent transition-all"
+                            />
+                          </div>
+                          <label className="flex items-center justify-center w-16 bg-neutral-900 border border-neutral-800 rounded-2xl cursor-pointer hover:border-brand-accent hover:text-brand-accent transition-all group">
+                            <input type="file" className="hidden" accept="image/*" onChange={(e) => handleFileUpload(e, 'loginSidebarUrl')} disabled={!!uploading} />
+                            {uploading === 'loginSidebarUrl' ? (
+                              <Loader2 className="w-5 h-5 animate-spin" />
+                            ) : (
+                              <Upload className="w-5 h-5 opacity-40 group-hover:opacity-100" />
+                            )}
+                          </label>
                         </div>
                         {tempSettings.loginSidebarUrl && (
                           <div className="px-4">
-                            <div className="h-32 w-full rounded-2xl overflow-hidden border border-neutral-800">
+                            <div className="h-32 w-full rounded-2xl overflow-hidden border border-neutral-800 relative">
                                <img src={tempSettings.loginSidebarUrl} className="w-full h-full object-cover opacity-50" referrerPolicy="no-referrer" />
+                               <div className="absolute inset-0 flex items-center justify-center">
+                                  <div className="px-3 py-1 bg-black/60 backdrop-blur-md rounded-full border border-white/10 flex items-center gap-2">
+                                     <CheckCircle2 className="w-3 h-3 text-green-500" />
+                                     <span className="text-[7px] text-white font-bold uppercase tracking-widest leading-none">PREVIEW LOADED</span>
+                                  </div>
+                               </div>
                             </div>
                           </div>
                         )}
                       </div>
+
+                      {uploadError && (
+                        <div className="px-4 py-3 bg-red-500/10 border border-red-500/20 rounded-2xl flex items-center gap-3">
+                           <div className="w-1.5 h-1.5 rounded-full bg-red-500" />
+                           <span className="text-[8px] text-red-400 font-bold uppercase tracking-widest">{uploadError}</span>
+                        </div>
+                      )}
                    </div>
                 </section>
               )}
