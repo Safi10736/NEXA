@@ -13,8 +13,8 @@ export default function AboutPage() {
             Back to Home
           </Link>
           <span className="text-[10px] font-bold tracking-[0.5em] uppercase text-brand-accent mb-4">Our Philosophy</span>
-          <h1 className="text-6xl md:text-8xl font-light text-neutral-900 tracking-tighter mb-12">
-            Mindful <span className="serif italic">Living</span>,<br />
+          <h1 className="text-6xl md:text-8xl font-black text-neutral-900 tracking-tighter mb-12 uppercase">
+            Mindful <span className="serif">Living</span>,<br />
             Timeless Design
           </h1>
           <p className="max-w-2xl text-neutral-600 font-light text-lg leading-relaxed">
@@ -34,7 +34,7 @@ export default function AboutPage() {
           </div>
           <div className="space-y-12">
              <div className="space-y-4">
-                <h3 className="text-3xl font-light tracking-tighter serif italic text-brand-accent">Beyond Products</h3>
+                <h3 className="text-3xl font-bold tracking-tighter text-brand-accent uppercase">Beyond Products</h3>
                 <p className="text-neutral-500 leading-relaxed font-light">
                   Nexa was born from a simple observation: the world is beautiful, and we should keep it that way. Every item in our collection is selected based on three criteria: its beauty, its longevity, and its impact on the planet.
                 </p>

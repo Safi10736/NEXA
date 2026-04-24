@@ -31,7 +31,7 @@ export default function Hero() {
             <span className="h-[1px] w-8 bg-white/40" />
           </div>
 
-          <h1 className="text-4xl md:text-7xl font-light text-white tracking-tighter mb-8 leading-[0.9] serif italic">
+          <h1 className="text-4xl md:text-6xl font-black text-white tracking-tight mb-8 leading-[1.1] uppercase">
              {t('heroTitlePart1')} <br />
              {t('heroTitlePart2')} <br />
              {t('heroTitlePart3')}

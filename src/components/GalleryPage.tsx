@@ -25,8 +25,8 @@ export default function GalleryPage() {
             Back to Home
           </Link>
           <span className="text-[10px] font-bold tracking-[0.5em] uppercase text-brand-accent mb-4">Inspiration Collective</span>
-          <h1 className="text-6xl font-light text-neutral-900 tracking-tighter mb-8">
-            Curated <span className="serif italic">Moments</span>
+          <h1 className="text-6xl font-black text-neutral-900 tracking-tighter mb-8 uppercase">
+            Curated <span className="serif">Moments</span>
           </h1>
           <p className="max-w-lg text-neutral-500 font-light text-sm leading-relaxed">
             A visual journey through sustainable living. Explore how our eco-friendly masterpieces transform everyday spaces into mindful sanctuaries.

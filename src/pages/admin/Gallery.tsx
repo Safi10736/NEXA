@@ -222,7 +222,7 @@ export default function AdminGallery() {
     <AdminLayout>
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
         <div>
-          <h1 className="text-4xl font-light tracking-tighter mb-2">Studio <span className="serif italic text-brand-accent">Assets</span></h1>
+          <h1 className="text-4xl font-bold tracking-tighter mb-2 uppercase">Studio <span className="text-brand-accent">Assets</span></h1>
           <div className="flex gap-4 mt-6">
             <button 
               onClick={() => setActiveTab('gallery')}
@@ -272,7 +272,7 @@ export default function AdminGallery() {
               <img src={item.image_url} className="w-full h-full object-cover opacity-60 transition-transform duration-700 group-hover:scale-110" />
               <div className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center p-8 text-center">
                 <span className="text-[8px] font-bold text-brand-accent uppercase tracking-widest mb-2">Slot {i + 1}</span>
-                <h3 className="text-white text-lg font-light serif italic mb-6">{item.title}</h3>
+                <h3 className="text-white text-lg font-bold mb-6 uppercase tracking-widest">{item.title}</h3>
                 <button 
                   onClick={() => openFeaturedModal(item)}
                   className="px-6 py-2 bg-white text-black rounded-full text-[8px] font-bold uppercase tracking-widest hover:bg-brand-accent hover:text-white transition-all"
@@ -291,7 +291,7 @@ export default function AdminGallery() {
       ) : errorMsg ? (
         <div className="bg-neutral-900/50 border border-brand-accent/20 rounded-[2.5rem] p-12 text-center max-w-2xl mx-auto my-12">
           <AlertCircle className="w-16 h-16 text-brand-accent mx-auto mb-6" />
-          <h2 className="text-2xl font-light mb-4">Database Table <span className="serif italic text-brand-accent">Missing</span></h2>
+          <h2 className="text-2xl font-bold mb-4 uppercase">Database Table <span className="text-brand-accent">Missing</span></h2>
           <p className="text-sm text-neutral-400 font-light leading-relaxed mb-10">
             It seems the "gallery" table has not been created yet. Please refresh your Supabase dashboard or create the table manually with columns: 
             <code className="block mt-4 p-4 bg-black rounded-xl text-brand-accent text-[10px] font-mono">

@@ -91,11 +91,11 @@ function BestsellingSection() {
         <div className="flex justify-between items-end mb-12">
           <div>
             <span className="text-[10px] font-bold tracking-[0.43em] uppercase text-brand-muted mb-4 block">Eco Essentials Planet-Friendly</span>
-            <h2 className="text-4xl md:text-5xl font-light text-neutral-900 tracking-tighter">
+            <h2 className="text-4xl md:text-5xl font-bold text-neutral-900 tracking-tighter uppercase">
                {lang === 'BN' ? (
-                 <>সেরা <span className="serif italic text-brand-accent">পণ্য</span></>
+                 <>সেরা <span className="font-bold text-brand-accent">পণ্য</span></>
                ) : (
-                 <>Bestselling <span className="serif italic text-brand-accent">Products</span></>
+                 <>Bestselling <span className="font-bold text-brand-accent">Products</span></>
                )}
             </h2>
           </div>
@@ -173,7 +173,7 @@ function SecondaryTeasers() {
 
         {/* Brand Commitment Teaser */}
         <div className="flex flex-col justify-center">
-           <h3 className="text-4xl font-light text-neutral-900 tracking-tighter mb-8 serif italic leading-tight">
+           <h3 className="text-4xl font-bold text-neutral-900 tracking-tighter mb-8 leading-tight">
              {lang === 'BN' ? 'চিন্তাশীল, গ্রহ-বান্ধব আইডিয়া এবং অনুপ্রেরণা গ্যালারি' : 'Thoughtful, Planet-Prioritizing Ideas and Inspiration Gallery'}
            </h3>
            <p className="text-sm text-neutral-500 font-light leading-relaxed mb-10 max-w-sm">
