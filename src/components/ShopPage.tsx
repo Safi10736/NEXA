@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { useProducts } from '../ProductContext';
 import ProductCard from './ProductCard';
+import QuickViewModal from './QuickViewModal';
 import { motion } from 'motion/react';
 import { Search, SlidersHorizontal, ArrowLeft } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { Product } from '../types';
 
 import { useLanguage } from '../LanguageContext';
 
@@ -12,6 +14,14 @@ export default function ShopPage() {
   const { t } = useLanguage();
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState('All');
+  
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [isQuickViewOpen, setIsQuickViewOpen] = useState(false);
+
+  const handleQuickView = (product: Product) => {
+    setSelectedProduct(product);
+    setIsQuickViewOpen(true);
+  };
 
   const categories = ['All', ...Array.from(new Set(products.map(p => p.category)))];
 
@@ -87,7 +97,7 @@ export default function ShopPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.05 }}
               >
-                <ProductCard product={p} />
+                <ProductCard product={p} onQuickView={handleQuickView} />
               </motion.div>
             ))}
           </div>
@@ -103,6 +113,12 @@ export default function ShopPage() {
           </div>
         )}
       </div>
+
+      <QuickViewModal 
+        product={selectedProduct}
+        isOpen={isQuickViewOpen}
+        onClose={() => setIsQuickViewOpen(false)}
+      />
     </div>
   );
 }

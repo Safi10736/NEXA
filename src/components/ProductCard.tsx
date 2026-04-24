@@ -1,7 +1,7 @@
 import React from 'react';
 import { Product } from '../types';
 import { formatPrice, cn } from '../lib/utils';
-import { ShoppingBag, Eye, Heart, Plus, Zap } from 'lucide-react';
+import { ShoppingBag, Eye, Heart, Plus, Zap, Search } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'motion/react';
 
@@ -9,7 +9,7 @@ import { useCart } from '../CartContext';
 import { useWishlist } from '../WishlistContext';
 import { useLanguage } from '../LanguageContext';
 
-export const ProductCard: React.FC<{ product: Product }> = ({ product }) => {
+export const ProductCard: React.FC<{ product: Product, onQuickView?: (product: Product) => void }> = ({ product, onQuickView }) => {
   const navigate = useNavigate();
   const { t, lang } = useLanguage();
   const { addToCart, setIsDraggingProduct } = useCart();
@@ -114,9 +114,22 @@ export const ProductCard: React.FC<{ product: Product }> = ({ product }) => {
               </motion.div>
 
               <motion.div variants={itemVariants} className="flex gap-4 pointer-events-auto">
+                {onQuickView && (
+                  <button 
+                    onClick={(e) => {
+                      e.preventDefault();
+                      onQuickView(product);
+                    }}
+                    className="w-14 h-14 bg-white rounded-full flex items-center justify-center text-neutral-900 hover:bg-neutral-900 hover:text-white transition-all shadow-2xl active:scale-95"
+                    title={lang === 'BN' ? 'কুইক ভিউ' : 'Quick View'}
+                  >
+                    <Search className="w-5 h-5" />
+                  </button>
+                )}
+
                 <Link 
                   to={`/product/${product.slug}`}
-                  className="w-14 h-14 bg-white rounded-full flex items-center justify-center text-neutral-900 hover:bg-brand-accent hover:text-white transition-all shadow-2xl active:scale-95"
+                  className="w-14 h-14 bg-white rounded-full flex items-center justify-center text-neutral-900 hover:bg-neutral-900 hover:text-white transition-all shadow-2xl active:scale-95"
                   title={lang === 'BN' ? 'বিস্তারিত দেখুন' : 'View Details'}
                 >
                   <Eye className="w-6 h-6" />

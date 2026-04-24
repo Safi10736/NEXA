@@ -6,8 +6,10 @@ import { useState } from 'react';
 import { Star, Truck, ShieldCheck, RefreshCw, ShoppingBag, Plus, Minus, ArrowRight, Zap } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import ProductCard from './ProductCard';
+import QuickViewModal from './QuickViewModal';
 import { useCart } from '../CartContext';
 import { useLanguage } from '../LanguageContext';
+import { Product } from '../types';
 
 export default function ProductPage() {
   const { slug } = useParams();
@@ -27,6 +29,14 @@ export default function ProductPage() {
   const [selectedVariant, setSelectedVariant] = useState<string | null>(null);
   const [selectedVariantData, setSelectedVariantData] = useState<any>(null);
   const { addToCart, setIsDraggingProduct } = useCart();
+
+  const [selectedQuickViewProduct, setSelectedQuickViewProduct] = useState<Product | null>(null);
+  const [isQuickViewOpen, setIsQuickViewOpen] = useState(false);
+
+  const handleQuickView = (product: Product) => {
+    setSelectedQuickViewProduct(product);
+    setIsQuickViewOpen(true);
+  };
 
   if (productsLoading) return <div className="pt-32 text-center h-screen bg-brand-bg text-neutral-900 uppercase tracking-widest text-[10px] font-bold">Curating masterpieces...</div>;
   if (!product) return <div className="pt-32 text-center h-screen bg-brand-bg text-neutral-900">Product not found.</div>;
@@ -315,7 +325,7 @@ export default function ProductPage() {
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-12">
               {upsellProducts.map(p => (
-                <ProductCard key={p.id} product={p} />
+                <ProductCard key={p.id} product={p} onQuickView={handleQuickView} />
               ))}
             </div>
           </section>
@@ -383,6 +393,12 @@ export default function ProductPage() {
            </div>
         </section>
       </div>
+
+      <QuickViewModal 
+        product={selectedQuickViewProduct}
+        isOpen={isQuickViewOpen}
+        onClose={() => setIsQuickViewOpen(false)}
+      />
     </div>
   );
 }

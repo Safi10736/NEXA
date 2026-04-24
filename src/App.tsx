@@ -14,6 +14,7 @@ import GalleryPage from './components/GalleryPage';
 import AboutPage from './components/AboutPage';
 import SupportPage from './components/SupportPage';
 import ContactPage from './components/ContactPage';
+import ChatWidget from './components/ChatWidget';
 import AdminDashboard from './pages/admin/Dashboard';
 import AdminInventory from './pages/admin/Inventory';
 import AdminOrders from './pages/admin/Orders';
@@ -24,7 +25,9 @@ import { Star, MessageCircle, Instagram, Twitter, Facebook, ArrowRight, User as 
 import { motion } from 'motion/react';
 import { cn } from './lib/utils';
 import ProductCard from './components/ProductCard';
+import QuickViewModal from './components/QuickViewModal';
 
+import { Product } from './types';
 import { AuthProvider, useAuth } from './AuthContext';
 import { supabase } from './lib/supabase';
 import { CartProvider, useCart } from './CartContext';
@@ -85,6 +88,15 @@ function FeaturedCollections() {
 function BestsellingSection() {
   const { products } = useProducts();
   const { t, lang } = useLanguage();
+  
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [isQuickViewOpen, setIsQuickViewOpen] = useState(false);
+
+  const handleQuickView = (product: Product) => {
+    setSelectedProduct(product);
+    setIsQuickViewOpen(true);
+  };
+
   return (
     <section id="bestsellers" className="py-24 px-6 bg-brand-bg relative overflow-hidden">
       <div className="max-w-7xl mx-auto">
@@ -107,10 +119,16 @@ function BestsellingSection() {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
           {products.slice(0, 8).map((p) => (
-             <ProductCard key={p.id} product={p} />
+             <ProductCard key={p.id} product={p} onQuickView={handleQuickView} />
           ))}
         </div>
       </div>
+
+      <QuickViewModal 
+        product={selectedProduct}
+        isOpen={isQuickViewOpen}
+        onClose={() => setIsQuickViewOpen(false)}
+      />
     </section>
   );
 }
@@ -477,18 +495,7 @@ function AppContent() {
       {/* Admin Quick Entry */}
       <AdminQuickEntry />
 
-      {/* Floating WhatsApp */}
-      <a 
-        href="https://wa.me/your-number" 
-        target="_blank" 
-        rel="noopener noreferrer"
-        className="fixed bottom-8 right-8 z-[90] bg-[#25D366] text-white p-4 rounded-full shadow-2xl hover:scale-110 transition-transform flex items-center gap-2 group"
-      >
-        <MessageCircle className="w-6 h-6" />
-        <span className="max-w-0 overflow-hidden whitespace-nowrap group-hover:max-w-xs transition-all duration-500 text-xs font-bold uppercase tracking-widest">
-          {t('contact')}
-        </span>
-      </a>
+      <ChatWidget />
     </div>
   );
 }
