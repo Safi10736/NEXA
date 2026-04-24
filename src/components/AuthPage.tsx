@@ -29,10 +29,12 @@ import { supabase } from '../lib/supabase';
 import { useAuth } from '../AuthContext';
 import { formatPrice, cn } from '../lib/utils';
 import { useLanguage } from '../LanguageContext';
+import { useAppearance } from '../AppearanceContext';
 
 type TabType = 'dashboard' | 'orders' | 'profile' | 'addresses' | 'settings';
 
 export default function AuthPage() {
+  const { settings } = useAppearance();
   const [isLogin, setIsLogin] = useState(true);
   const [activeTab, setActiveTab] = useState<TabType>('dashboard');
   const [orders, setOrders] = useState<any[]>([]);
@@ -1039,7 +1041,7 @@ export default function AuthPage() {
         {/* Left Side - Visual */}
         <div className="relative hidden md:block overflow-hidden border-r border-neutral-100">
           <img 
-            src="https://images.unsplash.com/photo-1542728928-1413ee093f59?auto=format&fit=crop&q=80&w=800" 
+            src={settings.loginSidebarUrl} 
             className="w-full h-full object-cover" 
             alt="Luxury Lighting"
             referrerPolicy="no-referrer"

@@ -3,8 +3,11 @@ import { ArrowRight, ShoppingBag, Search } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useLanguage } from '../LanguageContext';
 
+import { useAppearance } from '../AppearanceContext';
+
 export default function Hero() {
   const { t, lang } = useLanguage();
+  const { settings } = useAppearance();
 
   return (
     <section className="relative h-[75vh] flex items-center justify-center overflow-hidden bg-brand-surface">
@@ -12,7 +15,7 @@ export default function Hero() {
       <div className="absolute inset-0 z-0">
         <div className="absolute inset-0 bg-black/40 z-10" />
         <img 
-          src="https://images.unsplash.com/photo-1620808461872-9cc911043900?auto=format&fit=crop&q=85&w=2400" 
+          src={settings.heroBannerUrl} 
           alt="Luxury Eco Home" 
           className="w-full h-full object-cover scale-105 animate-slow-zoom"
           referrerPolicy="no-referrer"

@@ -437,21 +437,25 @@ function ScrollToTop() {
 
 import { LanguageProvider, useLanguage } from './LanguageContext';
 
+import { AppearanceProvider } from './AppearanceContext';
+
 export default function App() {
   return (
-    <LanguageProvider>
-      <AuthProvider>
-        <ProductProvider>
-          <CartProvider>
-            <WishlistProvider>
-              <BrowserRouter>
-                <AppContent />
-              </BrowserRouter>
-            </WishlistProvider>
-          </CartProvider>
-        </ProductProvider>
-      </AuthProvider>
-    </LanguageProvider>
+    <AppearanceProvider>
+      <LanguageProvider>
+        <AuthProvider>
+          <ProductProvider>
+            <CartProvider>
+              <WishlistProvider>
+                <BrowserRouter>
+                  <AppContent />
+                </BrowserRouter>
+              </WishlistProvider>
+            </CartProvider>
+          </ProductProvider>
+        </AuthProvider>
+      </LanguageProvider>
+    </AppearanceProvider>
   );
 }
 
