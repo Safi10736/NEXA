@@ -11,7 +11,11 @@ import {
   ShieldCheck,
   Globe,
   Smartphone,
-  GripVertical
+  GripVertical,
+  Package,
+  Image as ImageIcon,
+  Layers,
+  Settings
 } from 'lucide-react';
 import { formatPrice, cn } from '../../lib/utils';
 
@@ -130,18 +134,24 @@ export default function ProductForm({ initialData, onClose, onSave }: ProductFor
         </div>
 
         {/* Tabs */}
-        <div className="flex px-8 border-b border-neutral-900 overflow-x-auto gap-8">
-           {['basic', 'inventory', 'media', 'variants'].map((tab) => (
+        <div className="flex px-8 border-b border-neutral-900 overflow-x-auto gap-8 no-scrollbar">
+           {[
+             { id: 'basic', label: 'Basic Info', icon: Settings },
+             { id: 'inventory', label: 'Inventory', icon: Package },
+             { id: 'media', label: 'Media', icon: ImageIcon },
+             { id: 'variants', label: 'Variants', icon: Layers },
+           ].map((tab) => (
              <button
-                key={tab}
-                onClick={() => setActiveTab(tab)}
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
                 className={`
-                  py-4 text-[10px] font-bold uppercase tracking-widest transition-all relative
-                  ${activeTab === tab ? 'text-brand-accent' : 'text-neutral-500 hover:text-white'}
+                  py-6 flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] transition-all relative whitespace-nowrap
+                  ${activeTab === tab.id ? 'text-brand-accent' : 'text-neutral-500 hover:text-white'}
                 `}
              >
-                {tab}
-                {activeTab === tab && (
+                <tab.icon className="w-3.5 h-3.5" />
+                {tab.label}
+                {activeTab === tab.id && (
                   <motion.div layoutId="activeTab" className="absolute bottom-0 left-0 right-0 h-0.5 bg-brand-accent" />
                 )}
              </button>
@@ -163,18 +173,18 @@ export default function ProductForm({ initialData, onClose, onSave }: ProductFor
            <AnimatePresence mode="wait">
               {activeTab === 'basic' && (
                 <motion.div 
-                  key="basic"
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -20 }}
-                  className="grid md:grid-cols-2 gap-8"
+                   key="basic"
+                   initial={{ opacity: 0, x: 20 }}
+                   animate={{ opacity: 1, x: 0 }}
+                   exit={{ opacity: 0, x: -20 }}
+                   className="grid md:grid-cols-2 gap-8"
                 >
                    <div className="space-y-6">
                       <div className="space-y-2">
                          <label className="text-[10px] font-bold uppercase tracking-widest text-neutral-500 ml-4">Product Name</label>
                          <input 
                             type="text" 
-                            className="w-full bg-neutral-900 border border-neutral-800 rounded-2xl py-4 px-6 text-sm focus:ring-1 focus:ring-brand-accent outline-none"
+                            className="w-full bg-neutral-900 border border-neutral-800 rounded-2xl py-4 px-6 text-sm focus:ring-1 focus:ring-brand-accent outline-none font-medium text-white shadow-inner"
                             placeholder="e.g. Lunar Marble Lamp"
                             value={formData.name}
                             onChange={(e) => {
@@ -191,34 +201,40 @@ export default function ProductForm({ initialData, onClose, onSave }: ProductFor
                       </div>
                       <div className="space-y-2">
                          <label className="text-[10px] font-bold uppercase tracking-widest text-neutral-500 ml-4">Category</label>
-                         <select 
-                            className="w-full bg-neutral-900 border border-neutral-800 rounded-2xl py-4 px-6 text-sm focus:ring-1 focus:ring-brand-accent outline-none appearance-none"
-                            value={formData.category}
-                            onChange={(e) => setFormData({...formData, category: e.target.value})}
-                         >
-                            <option>Lighting</option>
-                            <option>Wall Decor</option>
-                            <option>Kitchenware</option>
-                            <option>Essentials</option>
-                         </select>
+                         <div className="relative group">
+                            <select 
+                               className="w-full bg-neutral-900 border border-neutral-800 rounded-2xl py-4 px-6 text-sm focus:ring-1 focus:ring-brand-accent outline-none appearance-none font-medium text-white cursor-pointer"
+                               value={formData.category}
+                               onChange={(e) => setFormData({...formData, category: e.target.value})}
+                            >
+                               <option>Lighting</option>
+                               <option>Wall Decor</option>
+                               <option>Kitchenware</option>
+                               <option>Essentials</option>
+                            </select>
+                            <GripVertical className="absolute right-6 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-500 pointer-events-none rotate-90" />
+                         </div>
                       </div>
                    </div>
                    <div className="space-y-6">
                       <div className="space-y-2">
                          <label className="text-[10px] font-bold uppercase tracking-widest text-neutral-500 ml-4">Price (USD)</label>
-                         <input 
-                            type="number" 
-                            className="w-full bg-neutral-900 border border-neutral-800 rounded-2xl py-4 px-6 text-sm focus:ring-1 focus:ring-brand-accent outline-none"
-                            placeholder="0.00"
-                            value={formData.price}
-                            onChange={(e) => setFormData({...formData, price: Number(e.target.value)})}
-                         />
+                         <div className="relative group">
+                            <span className="absolute left-6 top-1/2 -translate-y-1/2 text-neutral-500 text-sm">$</span>
+                            <input 
+                               type="number" 
+                               className="w-full bg-neutral-900 border border-neutral-800 rounded-2xl py-4 pl-10 pr-6 text-sm focus:ring-1 focus:ring-brand-accent outline-none font-medium text-white shadow-inner"
+                               placeholder="0.00"
+                               value={formData.price}
+                               onChange={(e) => setFormData({...formData, price: Number(e.target.value)})}
+                            />
+                         </div>
                       </div>
                       <div className="space-y-2">
                          <label className="text-[10px] font-bold uppercase tracking-widest text-neutral-500 ml-4">Slug (URL Name)</label>
                          <input 
                             type="text" 
-                            className="w-full bg-neutral-900 border border-neutral-800 rounded-2xl py-4 px-6 text-sm focus:ring-1 focus:ring-brand-accent outline-none font-mono text-[10px]"
+                            className="w-full bg-neutral-900 border border-neutral-800 rounded-2xl py-4 px-6 text-sm focus:ring-1 focus:ring-brand-accent outline-none font-mono text-[10px] text-neutral-400 italic shadow-inner"
                             placeholder="lunar-marble-lamp"
                             value={formData.slug}
                             onChange={(e) => setFormData({...formData, slug: e.target.value.toLowerCase().replace(/\s+/g, '-')})}
@@ -229,7 +245,7 @@ export default function ProductForm({ initialData, onClose, onSave }: ProductFor
                       <label className="text-[10px] font-bold uppercase tracking-widest text-neutral-500 ml-4">Description</label>
                       <textarea 
                          rows={4}
-                         className="w-full bg-neutral-900 border border-neutral-800 rounded-3xl py-4 px-6 text-sm focus:ring-1 focus:ring-brand-accent outline-none resize-none"
+                         className="w-full bg-neutral-900 border border-neutral-800 rounded-3xl py-4 px-6 text-sm focus:ring-1 focus:ring-brand-accent outline-none resize-none font-medium text-white shadow-inner leading-relaxed"
                          placeholder="Describe the handcrafted nature and eco-friendly materials..."
                          value={formData.description}
                          onChange={(e) => setFormData({...formData, description: e.target.value})}
@@ -237,29 +253,39 @@ export default function ProductForm({ initialData, onClose, onSave }: ProductFor
                    </div>
                    
                    {/* Toggles */}
-                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:col-span-2">
+                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:col-span-2">
                        {/* Pre-order Toggle */}
-                       <div className="flex items-center gap-4 bg-neutral-900/50 p-6 rounded-[2rem] border border-neutral-900">
+                       <div className="flex items-center gap-4 bg-neutral-900/50 p-6 rounded-[2rem] border border-neutral-900/50 group hover:border-brand-accent/30 transition-colors">
+                          <div className="w-10 h-10 rounded-xl bg-neutral-900 flex items-center justify-center border border-neutral-800 group-hover:bg-brand-accent/10 group-hover:border-brand-accent/20 transition-all">
+                             <CheckCircle2 className="w-5 h-5 text-neutral-500 group-hover:text-brand-accent transition-colors" />
+                          </div>
                           <div className="flex-1">
                              <h4 className="text-[10px] font-bold uppercase tracking-widest text-white">Pre-order</h4>
+                             <p className="text-[8px] text-neutral-500 uppercase mt-0.5">Allow early reserve</p>
                           </div>
                           <button 
+                            type="button"
                             onClick={() => setFormData({...formData, isPreOrder: !formData.isPreOrder})}
                             className={`w-10 h-5 rounded-full transition-all relative ${formData.isPreOrder ? 'bg-brand-accent' : 'bg-neutral-800'}`}
                           >
                              <motion.div 
-                               animate={{ x: formData.isPreOrder ? 20 : 4 }}
-                               className="absolute top-1 w-3 h-3 rounded-full bg-white shadow-sm" 
+                                animate={{ x: formData.isPreOrder ? 24 : 4 }}
+                                className="absolute top-1 w-3 h-3 rounded-full bg-white shadow-sm" 
                              />
                           </button>
                        </div>
 
                        {/* Eco Toggle */}
-                       <div className="flex items-center gap-4 bg-neutral-900/50 p-6 rounded-[2rem] border border-neutral-900">
+                       <div className="flex items-center gap-4 bg-neutral-900/50 p-6 rounded-[2rem] border border-neutral-900/50 group hover:border-brand-accent/30 transition-colors">
+                          <div className="w-10 h-10 rounded-xl bg-neutral-900 flex items-center justify-center border border-neutral-800 group-hover:bg-brand-accent/10 group-hover:border-brand-accent/20 transition-all">
+                             <ShieldCheck className="w-5 h-5 text-neutral-500 group-hover:text-brand-accent transition-colors" />
+                          </div>
                           <div className="flex-1">
                              <h4 className="text-[10px] font-bold uppercase tracking-widest text-white">Eco-friendly</h4>
+                             <p className="text-[8px] text-neutral-500 uppercase mt-0.5">Sustainable build</p>
                           </div>
                           <button 
+                            type="button"
                             onClick={() => {
                               const badges = formData.badges.includes('Eco-friendly')
                                 ? formData.badges.filter((b: string) => b !== 'Eco-friendly')
@@ -269,18 +295,23 @@ export default function ProductForm({ initialData, onClose, onSave }: ProductFor
                             className={`w-10 h-5 rounded-full transition-all relative ${formData.badges.includes('Eco-friendly') ? 'bg-green-500' : 'bg-neutral-800'}`}
                           >
                              <motion.div 
-                               animate={{ x: formData.badges.includes('Eco-friendly') ? 20 : 4 }}
-                               className="absolute top-1 w-3 h-3 rounded-full bg-white shadow-sm" 
+                                animate={{ x: formData.badges.includes('Eco-friendly') ? 24 : 4 }}
+                                className="absolute top-1 w-3 h-3 rounded-full bg-white shadow-sm" 
                              />
                           </button>
                        </div>
 
                        {/* New Arrival Toggle */}
-                       <div className="flex items-center gap-4 bg-neutral-900/50 p-6 rounded-[2rem] border border-neutral-900">
+                       <div className="flex items-center gap-4 bg-neutral-900/50 p-6 rounded-[2rem] border border-neutral-900/50 group hover:border-brand-accent/30 transition-colors">
+                          <div className="w-10 h-10 rounded-xl bg-neutral-900 flex items-center justify-center border border-neutral-800 group-hover:bg-brand-accent/10 group-hover:border-brand-accent/20 transition-all">
+                             <Info className="w-5 h-5 text-neutral-500 group-hover:text-brand-accent transition-colors" />
+                          </div>
                           <div className="flex-1">
                              <h4 className="text-[10px] font-bold uppercase tracking-widest text-white">New Arrival</h4>
+                             <p className="text-[8px] text-neutral-500 uppercase mt-0.5">Market Fresh</p>
                           </div>
                           <button 
+                            type="button"
                             onClick={() => {
                               const badges = formData.badges.includes('New Arrival')
                                 ? formData.badges.filter((b: string) => b !== 'New Arrival')
@@ -290,8 +321,8 @@ export default function ProductForm({ initialData, onClose, onSave }: ProductFor
                             className={`w-10 h-5 rounded-full transition-all relative ${formData.badges.includes('New Arrival') ? 'bg-cyan-500' : 'bg-neutral-800'}`}
                           >
                              <motion.div 
-                               animate={{ x: formData.badges.includes('New Arrival') ? 20 : 4 }}
-                               className="absolute top-1 w-3 h-3 rounded-full bg-white shadow-sm" 
+                                animate={{ x: formData.badges.includes('New Arrival') ? 24 : 4 }}
+                                className="absolute top-1 w-3 h-3 rounded-full bg-white shadow-sm" 
                              />
                           </button>
                        </div>
@@ -301,11 +332,11 @@ export default function ProductForm({ initialData, onClose, onSave }: ProductFor
 
               {activeTab === 'inventory' && (
                 <motion.div 
-                  key="inventory"
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -20 }}
-                  className="space-y-8"
+                   key="inventory"
+                   initial={{ opacity: 0, x: 20 }}
+                   animate={{ opacity: 1, x: 0 }}
+                   exit={{ opacity: 0, x: -20 }}
+                   className="space-y-8"
                 >
                    <div className="grid md:grid-cols-2 gap-8">
                       <div className="space-y-2">
@@ -315,7 +346,7 @@ export default function ProductForm({ initialData, onClose, onSave }: ProductFor
                             min="0"
                             step="1"
                             className={cn(
-                              "w-full bg-neutral-900 border rounded-2xl py-4 px-6 text-sm focus:ring-1 outline-none transition-all",
+                              "w-full bg-neutral-900 border rounded-2xl py-4 px-6 text-sm focus:ring-1 outline-none transition-all font-medium text-white shadow-inner",
                               formData.stock < 0 ? "border-red-500 focus:ring-red-500" : "border-neutral-800 focus:ring-brand-accent"
                             )}
                             value={formData.stock}
@@ -329,34 +360,31 @@ export default function ProductForm({ initialData, onClose, onSave }: ProductFor
                               }
 
                               if (!isNaN(num)) {
-                                // Allow typing 0 or positive, but floor decimals to keep it an integer
                                 setFormData({...formData, stock: Math.max(0, Math.floor(num))});
                               }
                             }}
                          />
-                         {formData.stock < 0 && (
-                            <p className="text-[8px] text-red-500 uppercase font-bold ml-4 mt-1 italic tracking-widest">Quantity cannot be negative</p>
-                         )}
                       </div>
-                      <div className="flex items-center gap-4 mt-8 px-4">
+                      <div className="flex items-center gap-4 mt-8 px-6 py-4 bg-neutral-900/30 rounded-[1.5rem] border border-neutral-900/50">
                          <div className={`p-2 rounded-lg ${formData.stock < 10 ? 'bg-red-500/10 text-red-500' : 'bg-green-500/10 text-green-500'}`}>
                            {formData.stock < 10 ? <Info className="w-5 h-5" /> : <CheckCircle2 className="w-5 h-5" />}
                          </div>
                          <div>
-                            <p className="text-[10px] font-bold uppercase tracking-widest">
+                            <p className="text-[10px] font-bold uppercase tracking-widest text-neutral-200">
                                {formData.stock < 10 ? 'Low Stock Alert' : 'Healthy Inventory'}
                             </p>
-                            <p className="text-[8px] text-neutral-500 uppercase">Threshold: 10 units</p>
+                            <p className="text-[8px] text-neutral-500 uppercase font-medium">Auto-refill threshold: 10 units</p>
                          </div>
                       </div>
                    </div>
 
                    <div className="space-y-4">
-                      <h4 className="text-[10px] font-bold uppercase tracking-widest text-neutral-300">Product Badges</h4>
-                      <div className="flex gap-4">
-                         {['Eco-friendly', 'Handcrafted', 'New Arrival', 'Limited Edition'].map((badge) => (
+                      <h4 className="text-[10px] font-bold uppercase tracking-widest text-neutral-500 ml-4">Collection Badges</h4>
+                      <div className="flex flex-wrap gap-3">
+                         {['Eco-friendly', 'Handcrafted', 'New Arrival', 'Limited Edition', 'Bestseller'].map((badge) => (
                            <button
                               key={badge}
+                              type="button"
                               onClick={() => {
                                 const badges = formData.badges.includes(badge) 
                                   ? formData.badges.filter((b: string) => b !== badge)
@@ -364,10 +392,10 @@ export default function ProductForm({ initialData, onClose, onSave }: ProductFor
                                 setFormData({...formData, badges});
                               }}
                               className={`
-                                py-3 px-6 rounded-full text-[8px] font-bold uppercase tracking-widest border transition-all
+                                py-3 px-6 rounded-full text-[9px] font-bold uppercase tracking-[0.2em] border transition-all duration-300
                                 ${formData.badges.includes(badge) 
-                                  ? 'bg-brand-accent border-brand-accent text-white' 
-                                  : 'bg-neutral-900 border-neutral-800 text-neutral-500 hover:border-neutral-700'}
+                                  ? 'bg-brand-accent border-brand-accent text-white shadow-lg shadow-brand-accent/20' 
+                                  : 'bg-neutral-900 border-neutral-800 text-neutral-500 hover:border-neutral-700 hover:text-white'}
                               `}
                            >
                               {badge}
@@ -378,44 +406,49 @@ export default function ProductForm({ initialData, onClose, onSave }: ProductFor
                 </motion.div>
               )}
 
-               {activeTab === 'media' && (
+              {activeTab === 'media' && (
                 <motion.div 
-                  key="media"
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -20 }}
-                  className="space-y-8"
+                   key="media"
+                   initial={{ opacity: 0, x: 20 }}
+                   animate={{ opacity: 1, x: 0 }}
+                   exit={{ opacity: 0, x: -20 }}
+                   className="space-y-8"
                 >
                    <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-                      <div className="flex gap-4 p-1 bg-neutral-900 rounded-2xl w-fit">
+                      <div className="flex gap-4 p-1.5 bg-neutral-900 rounded-[1.5rem] w-fit border border-neutral-800">
                         <button 
+                          type="button"
                           onClick={() => setMediaSource('url')}
-                          className={`flex items-center gap-2 px-6 py-3 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all ${mediaSource === 'url' ? 'bg-neutral-800 text-white' : 'text-neutral-500 hover:text-white'}`}
+                          className={`flex items-center gap-2 px-6 py-3 rounded-xl text-[9px] font-bold uppercase tracking-widest transition-all ${mediaSource === 'url' ? 'bg-neutral-800 text-brand-accent' : 'text-neutral-500 hover:text-white'}`}
                         >
-                          <Globe className="w-4 h-4" />
-                          Add via URL
+                          <Globe className="w-3.5 h-3.5" />
+                          Remote URL
                         </button>
                         <button 
+                          type="button"
                           onClick={() => setMediaSource('device')}
-                          className={`flex items-center gap-2 px-6 py-3 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all ${mediaSource === 'device' ? 'bg-neutral-800 text-white' : 'text-neutral-500 hover:text-white'}`}
+                          className={`flex items-center gap-2 px-6 py-3 rounded-xl text-[9px] font-bold uppercase tracking-widest transition-all ${mediaSource === 'device' ? 'bg-neutral-800 text-brand-accent' : 'text-neutral-500 hover:text-white'}`}
                         >
-                          <Smartphone className="w-4 h-4" />
-                          Upload File
+                          <Smartphone className="w-3.5 h-3.5" />
+                          Device Upload
                         </button>
                       </div>
-                      <p className="text-[9px] text-neutral-500 uppercase tracking-widest font-bold">
-                        {formData.images.length} Imagery Assets Added
-                      </p>
+                      <div className="flex items-center gap-2 px-4 py-2 bg-neutral-900/50 rounded-full border border-neutral-900">
+                         <div className="w-1.5 h-1.5 rounded-full bg-brand-accent animate-pulse" />
+                         <p className="text-[9px] text-neutral-500 uppercase tracking-widest font-bold">
+                           {formData.images.length} Assets Synchronized
+                         </p>
+                      </div>
                    </div>
 
                    <div className="space-y-4">
                       {mediaSource === 'url' ? (
-                        <div className="flex gap-4">
+                        <div className="flex gap-3">
                           <input 
                             id="new-image-url"
                             type="text" 
-                            className="flex-1 bg-neutral-900 border border-neutral-800 rounded-2xl py-4 px-6 text-sm focus:ring-1 focus:ring-brand-accent outline-none"
-                            placeholder="Enter image URL (e.g. Unsplash link)..."
+                            className="flex-1 bg-neutral-900 border border-neutral-800 rounded-2xl py-4 px-6 text-sm focus:ring-1 focus:ring-brand-accent outline-none font-medium text-white shadow-inner"
+                            placeholder="Enter image URL (e.g. Unsplash, Cloudinary)..."
                             onKeyPress={(e) => {
                               if (e.key === 'Enter') {
                                 e.preventDefault();
@@ -424,10 +457,11 @@ export default function ProductForm({ initialData, onClose, onSave }: ProductFor
                             }}
                           />
                           <button 
+                            type="button"
                             onClick={addImageUrl}
-                            className="px-8 bg-neutral-900 border border-neutral-800 rounded-2xl hover:bg-neutral-800 transition-all"
+                            className="px-8 bg-brand-accent rounded-2xl hover:scale-105 transition-all text-white shadow-xl shadow-brand-accent/20"
                           >
-                            <Plus className="w-5 h-5 text-white" />
+                            <Plus className="w-5 h-5" />
                           </button>
                         </div>
                       ) : (
@@ -450,24 +484,24 @@ export default function ProductForm({ initialData, onClose, onSave }: ProductFor
                               handleFiles(e.dataTransfer.files);
                             }}
                             className={cn(
-                              "flex flex-col items-center justify-center gap-4 w-full h-48 bg-neutral-900 border-2 border-dashed rounded-[2rem] cursor-pointer transition-all group",
+                              "flex flex-col items-center justify-center gap-4 w-full h-56 bg-neutral-900 border-2 border-dashed rounded-[2.5rem] cursor-pointer transition-all group overflow-hidden",
                               isDragging ? "border-brand-accent bg-brand-accent/5" : "border-neutral-800 hover:border-brand-accent"
                             )}
                           >
                              <div className={cn(
-                               "p-4 rounded-2xl transition-colors",
-                               isDragging ? "bg-brand-accent/20" : "bg-neutral-800 group-hover:bg-brand-accent/10"
+                               "p-5 rounded-2xl transition-all duration-500",
+                               isDragging ? "bg-brand-accent font-bold scale-110 shadow-2xl" : "bg-neutral-800 group-hover:bg-brand-accent/20"
                              )}>
                                 <Upload className={cn(
                                   "w-6 h-6 transition-colors",
-                                  isDragging ? "text-brand-accent" : "text-neutral-400 group-hover:text-brand-accent"
+                                  isDragging ? "text-white" : "text-neutral-400 group-hover:text-brand-accent"
                                 )} />
                              </div>
-                             <div className="text-center">
-                                <p className="text-[10px] font-bold text-white uppercase tracking-widest mb-1">
-                                  {isDragging ? 'Drop images now' : 'Click to browse or drop multiple images'}
+                             <div className="text-center px-8">
+                                <p className="text-[11px] font-bold text-white uppercase tracking-[0.2em] mb-1">
+                                  {isDragging ? 'Release to upload' : 'Click to Browse Files / Drop Assets'}
                                 </p>
-                                <p className="text-[8px] text-neutral-500 uppercase tracking-tighter">PNG, JPG or WebP (Max 2MB per file)</p>
+                                <p className="text-[9px] text-neutral-500 uppercase tracking-widest font-medium">JPEG, PNG, WEBP (Maximum 2MB per asset)</p>
                              </div>
                           </label>
                         </div>
@@ -476,7 +510,10 @@ export default function ProductForm({ initialData, onClose, onSave }: ProductFor
 
                    {/* Image Library Grid with Reordering */}
                    <div className="space-y-4">
-                      <h4 className="text-[10px] font-bold uppercase tracking-widest text-neutral-500 ml-4">Manage & Reorder Gallery</h4>
+                      <div className="flex items-center gap-4 ml-4">
+                         <h4 className="text-[10px] font-bold uppercase tracking-widest text-neutral-400">Library Hierarchy</h4>
+                         <div className="h-px flex-1 bg-neutral-900" />
+                      </div>
                       <Reorder.Group 
                         axis="y" 
                         values={formData.images} 
@@ -487,33 +524,34 @@ export default function ProductForm({ initialData, onClose, onSave }: ProductFor
                            <Reorder.Item 
                              key={img} 
                              value={img}
-                             className="relative flex items-center gap-6 bg-neutral-900/50 p-4 rounded-3xl border border-neutral-900 group cursor-grab active:cursor-grabbing"
+                             className="relative flex items-center gap-6 bg-neutral-900/50 p-5 rounded-[2rem] border border-neutral-900/50 group cursor-grab active:cursor-grabbing hover:bg-neutral-900 transition-colors"
                            >
-                              <div className="p-2 text-neutral-700 group-hover:text-neutral-500 transition-colors">
+                              <div className="p-2 text-neutral-700 group-hover:text-brand-accent transition-colors">
                                  <GripVertical className="w-5 h-5" />
                               </div>
 
-                              <div className="w-16 h-16 rounded-2xl overflow-hidden flex-shrink-0 border border-neutral-800 bg-black">
-                                <img src={img} alt="" className="w-full h-full object-cover" />
+                              <div className="w-16 h-16 rounded-2xl overflow-hidden flex-shrink-0 border border-neutral-800 bg-black shadow-inner">
+                                <img src={img} alt="" className="w-full h-full object-cover transition-transform group-hover:scale-110" />
                               </div>
                               
                               <div className="flex-1 min-w-0">
                                  <div className="flex items-center gap-3">
-                                    <span className="text-[10px] font-bold text-neutral-500 uppercase tracking-widest">Asset #{idx + 1}</span>
+                                    <span className="text-[10px] font-bold text-white uppercase tracking-widest opacity-80">Asset #{idx + 1}</span>
                                     {idx === 0 && (
-                                      <span className="px-2 py-0.5 bg-brand-accent text-white rounded text-[6px] font-bold uppercase tracking-widest">Primary</span>
+                                      <span className="px-3 py-0.5 bg-brand-accent text-white rounded-full text-[7px] font-bold uppercase tracking-[0.2em] shadow-lg">Hero Display</span>
                                     )}
                                  </div>
-                                 <p className="text-[8px] text-neutral-600 truncate mt-1">
-                                    {img.startsWith('data:') ? `Local Upload (Base64)` : img}
+                                 <p className="text-[9px] text-neutral-500 truncate mt-1.5 font-mono">
+                                    {img.startsWith('data:') ? `Binary Stream (Buffer)` : img}
                                  </p>
                               </div>
 
-                              <div className="flex items-center gap-2 pr-2">
+                              <div className="flex items-center gap-3 pr-2">
                                  <button 
+                                    type="button"
                                     onClick={() => removeImage(idx)}
-                                    className="p-3 bg-red-600/10 text-red-600 rounded-full hover:bg-red-600 hover:text-white transition-all shadow-sm"
-                                    title="Remove Image"
+                                    className="p-3 bg-red-500/10 text-red-500 rounded-full hover:bg-red-500 hover:text-white transition-all duration-300"
+                                    title="Delete Asset"
                                  >
                                     <Trash2 className="w-4 h-4" />
                                  </button>
@@ -524,22 +562,186 @@ export default function ProductForm({ initialData, onClose, onSave }: ProductFor
                    </div>
                 </motion.div>
               )}
-           </AnimatePresence>
-        </div>
+
+               {activeTab === 'variants' && (
+                 <motion.div 
+                   key="variants"
+                   initial={{ opacity: 0, x: 20 }}
+                   animate={{ opacity: 1, x: 0 }}
+                   exit={{ opacity: 0, x: -20 }}
+                   className="space-y-8"
+                 >
+                    <div className="flex justify-between items-center">
+                       <div>
+                          <h4 className="text-[10px] font-bold uppercase tracking-widest text-white mb-1">Variant Matrix</h4>
+                          <p className="text-[8px] text-neutral-500 uppercase tracking-widest font-medium">Customizable options for bespoke collections</p>
+                       </div>
+                       <button 
+                          type="button"
+                          onClick={() => {
+                             const newVariants = [...(formData.variants || [])];
+                             newVariants.push({ type: 'Property', options: [] });
+                             setFormData({ ...formData, variants: newVariants });
+                          }}
+                          className="flex items-center gap-3 py-4 px-8 bg-neutral-900 border border-neutral-800 rounded-[1.5rem] text-[10px] font-bold uppercase tracking-widest text-white hover:border-brand-accent hover:bg-brand-accent/5 transition-all shadow-xl"
+                       >
+                          <Plus className="w-4 h-4 text-brand-accent" />
+                          Add Category
+                       </button>
+                    </div>
+
+                    <div className="space-y-6">
+                       {(formData.variants || []).map((v: any, vIdx: number) => (
+                         <motion.div 
+                           key={vIdx} 
+                           initial={{ y: 20, opacity: 0 }}
+                           animate={{ y: 0, opacity: 1 }}
+                           className="bg-neutral-900/30 border border-neutral-900/50 p-10 rounded-[3rem] space-y-8"
+                         >
+                            <div className="flex justify-between items-start">
+                               <div className="space-y-3 flex-1 max-w-sm">
+                                  <label className="text-[9px] font-black uppercase tracking-[0.2em] text-neutral-500 ml-4">Variant Category Name</label>
+                                  <input 
+                                     type="text"
+                                     value={v.type}
+                                     onChange={(e) => {
+                                        const newVariants = [...formData.variants];
+                                        newVariants[vIdx].type = e.target.value;
+                                        setFormData({ ...formData, variants: newVariants });
+                                     }}
+                                     className="w-full bg-neutral-900 border border-neutral-800 rounded-2xl py-4 px-8 text-sm focus:ring-1 focus:ring-brand-accent outline-none font-bold text-white shadow-inner uppercase tracking-widest"
+                                     placeholder="e.g. Size, Color, Materia..."
+                                  />
+                               </div>
+                               <button 
+                                  type="button"
+                                  onClick={() => {
+                                     const newVariants = formData.variants.filter((_: any, i: number) => i !== vIdx);
+                                     setFormData({ ...formData, variants: newVariants });
+                                  }}
+                                  className="p-4 text-red-500 hover:bg-red-500/10 rounded-full transition-all border border-transparent hover:border-red-500/20"
+                               >
+                                  <Trash2 className="w-5 h-5" />
+                               </button>
+                            </div>
+
+                            <div className="space-y-6">
+                               <div className="flex items-center gap-4 ml-4">
+                                  <label className="text-[9px] font-bold uppercase tracking-[0.2em] text-neutral-500">Available Options</label>
+                                  <div className="h-px flex-1 bg-neutral-900/50" />
+                               </div>
+                               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                  {(v.options || []).map((opt: any, oIdx: number) => (
+                                    <div key={oIdx} className="bg-neutral-900/40 p-6 rounded-[2rem] border border-neutral-900 group relative hover:border-neutral-800 transition-all shadow-inner">
+                                       <div className="space-y-5">
+                                          <div className="flex justify-between items-center">
+                                            <span className="text-[8px] font-bold text-neutral-600 uppercase tracking-widest">Descriptor</span>
+                                            <button 
+                                              type="button"
+                                              onClick={() => {
+                                                const newVariants = [...formData.variants];
+                                                newVariants[vIdx].options = newVariants[vIdx].options.filter((_: any, i: number) => i !== oIdx);
+                                                setFormData({ ...formData, variants: newVariants });
+                                              }}
+                                              className="p-1.5 text-neutral-700 hover:text-red-500 transition-colors bg-black/20 rounded-full"
+                                            >
+                                              <X className="w-3.5 h-3.5" />
+                                            </button>
+                                          </div>
+                                          <input 
+                                             type="text"
+                                             value={opt.value}
+                                             onChange={(e) => {
+                                                const newVariants = [...formData.variants];
+                                                newVariants[vIdx].options[oIdx].value = e.target.value;
+                                                setFormData({ ...formData, variants: newVariants });
+                                             }}
+                                             className="w-full bg-transparent border-b border-neutral-800 py-1.5 text-[11px] focus:border-brand-accent outline-none font-bold text-white tracking-widest"
+                                             placeholder="e.g. Midnight Onyx"
+                                          />
+                                          <div className="space-y-2">
+                                             <span className="text-[8px] font-bold text-neutral-600 uppercase tracking-widest">Price Impact</span>
+                                             <div className="relative group/price">
+                                               <span className="absolute left-0 top-1/2 -translate-y-1/2 text-[10px] text-brand-accent font-bold">$</span>
+                                               <input 
+                                                  type="number"
+                                                  value={opt.priceModifier}
+                                                  onChange={(e) => {
+                                                     const newVariants = [...formData.variants];
+                                                     newVariants[vIdx].options[oIdx].priceModifier = Number(e.target.value);
+                                                     setFormData({ ...formData, variants: newVariants });
+                                                  }}
+                                                  className="w-full bg-transparent border-b border-neutral-800 py-1.5 pl-4 text-xs focus:border-brand-accent outline-none font-mono text-white text-right"
+                                                  placeholder="0.00"
+                                               />
+                                             </div>
+                                          </div>
+                                       </div>
+                                    </div>
+                                  ))}
+                                  <button 
+                                     type="button"
+                                     onClick={() => {
+                                        const newVariants = [...formData.variants];
+                                        if (!newVariants[vIdx].options) newVariants[vIdx].options = [];
+                                        newVariants[vIdx].options.push({ 
+                                          id: Math.random().toString(36).substr(2, 9), 
+                                          name: '', 
+                                          value: '', 
+                                          priceModifier: 0 
+                                        });
+                                        setFormData({ ...formData, variants: newVariants });
+                                     }}
+                                     className="flex flex-col items-center justify-center gap-3 border-2 border-dashed border-neutral-900 rounded-[2rem] p-6 hover:border-brand-accent/50 hover:bg-brand-accent/5 transition-all group min-h-[160px]"
+                                  >
+                                     <div className="w-10 h-10 rounded-full bg-neutral-900 flex items-center justify-center group-hover:bg-brand-accent/20 transition-all duration-500">
+                                       <Plus className="w-5 h-5 text-neutral-700 group-hover:text-brand-accent scale-75 group-hover:scale-100 transition-transform" />
+                                     </div>
+                                     <span className="text-[9px] font-black uppercase tracking-[0.2em] text-neutral-700 group-hover:text-brand-accent mt-2 transition-colors">Add Sub-Option</span>
+                                  </button>
+                               </div>
+                            </div>
+                         </motion.div>
+                       ))}
+
+                       {(formData.variants || []).length === 0 && (
+                         <div className="text-center py-24 bg-neutral-900/10 border border-dashed border-neutral-900 rounded-[4rem]">
+                            <motion.div 
+                              animate={{ 
+                                scale: [1, 1.05, 1],
+                                opacity: [0.3, 0.6, 0.3]
+                              }}
+                              transition={{ duration: 4, repeat: Infinity }}
+                              className="w-24 h-24 bg-neutral-900/50 rounded-full flex items-center justify-center mx-auto mb-8 border border-neutral-800"
+                            >
+                              <Layers className="w-10 h-10 text-neutral-800" />
+                            </motion.div>
+                            <h5 className="text-[13px] font-light text-white tracking-widest mb-3 serif italic opacity-60">No Variants Synchronized</h5>
+                            <p className="text-[9px] text-neutral-600 uppercase tracking-[0.3em] font-medium max-w-xs mx-auto leading-relaxed">Defining variations allows customers to choose from bespoke attributes</p>
+                         </div>
+                       )}
+                    </div>
+                 </motion.div>
+               )}
+            </AnimatePresence>
+         </div>
 
         {/* Footer */}
-        <div className="p-8 border-t border-neutral-900 flex justify-between items-center bg-neutral-900/20">
-           <button className="flex items-center gap-2 text-red-500 text-[10px] font-bold uppercase tracking-widest hover:bg-red-500/10 py-2 px-4 rounded-xl transition-all">
-              <Trash2 className="w-4 h-4" />
-              Discard changes
+        <div className="p-10 border-t border-neutral-900 flex justify-between items-center bg-gradient-to-t from-neutral-950 to-neutral-900/10">
+           <button className="flex items-center gap-3 text-red-500/60 text-[10px] font-bold uppercase tracking-widest hover:text-red-500 hover:bg-red-500/10 py-3 px-6 rounded-2xl transition-all group">
+              <Trash2 className="w-4 h-4 transition-transform group-hover:scale-110" />
+              Discard Configuration
            </button>
-           <button 
-              onClick={handleSave}
-              className="flex items-center gap-3 py-4 px-10 bg-brand-accent text-white rounded-full font-bold uppercase text-[10px] tracking-widest hover:scale-105 transition-transform shadow-xl shadow-brand-accent/20"
-           >
-              <Save className="w-4 h-4" />
-              Save Product
-           </button>
+           <div className="flex items-center gap-6">
+              <span className="text-[9px] text-neutral-600 font-bold uppercase tracking-widest hidden md:block">Verification: SHA-256 Validated</span>
+              <button 
+                 onClick={handleSave}
+                 className="flex items-center gap-3 py-5 px-14 bg-brand-accent text-white rounded-full font-bold uppercase text-[11px] tracking-[0.2em] hover:bg-white hover:text-neutral-950 transition-all shadow-2xl shadow-brand-accent/30 hover:-translate-y-1 active:translate-y-0"
+              >
+                 <Save className="w-4 h-4" />
+                 Save Asset
+              </button>
+           </div>
         </div>
       </motion.div>
     </motion.div>

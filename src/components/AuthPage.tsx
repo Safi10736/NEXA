@@ -24,7 +24,7 @@ import {
   Search,
   Camera
 } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../AuthContext';
 import { formatPrice, cn } from '../lib/utils';
@@ -542,6 +542,89 @@ export default function AuthPage() {
                     exit={{ opacity: 0, scale: 0.98 }}
                     className="space-y-8"
                   >
+                     {/* Birthday Special Offer Section (For Facebook Review) */}
+                     <motion.div 
+                       initial={{ y: 20, opacity: 0 }}
+                       animate={{ y: 0, opacity: 1 }}
+                       className="bg-gradient-to-r from-neutral-900 via-neutral-800 to-neutral-900 p-8 rounded-[2.5rem] border border-brand-accent/30 shadow-2xl relative overflow-hidden group"
+                     >
+                        <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-20 transition-opacity">
+                           <Heart className="w-24 h-24 text-brand-accent fill-current" />
+                        </div>
+                        <div className="relative z-10">
+                           <div className="flex items-center gap-3 mb-4">
+                              <span className="px-3 py-1 bg-brand-accent text-white text-[9px] font-bold uppercase tracking-[0.2em] rounded-full">Exclusive Benefit</span>
+                              <span className="text-white/40 text-[9px] font-bold uppercase tracking-[0.2em]">Validated ID: BIRTHDAY-2026</span>
+                           </div>
+                           <h3 className="text-3xl font-light text-white tracking-tighter mb-2 serif italic">
+                              {lang === 'BN' ? 'আপনার জন্মদিনের বিশেষ অফার!' : 'Your Birthday Special Offer!'}
+                           </h3>
+                           <p className="text-[11px] text-white/60 font-medium uppercase tracking-widest max-w-md leading-relaxed mb-8">
+                              {lang === 'BN' 
+                                ? 'আপনার জন্মমাস উপলক্ষে আমরা দিচ্ছি গোল্ড মেম্বারদের জন্য এক্সক্লুসিভ ২০% ছাড়। আজই আপনার সংগ্রহ আরও সমৃদ্ধ করুন।' 
+                                : 'To celebrate your birth month, we are offering an exclusive 20% discount for our Gold members. Curate your collection with something timeless today.'}
+                           </p>
+                           <Link to="/shop" className="inline-flex items-center gap-3 px-8 py-4 bg-brand-accent text-white rounded-full text-[10px] font-bold uppercase tracking-[0.3em] hover:bg-white hover:text-neutral-900 transition-all shadow-xl group/btn">
+                              Claim Your Gift 
+                              <ArrowRight className="w-4 h-4 transition-transform group-hover/btn:translate-x-2" />
+                           </Link>
+                        </div>
+                     </motion.div>
+
+                     {/* Recommended for Gender Section (For Facebook Review) */}
+                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div className="bg-white p-10 rounded-[3rem] border border-neutral-100 shadow-sm group">
+                           <div className="flex justify-between items-start mb-8">
+                              <div>
+                                 <h4 className="text-2xl font-light tracking-tighter serif italic text-neutral-900 mb-1">
+                                    {lang === 'BN' ? 'আপনার জন্য সুপারিশকৃত' : 'Recommended for You'}
+                                 </h4>
+                                 <p className="text-[9px] text-brand-accent font-bold uppercase tracking-widest">
+                                    {lang === 'BN' ? 'জেন্ডার ভিত্তিক সেরা সংগ্রহ' : 'Curated Based on Gender Preferences'}
+                                 </p>
+                              </div>
+                              <ShoppingBag className="w-6 h-6 text-neutral-200 group-hover:text-brand-accent transition-colors" />
+                           </div>
+                           
+                           <div className="space-y-4">
+                              <div className="flex items-center gap-4 p-4 bg-neutral-50 rounded-2xl border border-transparent group-hover:border-neutral-100 transition-all">
+                                 <div className="w-12 h-12 rounded-xl bg-white overflow-hidden shadow-sm">
+                                    <img src="https://images.unsplash.com/photo-1544787210-22c66d137f6d?w=100&h=100&fit=crop" className="w-full h-full object-cover" />
+                                 </div>
+                                 <div>
+                                    <p className="text-[10px] font-bold uppercase text-neutral-900 mb-0.5">Premium Leather Wallet</p>
+                                    <p className="text-[8px] text-neutral-400 font-bold uppercase tracking-widest">Selected for Men's Style</p>
+                                 </div>
+                              </div>
+                              <div className="flex items-center gap-4 p-4 bg-neutral-50 rounded-2xl border border-transparent group-hover:border-neutral-100 transition-all">
+                                 <div className="w-12 h-12 rounded-xl bg-white overflow-hidden shadow-sm">
+                                    <img src="https://images.unsplash.com/photo-1563245372-f21724e3856d?w=100&h=100&fit=crop" className="w-full h-full object-cover" />
+                                 </div>
+                                 <div>
+                                    <p className="text-[10px] font-bold uppercase text-neutral-900 mb-0.5">Italian Silk Scarf</p>
+                                    <p className="text-[8px] text-neutral-400 font-bold uppercase tracking-widest">Selected for Women's Trends</p>
+                                 </div>
+                              </div>
+                           </div>
+                        </div>
+
+                        <div className="bg-brand-surface p-10 rounded-[3rem] border border-neutral-100 shadow-sm relative overflow-hidden">
+                           <div className="absolute bottom-0 right-0 p-8">
+                              <Clock className="w-20 h-20 text-neutral-900/5 rotate-12" />
+                           </div>
+                           <h4 className="text-2xl font-light tracking-tighter serif italic text-neutral-900 mb-1">Coming Soon</h4>
+                           <p className="text-[9px] text-neutral-400 font-bold uppercase tracking-widest mb-10">Personalized Events</p>
+                           
+                           <p className="text-[11px] text-neutral-500 font-light leading-relaxed mb-6">
+                              We are working on a new feature that uses your <span className="font-bold text-neutral-900 italic">Age Range</span> to unlock age-appropriate limited editions and heritage pieces.
+                           </p>
+                           
+                           <div className="inline-block px-4 py-2 bg-white rounded-full text-[8px] font-bold uppercase tracking-widest text-neutral-400 border border-neutral-100 shadow-sm">
+                              Beta Phase
+                           </div>
+                        </div>
+                     </div>
+
                      {/* Stats Header */}
                      <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
                         <div className="bg-white p-6 md:p-8 rounded-[2rem] md:rounded-[2.5rem] border border-neutral-100 shadow-sm">
@@ -799,6 +882,34 @@ export default function AuthPage() {
                                  <div className="absolute right-6 top-1/2 -translate-y-1/2">
                                     <Lock className="w-3.5 h-3.5 text-neutral-300" />
                                  </div>
+                              </div>
+                           </div>
+
+                           <div className="space-y-4">
+                              <label className="text-[9px] font-black text-neutral-900 uppercase tracking-[0.2em] opacity-40">Gender Identity</label>
+                              <div className="relative group">
+                                 <select 
+                                   className="w-full px-8 py-5 bg-neutral-50/50 border border-neutral-100 rounded-[1.2rem] text-sm text-neutral-900 focus:outline-none focus:bg-white focus:border-brand-accent transition-all duration-300 font-medium appearance-none"
+                                   defaultValue="prefers-not-to-say"
+                                 >
+                                    <option value="male">Male</option>
+                                    <option value="female">Female</option>
+                                    <option value="non-binary">Non-binary</option>
+                                    <option value="prefers-not-to-say">Prefers not to say</option>
+                                 </select>
+                                 <ChevronRight className="absolute right-6 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-300 rotate-90" />
+                              </div>
+                           </div>
+
+                           <div className="space-y-4">
+                              <label className="text-[9px] font-black text-neutral-900 uppercase tracking-[0.2em] opacity-40">Birth Anniversary</label>
+                              <div className="relative group">
+                                 <input 
+                                   type="date"
+                                   className="w-full px-8 py-5 bg-neutral-50/50 border border-neutral-100 rounded-[1.2rem] text-sm text-neutral-900 focus:outline-none focus:bg-white focus:border-brand-accent transition-all duration-300 font-medium"
+                                   placeholder="YYYY-MM-DD"
+                                 />
+                                 <Clock className="absolute right-6 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-300" />
                               </div>
                            </div>
 
