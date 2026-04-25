@@ -13,6 +13,7 @@ export const PRODUCTS: Product[] = [
       'https://images.unsplash.com/photo-1507473885765-e6ed057f782c?auto=format&fit=crop&q=80&w=800'
     ],
     badges: ['New', 'Eco-friendly'],
+    videos: ['https://assets.mixkit.co/videos/preview/mixkit-decorating-a-room-with-flowers-and-lamps-42525-large.mp4'],
     upsellIds: ['2', '4'],
     stock: 12,
     variants: [

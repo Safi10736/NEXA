@@ -3,7 +3,7 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useProducts } from '../ProductContext';
 import { formatPrice, cn } from '../lib/utils';
 import { useState } from 'react';
-import { Star, Truck, ShieldCheck, RefreshCw, ShoppingBag, Plus, Minus, ArrowRight, Zap } from 'lucide-react';
+import { Star, Truck, ShieldCheck, RefreshCw, ShoppingBag, Plus, Minus, ArrowRight, Zap, Play } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import ProductCard from './ProductCard';
 import QuickViewModal from './QuickViewModal';
@@ -313,6 +313,39 @@ export default function ProductPage() {
             </div>
           </div>
         </div>
+
+        {/* Cinematic Presentation */}
+        {product.videos && product.videos.length > 0 && (
+          <section className="mb-24 px-6 pt-12 border-t border-neutral-100">
+            <div className="flex justify-between items-end mb-12">
+              <div>
+                <span className="text-[10px] font-bold tracking-[.43em] uppercase text-brand-accent mb-4 block">{lang === 'BN' ? 'সিনেমাটিক উপস্থাপনা' : 'Cinematic Presentation'}</span>
+                <h2 className="text-4xl font-light text-neutral-900 tracking-tighter serif italic">{lang === 'BN' ? 'উৎপাদন ও কারুকার্য' : 'Craftmanship in Motion'}</h2>
+              </div>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+              {product.videos.map((video, idx) => (
+                <motion.div 
+                  key={idx}
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  viewport={{ once: true }}
+                  className="aspect-video rounded-[2.5rem] overflow-hidden bg-black border border-neutral-100 shadow-2xl relative group"
+                >
+                  <video 
+                    src={video} 
+                    controls 
+                    className="w-full h-full object-cover"
+                    poster={product.images[0]}
+                  />
+                  <div className="absolute top-6 left-6 p-3 bg-white/20 backdrop-blur-md rounded-full pointer-events-none">
+                    <Play className="w-5 h-5 text-white" />
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </section>
+        )}
 
         {/* Intelligent Upselling */}
         {upsellProducts.length > 0 && (

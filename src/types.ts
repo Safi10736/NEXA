@@ -20,6 +20,7 @@ export interface Product {
   price: number;
   category: Category;
   images: string[];
+  videos?: string[];
   variants?: {
     type: string;
     options: ProductVariant[];

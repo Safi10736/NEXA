@@ -14,6 +14,7 @@ import {
   GripVertical,
   Package,
   Image as ImageIcon,
+  Play,
   Layers,
   Settings
 } from 'lucide-react';
@@ -35,6 +36,7 @@ export default function ProductForm({ initialData, onClose, onSave }: ProductFor
     isPreOrder: false,
     description: '',
     images: ['https://images.unsplash.com/photo-1550684848-fac1c5b4e853?auto=format&fit=crop&q=80&w=800'],
+    videos: [],
     badges: [],
     variants: [],
     upsellIds: []
@@ -79,6 +81,19 @@ export default function ProductForm({ initialData, onClose, onSave }: ProductFor
       setFormData({ ...formData, images: [...formData.images, urlInput.value] });
       urlInput.value = '';
     }
+  };
+
+  const addVideoUrl = () => {
+    const urlInput = document.getElementById('new-video-url') as HTMLInputElement;
+    if (urlInput && urlInput.value) {
+      setFormData({ ...formData, videos: [...(formData.videos || []), urlInput.value] });
+      urlInput.value = '';
+    }
+  };
+
+  const removeVideo = (index: number) => {
+    const newVideos = formData.videos.filter((_: any, i: number) => i !== index);
+    setFormData({ ...formData, videos: newVideos });
   };
 
   const setPrimaryImage = (index: number) => {
@@ -506,6 +521,57 @@ export default function ProductForm({ initialData, onClose, onSave }: ProductFor
                           </label>
                         </div>
                       )}
+                   </div>
+
+                   {/* video section */}
+                   <div className="space-y-6 pt-6 border-t border-neutral-900">
+                      <div className="flex items-center gap-4 ml-4">
+                         <h4 className="text-[10px] font-bold uppercase tracking-widest text-neutral-400">Video Integration</h4>
+                         <div className="h-px flex-1 bg-neutral-900" />
+                      </div>
+                      
+                      <div className="flex gap-3">
+                         <input 
+                           id="new-video-url"
+                           type="text" 
+                           className="flex-1 bg-neutral-900 border border-neutral-800 rounded-2xl py-4 px-6 text-sm focus:ring-1 focus:ring-brand-accent outline-none font-medium text-white shadow-inner"
+                           placeholder="Enter video URL (Direct mp4 or YouTube/Vimeo)..."
+                           onKeyPress={(e) => {
+                             if (e.key === 'Enter') {
+                               e.preventDefault();
+                               addVideoUrl();
+                             }
+                           }}
+                         />
+                         <button 
+                           type="button" 
+                           onClick={addVideoUrl}
+                           className="px-8 bg-brand-accent rounded-2xl hover:scale-105 transition-all text-white shadow-xl shadow-brand-accent/20"
+                         >
+                           <Plus className="w-5 h-5" />
+                         </button>
+                      </div>
+
+                      <div className="grid grid-cols-1 gap-3">
+                         {(formData.videos || []).map((video: string, idx: number) => (
+                            <div key={idx} className="flex items-center gap-6 bg-neutral-900/50 p-5 rounded-[2rem] border border-neutral-900/50 group">
+                               <div className="w-16 h-16 rounded-2xl overflow-hidden flex-shrink-0 border border-neutral-800 bg-black flex items-center justify-center">
+                                 <Play className="w-6 h-6 text-brand-accent" />
+                               </div>
+                               <div className="flex-1 min-w-0">
+                                  <span className="text-[10px] font-bold text-white uppercase tracking-widest opacity-80">Video Asset #{idx + 1}</span>
+                                  <p className="text-[9px] text-neutral-500 truncate mt-1.5 font-mono">{video}</p>
+                               </div>
+                               <button 
+                                 type="button"
+                                 onClick={() => removeVideo(idx)}
+                                 className="p-3 bg-red-500/10 text-red-500 rounded-full hover:bg-red-500 hover:text-white transition-all duration-300"
+                               >
+                                 <Trash2 className="w-4 h-4" />
+                               </button>
+                            </div>
+                         ))}
+                      </div>
                    </div>
 
                    {/* Image Library Grid with Reordering */}

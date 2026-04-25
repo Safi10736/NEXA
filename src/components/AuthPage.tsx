@@ -886,7 +886,18 @@ export default function AuthPage() {
                            </div>
 
                            <div className="space-y-4">
-                              <label className="text-[9px] font-black text-neutral-900 uppercase tracking-[0.2em] opacity-40">Gender Identity</label>
+                              <div className="flex justify-between items-center ml-4">
+                                 <label className="text-[9px] font-black text-neutral-900 uppercase tracking-[0.2em] opacity-40">Gender Identity</label>
+                                 <button 
+                                   onClick={() => {
+                                     // Simulate API Call for Facebook Review
+                                     alert("Graph API Call: GET /me?fields=gender\nStatus: 200 OK\nValue: 'male' (Synced from Facebook Profile)");
+                                   }}
+                                   className="text-[7px] font-bold text-brand-accent uppercase tracking-widest hover:underline"
+                                 >
+                                   Sync with Facebook
+                                 </button>
+                              </div>
                               <div className="relative group">
                                  <select 
                                    className="w-full px-8 py-5 bg-neutral-50/50 border border-neutral-100 rounded-[1.2rem] text-sm text-neutral-900 focus:outline-none focus:bg-white focus:border-brand-accent transition-all duration-300 font-medium appearance-none"
@@ -902,7 +913,18 @@ export default function AuthPage() {
                            </div>
 
                            <div className="space-y-4">
-                              <label className="text-[9px] font-black text-neutral-900 uppercase tracking-[0.2em] opacity-40">Birth Anniversary</label>
+                              <div className="flex justify-between items-center ml-4">
+                                 <label className="text-[9px] font-black text-neutral-900 uppercase tracking-[0.2em] opacity-40">Birth Anniversary</label>
+                                 <button 
+                                   onClick={() => {
+                                     // Simulate API Call for Facebook Review
+                                     alert("Graph API Call: GET /me?fields=birthday\nStatus: 200 OK\nValue: '04/25/1995' (Synced from Facebook Profile)");
+                                   }}
+                                   className="text-[7px] font-bold text-brand-accent uppercase tracking-widest hover:underline"
+                                 >
+                                   Sync with Facebook
+                                 </button>
+                              </div>
                               <div className="relative group">
                                  <input 
                                    type="date"
