@@ -439,6 +439,8 @@ import { LanguageProvider, useLanguage } from './LanguageContext';
 
 import { AppearanceProvider } from './AppearanceContext';
 
+import WhatsAppButton from './components/WhatsAppButton';
+
 export default function App() {
   return (
     <AppearanceProvider>
@@ -500,6 +502,7 @@ function AppContent() {
       <AdminQuickEntry />
 
       <ChatWidget />
+      <WhatsAppButton />
     </div>
   );
 }
@@ -518,7 +521,7 @@ function AuthPrompt() {
     <motion.div
       initial={{ x: 100, opacity: 0 }}
       animate={{ x: 0, opacity: 1 }}
-      className="fixed bottom-28 right-8 z-[90]"
+      className="fixed bottom-48 right-8 z-[90]"
     >
       <Link 
         to="/profile"
@@ -543,7 +546,7 @@ function AdminQuickEntry() {
     <motion.div
       initial={{ x: -100, opacity: 0 }}
       animate={{ x: 0, opacity: 1 }}
-      className="fixed bottom-28 left-8 z-[90]"
+      className="fixed bottom-48 left-8 z-[90]"
     >
       <Link 
         to="/admin"
