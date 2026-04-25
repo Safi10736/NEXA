@@ -243,7 +243,10 @@ export default function AdminSettings() {
                             <input 
                               type="text"
                               value={tempSettings.heroBannerUrl}
-                              onChange={(e) => setTempSettings(prev => ({ ...prev, heroBannerUrl: e.target.value }))}
+                              onChange={(e) => {
+                                setTempSettings(prev => ({ ...prev, heroBannerUrl: e.target.value }));
+                                setUploadError(null);
+                              }}
                               placeholder="IMAGE URL (.JPG / .PNG)"
                               className="w-full pl-16 pr-6 py-5 bg-neutral-900 border border-neutral-800 rounded-2xl text-[10px] font-bold tracking-widest uppercase text-white placeholder:text-neutral-700 focus:outline-none focus:border-brand-accent transition-all"
                             />
@@ -257,19 +260,40 @@ export default function AdminSettings() {
                             )}
                           </label>
                         </div>
-                        {tempSettings.heroBannerUrl && (
-                          <div className="px-4">
-                            <div className="h-32 w-full rounded-2xl overflow-hidden border border-neutral-800 relative">
-                               <img src={tempSettings.heroBannerUrl} className="w-full h-full object-cover opacity-50" referrerPolicy="no-referrer" />
-                               <div className="absolute inset-0 flex items-center justify-center">
+                        <div className="px-4">
+                            <div className="h-48 w-full rounded-2xl overflow-hidden border border-neutral-800 relative bg-neutral-950/50">
+                               {tempSettings.heroBannerUrl ? (
+                                 <img 
+                                   src={tempSettings.heroBannerUrl} 
+                                   className="w-full h-full object-cover" 
+                                   referrerPolicy="no-referrer"
+                                   onError={(e) => {
+                                     e.currentTarget.style.display = 'none';
+                                     const p = e.currentTarget.parentElement?.querySelector('.error-msg');
+                                     if (p) p.classList.remove('hidden');
+                                   }}
+                                   onLoad={(e) => {
+                                     e.currentTarget.style.display = 'block';
+                                     const p = e.currentTarget.parentElement?.querySelector('.error-msg');
+                                     if (p) p.classList.add('hidden');
+                                   }}
+                                 />
+                               ) : (
+                                 <div className="absolute inset-0 flex items-center justify-center text-neutral-800 uppercase text-[8px] font-bold tracking-widest">
+                                    No Image Assigned
+                                 </div>
+                               )}
+                               <div className="error-msg hidden absolute inset-0 flex items-center justify-center bg-red-950/20 text-red-500 text-[10px] uppercase font-bold tracking-widest">
+                                  Invalid Image URL
+                               </div>
+                               <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                                   <div className="px-3 py-1 bg-black/60 backdrop-blur-md rounded-full border border-white/10 flex items-center gap-2">
                                      <CheckCircle2 className="w-3 h-3 text-green-500" />
-                                     <span className="text-[7px] text-white font-bold uppercase tracking-widest leading-none">PREVIEW LOADED</span>
+                                     <span className="text-[7px] text-white font-bold uppercase tracking-widest leading-none">REAL-TIME PREVIEW</span>
                                   </div>
                                </div>
                             </div>
                           </div>
-                        )}
                       </div>
 
                       {/* Login Sidebar Setting */}
@@ -284,7 +308,10 @@ export default function AdminSettings() {
                             <input 
                               type="text"
                               value={tempSettings.loginSidebarUrl}
-                              onChange={(e) => setTempSettings(prev => ({ ...prev, loginSidebarUrl: e.target.value }))}
+                              onChange={(e) => {
+                                setTempSettings(prev => ({ ...prev, loginSidebarUrl: e.target.value }));
+                                setUploadError(null);
+                              }}
                               placeholder="IMAGE URL (.JPG / .PNG)"
                               className="w-full pl-16 pr-6 py-5 bg-neutral-900 border border-neutral-800 rounded-2xl text-[10px] font-bold tracking-widest uppercase text-white placeholder:text-neutral-700 focus:outline-none focus:border-brand-accent transition-all"
                             />
@@ -298,25 +325,53 @@ export default function AdminSettings() {
                             )}
                           </label>
                         </div>
-                        {tempSettings.loginSidebarUrl && (
-                          <div className="px-4">
-                            <div className="h-32 w-full rounded-2xl overflow-hidden border border-neutral-800 relative">
-                               <img src={tempSettings.loginSidebarUrl} className="w-full h-full object-cover opacity-50" referrerPolicy="no-referrer" />
-                               <div className="absolute inset-0 flex items-center justify-center">
+                        <div className="px-4">
+                            <div className="h-48 w-full rounded-2xl overflow-hidden border border-neutral-800 relative bg-neutral-950/50">
+                               {tempSettings.loginSidebarUrl ? (
+                                 <img 
+                                   src={tempSettings.loginSidebarUrl} 
+                                   className="w-full h-full object-cover" 
+                                   referrerPolicy="no-referrer"
+                                   onError={(e) => {
+                                     e.currentTarget.style.display = 'none';
+                                     const p = e.currentTarget.parentElement?.querySelector('.error-msg');
+                                     if (p) p.classList.remove('hidden');
+                                   }}
+                                   onLoad={(e) => {
+                                     e.currentTarget.style.display = 'block';
+                                     const p = e.currentTarget.parentElement?.querySelector('.error-msg');
+                                     if (p) p.classList.add('hidden');
+                                   }}
+                                 />
+                               ) : (
+                                 <div className="absolute inset-0 flex items-center justify-center text-neutral-800 uppercase text-[8px] font-bold tracking-widest">
+                                    No Image Assigned
+                                 </div>
+                               )}
+                               <div className="error-msg hidden absolute inset-0 flex items-center justify-center bg-red-950/20 text-red-500 text-[10px] uppercase font-bold tracking-widest">
+                                  Invalid Image URL
+                               </div>
+                               <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                                   <div className="px-3 py-1 bg-black/60 backdrop-blur-md rounded-full border border-white/10 flex items-center gap-2">
                                      <CheckCircle2 className="w-3 h-3 text-green-500" />
-                                     <span className="text-[7px] text-white font-bold uppercase tracking-widest leading-none">PREVIEW LOADED</span>
+                                     <span className="text-[7px] text-white font-bold uppercase tracking-widest leading-none">REAL-TIME PREVIEW</span>
                                   </div>
                                </div>
                             </div>
                           </div>
-                        )}
                       </div>
 
                       {uploadError && (
-                        <div className="px-4 py-3 bg-red-500/10 border border-red-500/20 rounded-2xl flex items-center gap-3">
-                           <div className="w-1.5 h-1.5 rounded-full bg-red-500" />
-                           <span className="text-[8px] text-red-400 font-bold uppercase tracking-widest">{uploadError}</span>
+                        <div className="px-4 py-3 bg-red-500/10 border border-red-500/20 rounded-2xl flex flex-col gap-1">
+                           <div className="flex items-center gap-3">
+                             <div className="w-1.5 h-1.5 rounded-full bg-red-500" />
+                             <span className="text-[8px] text-red-400 font-bold uppercase tracking-widest">{uploadError}</span>
+                           </div>
+                           {uploadError.toLowerCase().includes('bucket not found') && (
+                             <p className="text-[7px] text-neutral-500 uppercase tracking-tighter pl-4">
+                               Action Required: Create a public bucket named 'assets' in your Supabase storage dashboard.
+                             </p>
+                           )}
                         </div>
                       )}
                    </div>
