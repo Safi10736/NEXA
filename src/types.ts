@@ -28,6 +28,10 @@ export interface Product {
   badges: ('Eco-friendly' | 'New' | 'Pre-order')[];
   upsellIds: string[]; // Frequently bought together
   stock: number;
+  flashSale?: {
+    endTime: number;
+    salePrice: number;
+  };
 }
 
 export interface Review {

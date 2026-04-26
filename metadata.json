@@ -1,6 +1,6 @@
 {
   "name": "NEXA",
-  "description": "High-end, minimalist e-commerce store for handcrafted home decoration and table lamps featuring interactive lifestyle shopping and intelligent upselling.",
-  "requestFramePermissions": [],
+  "description": "High-end, minimalist e-commerce store with immersive 3D/virtual galleries and core AR Try-On technology for handcrafted home decoration and table lamps.",
+  "requestFramePermissions": ["camera"],
   "majorCapabilities": []
 }

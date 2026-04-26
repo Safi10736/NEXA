@@ -10,10 +10,15 @@ export const PRODUCTS: Product[] = [
     category: 'Table Lamps',
     images: [
       'https://images.unsplash.com/photo-1534073828943-f801091bb18c?auto=format&fit=crop&q=80&w=800',
-      'https://images.unsplash.com/photo-1507473885765-e6ed057f782c?auto=format&fit=crop&q=80&w=800'
+      'https://images.unsplash.com/photo-1507473885765-e6ed057f782c?auto=format&fit=crop&q=80&w=800',
+      'https://images.unsplash.com/photo-1513506003901-1e6a229e2d15?auto=format&fit=crop&q=80&w=800',
+      'https://images.unsplash.com/photo-1510127034890-ba27508e9f1c?auto=format&fit=crop&q=80&w=800'
     ],
     badges: ['New', 'Eco-friendly'],
-    videos: ['https://assets.mixkit.co/videos/preview/mixkit-decorating-a-room-with-flowers-and-lamps-42525-large.mp4'],
+    videos: [
+      'https://assets.mixkit.co/videos/preview/mixkit-decorating-a-room-with-flowers-and-lamps-42525-large.mp4',
+      'https://assets.mixkit.co/videos/preview/mixkit-modern-apartment-with-living-room-and-bedroom-42511-large.mp4'
+    ],
     upsellIds: ['2', '4'],
     stock: 12,
     variants: [
@@ -37,6 +42,10 @@ export const PRODUCTS: Product[] = [
     badges: ['Eco-friendly'],
     upsellIds: ['1'],
     stock: 5,
+    flashSale: {
+      endTime: Date.now() + 1000 * 60 * 60 * 24, // 24 hours from now
+      salePrice: 145
+    },
     variants: [
       {
         type: 'Size',

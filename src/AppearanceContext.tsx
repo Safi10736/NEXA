@@ -4,17 +4,20 @@ import { supabase } from './lib/supabase';
 interface AppearanceSettings {
   heroBannerUrl: string;
   loginSidebarUrl: string;
+  theme: 'light' | 'dark';
 }
 
 interface AppearanceContextType {
   settings: AppearanceSettings;
   updateSettings: (newSettings: Partial<AppearanceSettings>) => Promise<void>;
+  toggleTheme: () => void;
   loading: boolean;
 }
 
 const DEFAULT_SETTINGS: AppearanceSettings = {
   heroBannerUrl: 'https://images.unsplash.com/photo-1620808461872-9cc911043900?auto=format&fit=crop&q=85&w=2400',
-  loginSidebarUrl: 'https://images.unsplash.com/photo-1560393464-5c69a73c5770?auto=format&fit=crop&q=80&w=800'
+  loginSidebarUrl: 'https://images.unsplash.com/photo-1560393464-5c69a73c5770?auto=format&fit=crop&q=80&w=800',
+  theme: 'light'
 };
 
 const AppearanceContext = createContext<AppearanceContextType | undefined>(undefined);
@@ -64,6 +67,19 @@ export function AppearanceProvider({ children }: { children: React.ReactNode }) 
     };
   }, []);
 
+  useEffect(() => {
+    if (settings.theme === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, [settings.theme]);
+
+  const toggleTheme = () => {
+    const newTheme = settings.theme === 'light' ? 'dark' : 'light';
+    updateSettings({ theme: newTheme });
+  };
+
   const updateSettings = async (newSettings: Partial<AppearanceSettings>) => {
     const updated = { ...settings, ...newSettings };
     setSettings(updated);
@@ -90,7 +106,7 @@ export function AppearanceProvider({ children }: { children: React.ReactNode }) 
   };
 
   return (
-    <AppearanceContext.Provider value={{ settings, updateSettings, loading }}>
+    <AppearanceContext.Provider value={{ settings, updateSettings, toggleTheme, loading }}>
       {children}
     </AppearanceContext.Provider>
   );

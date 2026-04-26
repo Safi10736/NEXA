@@ -22,7 +22,7 @@ import AdminCustomers from './pages/admin/Customers';
 import AdminSettings from './pages/admin/Settings';
 import AdminGallery from './pages/admin/Gallery';
 import { Star, MessageCircle, Instagram, Twitter, Facebook, ArrowRight, User as UserIcon, ShieldCheck, BarChart3, Linkedin, Youtube, Plus, Minus } from 'lucide-react';
-import { motion } from 'motion/react';
+import { motion, AnimatePresence } from 'motion/react';
 import { cn } from './lib/utils';
 import ProductCard from './components/ProductCard';
 import QuickViewModal from './components/QuickViewModal';
@@ -35,6 +35,15 @@ import { ProductProvider, useProducts } from './ProductContext';
 import { WishlistProvider } from './WishlistContext';
 import FlyToCartRenderer from './components/FlyToCart';
 import { useAdmin } from './hooks/useAdmin';
+import { LanguageProvider, useLanguage } from './LanguageContext';
+import { AppearanceProvider } from './AppearanceContext';
+import { NotificationProvider } from './NotificationContext';
+import FlashSaleBanner from './components/FlashSaleBanner';
+import PriceDropMonitor from './components/PriceDropMonitor';
+import VirtualShowroom from './components/VirtualShowroom';
+import ARTeaser from './components/ARTeaser';
+import WhatsAppButton from './components/WhatsAppButton';
+import PWAPrompt from './components/PWAPrompt';
 
 function FeaturedCollections() {
   const [items, setItems] = useState<any[]>([]);
@@ -411,6 +420,8 @@ function HomePage() {
     <>
       <Hero />
       <FeaturedCollections />
+      <VirtualShowroom />
+      <ARTeaser />
       <BestsellingSection />
       <SecondaryTeasers />
       <EnhancedReviewSection />
@@ -435,12 +446,6 @@ function ScrollToTop() {
   return null;
 }
 
-import { LanguageProvider, useLanguage } from './LanguageContext';
-
-import { AppearanceProvider } from './AppearanceContext';
-
-import WhatsAppButton from './components/WhatsAppButton';
-
 export default function App() {
   return (
     <AppearanceProvider>
@@ -449,9 +454,11 @@ export default function App() {
           <ProductProvider>
             <CartProvider>
               <WishlistProvider>
-                <BrowserRouter>
-                  <AppContent />
-                </BrowserRouter>
+                <NotificationProvider>
+                  <BrowserRouter>
+                    <AppContent />
+                  </BrowserRouter>
+                </NotificationProvider>
               </WishlistProvider>
             </CartProvider>
           </ProductProvider>
@@ -463,33 +470,47 @@ export default function App() {
 
 function AppContent() {
   const { t, lang } = useLanguage();
+  const location = useLocation();
   
   return (
     <div className="min-h-screen bg-brand-bg font-sans text-neutral-900 selection:bg-brand-accent selection:text-white">
+      <PWAPrompt />
+      <PriceDropMonitor />
+      <FlashSaleBanner />
       <Navbar />
       <FlyToCartRenderer />
       
-      <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/shop" element={<ShopPage />} />
-        <Route path="/gallery" element={<GalleryPage />} />
-        <Route path="/about" element={<AboutPage />} />
-        <Route path="/support" element={<SupportPage />} />
-        <Route path="/contact" element={<ContactPage />} />
-        <Route path="/product/:slug" element={<ProductPage />} />
-        <Route path="/profile" element={<AuthPage />} />
-        <Route path="/checkout" element={<CheckoutPage />} />
-        <Route path="/success" element={<SuccessPage />} />
-        <Route path="/track" element={<OrderTracker />} />
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={location.pathname}
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -10 }}
+          transition={{ duration: 0.3, ease: 'easeInOut' }}
+        >
+          <Routes location={location}>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/shop" element={<ShopPage />} />
+            <Route path="/gallery" element={<GalleryPage />} />
+            <Route path="/about" element={<AboutPage />} />
+            <Route path="/support" element={<SupportPage />} />
+            <Route path="/contact" element={<ContactPage />} />
+            <Route path="/product/:slug" element={<ProductPage />} />
+            <Route path="/profile" element={<AuthPage />} />
+            <Route path="/checkout" element={<CheckoutPage />} />
+            <Route path="/success" element={<SuccessPage />} />
+            <Route path="/track" element={<OrderTracker />} />
 
-        {/* Admin Routes */}
-        <Route path="/admin" element={<AdminDashboard />} />
-        <Route path="/admin/products" element={<AdminInventory />} />
-        <Route path="/admin/orders" element={<AdminOrders />} />
-        <Route path="/admin/customers" element={<AdminCustomers />} />
-        <Route path="/admin/settings" element={<AdminSettings />} />
-        <Route path="/admin/gallery" element={<AdminGallery />} />
-      </Routes>
+            {/* Admin Routes */}
+            <Route path="/admin" element={<AdminDashboard />} />
+            <Route path="/admin/products" element={<AdminInventory />} />
+            <Route path="/admin/orders" element={<AdminOrders />} />
+            <Route path="/admin/customers" element={<AdminCustomers />} />
+            <Route path="/admin/settings" element={<AdminSettings />} />
+            <Route path="/admin/gallery" element={<AdminGallery />} />
+          </Routes>
+        </motion.div>
+      </AnimatePresence>
 
       <Footer />
       

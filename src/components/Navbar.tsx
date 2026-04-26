@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Menu, X, ShoppingBag, Search, User, Globe, Instagram, Facebook, Twitter, Linkedin, Youtube, Heart } from 'lucide-react';
+import { Menu, X, ShoppingBag, Search, User, Globe, Instagram, Facebook, Twitter, Linkedin, Youtube, Heart, Moon, Sun } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Link, useLocation } from 'react-router-dom';
 import { cn } from '../lib/utils';
@@ -8,14 +8,18 @@ import { useAuth } from '../AuthContext';
 import { useCart } from '../CartContext';
 import { useWishlist } from '../WishlistContext';
 import { useLanguage } from '../LanguageContext';
+import { useAppearance } from '../AppearanceContext';
+import SearchOverlay from './SearchOverlay';
 
 export default function Navbar() {
   const { user } = useAuth();
   const { setIsCartOpen, cartCount, isDraggingProduct } = useCart();
   const { wishlist } = useWishlist();
   const { lang, setLang, t } = useLanguage();
+  const { settings, toggleTheme } = useAppearance();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
   const location = useLocation();
 
   useEffect(() => {
@@ -33,7 +37,9 @@ export default function Navbar() {
     <nav
       className={cn(
         'fixed top-0 left-0 right-0 z-50 transition-all duration-300 px-6 py-4 flex items-center justify-between',
-        showDarkNav ? 'bg-brand-bg/95 backdrop-blur-md border-b border-neutral-100 py-3' : 'bg-transparent'
+        showDarkNav 
+          ? 'bg-brand-bg/80 backdrop-blur-xl border-b border-white/10 py-3 shadow-[0_8px_32px_rgba(0,0,0,0.05)]' 
+          : 'bg-transparent'
       )}
     >
       <div className="flex items-center gap-8">
@@ -41,7 +47,7 @@ export default function Navbar() {
           onClick={() => setIsMenuOpen(true)}
           className={cn(
             "p-2 rounded-full transition-colors",
-            showDarkNav ? "hover:bg-neutral-100 text-neutral-900" : "hover:bg-white/10 text-neutral-900"
+            showDarkNav ? "hover:bg-white/10 text-neutral-900" : "hover:bg-white/10 text-neutral-900"
           )}
         >
           <Menu className="w-6 h-6" />
@@ -49,12 +55,12 @@ export default function Navbar() {
 
         <Link to="/" className="group flex items-center gap-2">
           <span className={cn(
-            'text-2xl font-bold tracking-[0.2em] uppercase transition-colors serif italic',
+            'text-2xl font-bold tracking-[0.2em] uppercase transition-all duration-500 serif italic',
             showDarkNav ? 'text-brand-accent' : 'text-neutral-900'
           )}>
             Nexa
           </span>
-          {!showDarkNav && <div className="w-1.5 h-1.5 rounded-full bg-brand-accent" />}
+          {!showDarkNav && <div className="w-1.5 h-1.5 rounded-full bg-brand-accent animate-pulse" />}
         </Link>
       </div>
 
@@ -71,26 +77,45 @@ export default function Navbar() {
           <Link
             key={item.id}
             to="/shop"
-            className="hover:text-brand-accent transition-colors"
+            className="hover:text-brand-accent transition-colors relative group"
           >
             {item.label}
+            <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-brand-accent transition-all group-hover:w-full" />
           </Link>
         ))}
       </div>
 
       <div className="flex items-center gap-4">
         <button
+          onClick={toggleTheme}
+          className={cn(
+            "p-2 rounded-full transition-all duration-500 hover:scale-110",
+            showDarkNav ? "bg-white/5 text-neutral-900" : "bg-white/10 text-neutral-900"
+          )}
+          aria-label="Toggle theme"
+        >
+          {settings.theme === 'dark' ? (
+            <Sun className="w-5 h-5 text-brand-gold" />
+          ) : (
+            <Moon className="w-5 h-5 text-brand-accent" />
+          )}
+        </button>
+
+        <button
           onClick={() => setLang(l => l === 'EN' ? 'BN' : 'EN')}
           className={cn(
-            "flex items-center gap-1.5 text-[10px] font-medium tracking-[.15em] border rounded-full px-3 py-1 transition-colors uppercase",
-            showDarkNav ? "border-neutral-200 text-neutral-900 hover:border-brand-accent" : "border-neutral-200 text-neutral-900 hover:border-brand-accent"
+            "flex items-center gap-1.5 text-[10px] font-medium tracking-[.15em] border rounded-full px-4 py-1.5 transition-colors uppercase",
+            showDarkNav ? "border-white/10 text-neutral-900 hover:border-brand-accent shadow-sm" : "border-neutral-200 text-neutral-900 hover:border-brand-accent"
           )}
         >
           <Globe className="w-3.5 h-3.5" />
           {lang}
         </button>
         
-        <button className={cn("p-2 rounded-full transition-colors hidden sm:block", "hover:bg-neutral-100 text-neutral-900")}>
+        <button 
+          onClick={() => setIsSearchOpen(true)}
+          className={cn("p-2 rounded-full transition-colors", "hover:bg-neutral-100 text-neutral-900", isSearchOpen && "scale-110 bg-neutral-100")}
+        >
           <Search className="w-5 h-5" />
         </button>
 
@@ -241,6 +266,8 @@ export default function Navbar() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      <SearchOverlay isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
     </nav>
   );
 }

@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useProducts } from '../ProductContext';
 import ProductCard from './ProductCard';
 import QuickViewModal from './QuickViewModal';
 import { motion } from 'motion/react';
 import { Search, SlidersHorizontal, ArrowLeft } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { Product } from '../types';
 
 import { useLanguage } from '../LanguageContext';
@@ -12,9 +12,15 @@ import { useLanguage } from '../LanguageContext';
 export default function ShopPage() {
   const { products, loading } = useProducts();
   const { t } = useLanguage();
-  const [searchQuery, setSearchQuery] = useState('');
-  const [activeCategory, setActiveCategory] = useState('All');
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchQuery, setSearchQuery] = useState(searchParams.get('q') || '');
+  const [activeCategory, setActiveCategory] = useState(searchParams.get('category') || 'All');
   
+  useEffect(() => {
+    setSearchQuery(searchParams.get('q') || '');
+    setActiveCategory(searchParams.get('category') || 'All');
+  }, [searchParams]);
+
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [isQuickViewOpen, setIsQuickViewOpen] = useState(false);
 
@@ -23,11 +29,39 @@ export default function ShopPage() {
     setIsQuickViewOpen(true);
   };
 
-  const categories = ['All', ...Array.from(new Set(products.map(p => p.category)))];
+  const categories: string[] = ['All', ...(Array.from(new Set(products.map(p => p.category))) as string[])];
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value;
+    setSearchQuery(val);
+    if (val) {
+      const newParams = new URLSearchParams(searchParams);
+      newParams.set('q', val);
+      setSearchParams(newParams);
+    } else {
+      const newParams = new URLSearchParams(searchParams);
+      newParams.delete('q');
+      setSearchParams(newParams);
+    }
+  };
+
+  const handleCategoryChange = (cat: string) => {
+    setActiveCategory(cat);
+    if (cat !== 'All') {
+      const newParams = new URLSearchParams(searchParams);
+      newParams.set('category', cat);
+      setSearchParams(newParams);
+    } else {
+      const newParams = new URLSearchParams(searchParams);
+      newParams.delete('category');
+      setSearchParams(newParams);
+    }
+  };
 
   const filteredProducts = products.filter(p => {
     const matchesSearch = p.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                          p.description.toLowerCase().includes(searchQuery.toLowerCase());
+                          p.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                          p.category.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesCategory = activeCategory === 'All' || p.category === activeCategory;
     return matchesSearch && matchesCategory;
   });
@@ -54,7 +88,7 @@ export default function ShopPage() {
                 type="text"
                 placeholder={t('searchProducts')}
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={handleSearchChange}
                 className="w-full sm:w-64 bg-white border border-neutral-100 rounded-full py-4 pl-12 pr-6 text-[10px] font-bold uppercase tracking-widest outline-none focus:ring-2 focus:ring-brand-accent/20 transition-all"
               />
             </div>
@@ -70,7 +104,7 @@ export default function ShopPage() {
           {categories.map((cat) => (
             <button
               key={cat}
-              onClick={() => setActiveCategory(cat)}
+              onClick={() => handleCategoryChange(cat)}
               className={`
                 px-8 py-3 rounded-full text-[9px] font-bold uppercase tracking-widest transition-all whitespace-nowrap
                 ${activeCategory === cat 
@@ -105,7 +139,7 @@ export default function ShopPage() {
           <div className="h-96 flex flex-col items-center justify-center text-center">
             <p className="text-xl font-light text-neutral-400 mb-4 tracking-tighter">{t('noItemsFound')}</p>
             <button 
-              onClick={() => { setSearchQuery(''); setActiveCategory('All'); }}
+              onClick={() => { setSearchQuery(''); setActiveCategory('All'); setSearchParams({}); }}
               className="text-brand-accent text-[10px] font-bold uppercase tracking-widest border-b border-brand-accent/20 pb-1"
             >
               {t('clearFilters')}

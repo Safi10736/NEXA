@@ -889,13 +889,21 @@ export default function AuthPage() {
                               <div className="flex justify-between items-center ml-4">
                                  <label className="text-[9px] font-black text-neutral-900 uppercase tracking-[0.2em] opacity-40">Gender Identity</label>
                                  <button 
-                                   onClick={() => {
-                                     // Simulate API Call for Facebook Review
-                                     alert("Graph API Call: GET /me?fields=gender\nStatus: 200 OK\nValue: 'male' (Synced from Facebook Profile)");
+                                   onClick={async () => {
+                                     const token = prompt("Enter FB User Access Token (from Graph API Explorer):");
+                                     if (!token) return;
+                                     try {
+                                       // This satisfies Meta's 'required test call' for user_gender
+                                       const res = await fetch(`https://graph.facebook.com/v19.0/me?fields=gender&access_token=${token}`);
+                                       const data = await res.json();
+                                       alert("Meta Graph API Response: " + JSON.stringify(data));
+                                     } catch (e) {
+                                       alert("Execution Error: " + e);
+                                     }
                                    }}
                                    className="text-[7px] font-bold text-brand-accent uppercase tracking-widest hover:underline"
                                  >
-                                   Sync with Facebook
+                                   Meta API Test (user_gender)
                                  </button>
                               </div>
                               <div className="relative group">

@@ -1,14 +1,17 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useProducts } from '../ProductContext';
 import { formatPrice, cn } from '../lib/utils';
-import { useState } from 'react';
-import { Star, Truck, ShieldCheck, RefreshCw, ShoppingBag, Plus, Minus, ArrowRight, Zap, Play } from 'lucide-react';
-import { motion, AnimatePresence } from 'motion/react';
+import { useState, useEffect } from 'react';
+import { Star, Truck, ShieldCheck, RefreshCw, ShoppingBag, Plus, Minus, ArrowRight, Zap, Play, CheckCircle2, Smartphone, Bell } from 'lucide-react';
+import { motion, AnimatePresence, useScroll, useTransform } from 'motion/react';
 import ProductCard from './ProductCard';
 import QuickViewModal from './QuickViewModal';
+import ProductViewer360 from './ProductViewer360';
+import ARTryOnModal from './ARTryOnModal';
 import { useCart } from '../CartContext';
 import { useLanguage } from '../LanguageContext';
+import { useNotifications } from '../NotificationContext';
 import { Product } from '../types';
 
 export default function ProductPage() {
@@ -16,12 +19,36 @@ export default function ProductPage() {
   const navigate = useNavigate();
   const { products, loading: productsLoading } = useProducts();
   const { t, lang } = useLanguage();
+  const { addNotification } = useNotifications();
+  const galleryRef = useRef<HTMLDivElement>(null);
+
+  const [isAdded, setIsAdded] = useState(false);
+  const [viewMode, setViewMode] = useState<'standard' | '360' | 'video'>('standard');
+  const [isAROpen, setIsAROpen] = useState(false);
   
+  const { scrollYProgress } = useScroll({
+    target: galleryRef,
+    offset: ["start end", "end start"]
+  });
+
+  const parallaxY = useTransform(scrollYProgress, [0, 1], [0, -100]);
+  const parallaxRotate = useTransform(scrollYProgress, [0, 1], [0, 5]);
+
   // Ultra-robust matching: ignore spaces, hyphens and case for maximum compatibility
   const product = products.find(p => {
     const normalize = (s: string) => String(s || '').toLowerCase().replace(/[^a-z0-9]/g, '');
     return normalize(p.slug) === normalize(slug || '');
   });
+
+  // Track Viewed Product
+  useEffect(() => {
+    if (product) {
+      const viewed = JSON.parse(localStorage.getItem('viewed_products') || '[]');
+      if (!viewed.includes(product.id)) {
+        localStorage.setItem('viewed_products', JSON.stringify([...viewed, product.id]));
+      }
+    }
+  }, [product]);
 
   const [activeTab, setActiveTab] = useState<'details' | 'personalize'>('details');
   const [activeImage, setActiveImage] = useState(0);
@@ -32,6 +59,17 @@ export default function ProductPage() {
 
   const [selectedQuickViewProduct, setSelectedQuickViewProduct] = useState<Product | null>(null);
   const [isQuickViewOpen, setIsQuickViewOpen] = useState(false);
+
+  // Zoom State
+  const [zoomPos, setZoomPos] = useState({ x: 50, y: 50 });
+  const [isZoomed, setIsZoomed] = useState(false);
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const { left, top, width, height } = e.currentTarget.getBoundingClientRect();
+    const x = ((e.clientX - left) / width) * 100;
+    const y = ((e.clientY - top) / height) * 100;
+    setZoomPos({ x, y });
+  };
 
   const handleQuickView = (product: Product) => {
     setSelectedQuickViewProduct(product);
@@ -70,7 +108,7 @@ export default function ProductPage() {
 
         <div className="grid lg:grid-cols-2 gap-16 mb-24">
           {/* Gallery - Personalization Preview Side */}
-          <div className="flex flex-col gap-8">
+          <div className="flex flex-col gap-8" ref={galleryRef}>
             <div className="flex flex-col-reverse md:flex-row gap-6">
               <div className="flex md:flex-col gap-4">
                 {product.images.map((img, i) => (
@@ -89,23 +127,78 @@ export default function ProductPage() {
                   </button>
                 ))}
               </div>
-              <div className="flex-1 aspect-[4/5] rounded-[2.5rem] overflow-hidden bg-brand-surface shadow-2xl border border-neutral-100 relative group">
+              <div 
+                className="flex-1 aspect-[4/5] rounded-[2.5rem] overflow-hidden bg-brand-surface shadow-2xl border border-neutral-100 relative group cursor-zoom-in"
+                onMouseEnter={() => setIsZoomed(true)}
+                onMouseLeave={() => setIsZoomed(false)}
+                onMouseMove={handleMouseMove}
+              >
+                {/* Parallax Background Text */}
+                <motion.div 
+                  style={{ y: parallaxY, rotate: parallaxRotate }}
+                  className="absolute -top-12 -left-12 text-[18vw] font-black text-neutral-900/[0.03] pointer-events-none select-none serif italic leading-none whitespace-nowrap z-0"
+                >
+                  NEXA DESIGN
+                </motion.div>
+
                 <AnimatePresence mode="wait">
-                  <motion.img 
-                    key={currentDisplayImage}
-                    initial={{ opacity: 0, scale: 1.05 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0 }}
-                    transition={{ duration: 0.6 }}
-                    src={currentDisplayImage} 
-                    alt={product.name} 
-                    className="w-full h-full object-cover"
-                    referrerPolicy="no-referrer"
-                  />
+                  {viewMode === '360' ? (
+                    <motion.div
+                      key="360"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      className="absolute inset-0 z-10"
+                    >
+                      <ProductViewer360 images={product.images} className="w-full h-full border-none" />
+                    </motion.div>
+                  ) : viewMode === 'video' && product.videos ? (
+                    <motion.div
+                      key="video"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      className="absolute inset-0 z-10 bg-black"
+                    >
+                      <video 
+                        src={product.videos[0]} 
+                        autoPlay 
+                        loop 
+                        muted 
+                        className="w-full h-full object-cover" 
+                      />
+                    </motion.div>
+                  ) : (
+                    <motion.img 
+                      key={currentDisplayImage}
+                      initial={{ opacity: 0, scale: 1.05 }}
+                      animate={{ 
+                        opacity: 1, 
+                        scale: isZoomed ? 1.5 : 1,
+                        x: isZoomed ? (50 - zoomPos.x) * 0.5 + '%' : 0,
+                        y: isZoomed ? (50 - zoomPos.y) * 0.5 + '%' : 0
+                      }}
+                      exit={{ opacity: 0 }}
+                      transition={{ 
+                        opacity: { duration: 0.6 },
+                        scale: { duration: 0.3, ease: "easeOut" },
+                        x: { duration: 0.1, ease: "linear" },
+                        y: { duration: 0.1, ease: "linear" }
+                      }}
+                      style={{ 
+                        transformOrigin: `${zoomPos.x}% ${zoomPos.y}%`,
+                        zIndex: 1
+                      }}
+                      src={currentDisplayImage} 
+                      alt={product.name} 
+                      className="w-full h-full object-cover"
+                      referrerPolicy="no-referrer"
+                    />
+                  )}
                 </AnimatePresence>
                 
                 {/* Visual Label for Studio Mode */}
-                <div className="absolute top-6 right-6 px-4 py-2 bg-white/80 backdrop-blur-md border border-neutral-100 rounded-full flex items-center gap-2 shadow-sm">
+                <div className="absolute top-6 right-6 px-4 py-2 bg-white/80 backdrop-blur-md border border-neutral-100 rounded-full flex items-center gap-2 shadow-sm z-10">
                   <div className="w-2 h-2 rounded-full bg-brand-accent animate-pulse" />
                   <span className="text-[8px] font-bold uppercase tracking-[0.2em] text-neutral-900">{lang === 'BN' ? 'লাইভ প্রিভিউ' : 'Live Preview'}</span>
                 </div>
@@ -147,8 +240,63 @@ export default function ProductPage() {
                     </span>
                   ))}
                 </div>
+
+                {/* View Mode Toggle */}
+                <div className="absolute top-6 left-6 flex items-center gap-2 z-30">
+                  <button 
+                    onClick={() => setViewMode('standard')}
+                    className={cn(
+                      "px-4 py-2 rounded-full text-[8px] font-bold uppercase tracking-widest transition-all backdrop-blur-md border",
+                      viewMode === 'standard' 
+                        ? "bg-neutral-900 border-neutral-900 text-white shadow-lg" 
+                        : "bg-white/40 border-white/20 text-neutral-900 hover:bg-white/60"
+                    )}
+                  >
+                    Photos
+                  </button>
+                  {product.images.length >= 3 && (
+                    <button 
+                      onClick={() => setViewMode('360')}
+                      className={cn(
+                        "px-4 py-2 rounded-full text-[8px] font-bold uppercase tracking-widest transition-all backdrop-blur-md border",
+                        viewMode === '360' 
+                          ? "bg-neutral-900 border-neutral-900 text-white shadow-lg" 
+                          : "bg-white/40 border-white/20 text-neutral-900 hover:bg-white/60"
+                      )}
+                    >
+                      360° View
+                    </button>
+                  )}
+                  {product.videos && product.videos.length > 0 && (
+                    <button 
+                      onClick={() => setViewMode('video')}
+                      className={cn(
+                        "px-4 py-2 rounded-full text-[8px] font-bold uppercase tracking-widest transition-all backdrop-blur-md border",
+                        viewMode === 'video' 
+                          ? "bg-neutral-900 border-neutral-900 text-white shadow-lg" 
+                          : "bg-white/40 border-white/20 text-neutral-900 hover:bg-white/60"
+                      )}
+                    >
+                      Exhibition Video
+                    </button>
+                  )}
+                  <button 
+                    onClick={() => setIsAROpen(true)}
+                    className="px-4 py-2 bg-white/10 hover:bg-white/40 backdrop-blur-md border border-white/20 text-neutral-900 rounded-full text-[8px] font-bold uppercase tracking-widest transition-all flex items-center gap-2"
+                  >
+                    <Smartphone className="w-3 h-3 text-brand-accent" />
+                    AR Try-On
+                  </button>
+                </div>
               </div>
             </div>
+
+            {/* ARTryOn Component Integrated */}
+            <ARTryOnModal 
+              product={product} 
+              isOpen={isAROpen} 
+              onClose={() => setIsAROpen(false)} 
+            />
             
             {/* Design Note */}
             <div className="bg-neutral-50 border border-neutral-100 p-8 rounded-3xl">
@@ -283,18 +431,59 @@ export default function ProductPage() {
                     <button onClick={() => setQuantity(quantity + 1)} className="hover:text-brand-accent transition-colors"><Plus className="w-4 h-4 text-neutral-900" /></button>
                   </div>
                   <button 
-                    onClick={(e) => addToCart(product.id, quantity, selectedVariant || undefined, e)}
-                    className="flex-1 py-5 border border-neutral-900 text-neutral-900 font-bold uppercase text-[10px] tracking-[.3em] rounded-full flex items-center justify-center gap-3 hover:bg-neutral-900 hover:text-white transition-all duration-500 shadow-sm group"
+                    onClick={() => setIsAROpen(true)}
+                    className="flex-1 py-5 bg-white border-2 border-brand-accent text-brand-accent font-bold uppercase text-[10px] tracking-[.3em] rounded-full flex items-center justify-center gap-3 hover:bg-brand-accent hover:text-white transition-all duration-500 shadow-sm group"
                   >
-                    <ShoppingBag className="w-4 h-4 transition-transform group-hover:-translate-y-1" />
-                    {t('addToBag')}
+                    <Smartphone className="w-4 h-4 transition-transform group-hover:scale-110" />
+                    AR View
+                  </button>
+                </div>
+                <div className="flex flex-col gap-6">
+                  <button 
+                    onClick={(e) => {
+                      setIsAdded(true);
+                      addToCart(product.id, quantity, selectedVariant || undefined, e);
+                      setTimeout(() => setIsAdded(false), 2000);
+                    }}
+                    className={cn(
+                      "w-full py-6 border-2 font-bold uppercase text-[10px] tracking-[.3em] rounded-full flex items-center justify-center gap-3 transition-all duration-500 shadow-sm group overflow-hidden relative",
+                      isAdded 
+                        ? "bg-green-600 text-white border-green-600" 
+                        : "border-neutral-900 text-neutral-900 hover:bg-neutral-900 hover:text-white"
+                    )}
+                  >
+                     <AnimatePresence mode="wait">
+                      {isAdded ? (
+                        <motion.div 
+                          key="added"
+                          initial={{ y: 20, opacity: 0 }}
+                          animate={{ y: 0, opacity: 1 }}
+                          exit={{ y: -20, opacity: 0 }}
+                          className="flex items-center gap-2"
+                        >
+                          <CheckCircle2 className="w-4 h-4" />
+                          <span>{lang === 'BN' ? 'যোগ করা হয়েছে' : 'Added'}</span>
+                        </motion.div>
+                      ) : (
+                        <motion.div 
+                          key="add"
+                          initial={{ y: 20, opacity: 0 }}
+                          animate={{ y: 0, opacity: 1 }}
+                          exit={{ y: -20, opacity: 0 }}
+                          className="flex items-center gap-3"
+                        >
+                          <ShoppingBag className="w-4 h-4 transition-transform group-hover:-translate-y-1" />
+                          {t('addToBag')}
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
                   </button>
                   <button 
                     onClick={(e) => {
                       addToCart(product.id, quantity, selectedVariant || undefined, e);
                       navigate('/checkout');
                     }}
-                    className="flex-1 py-5 bg-brand-accent text-white font-bold uppercase text-[10px] tracking-[.3em] rounded-full flex items-center justify-center gap-3 hover:bg-neutral-900 transition-all duration-500 shadow-xl shadow-brand-accent/20 group"
+                    className="flex-1 py-5 bg-brand-accent text-white font-bold uppercase text-[10px] tracking-[.3em] rounded-full flex items-center justify-center gap-3 hover:bg-neutral-900 transition-all duration-500 shadow-xl shadow-brand-accent/20 group hover:animate-glow"
                   >
                     <Zap className="w-4 h-4 fill-current transition-transform group-hover:scale-125" />
                     {t('buyNow')}
