@@ -56,14 +56,14 @@ export default function ARTeaser() {
           to="/product/aurelia-table-lamp"
           className="flex-1 relative block group/ar cursor-pointer"
         >
-           <div className="relative z-10 aspect-[4/5] bg-neutral-100 dark:bg-neutral-900 rounded-[3rem] overflow-hidden border border-neutral-200 dark:border-white/5 shadow-2xl transition-all duration-700 group-hover/ar:scale-[1.02] group-hover/ar:shadow-brand-accent/20">
+           <div className="relative z-10 aspect-[4/5] bg-yellow-400 rounded-[3rem] overflow-hidden border border-neutral-200 dark:border-white/5 shadow-2xl transition-all duration-700 group-hover/ar:scale-[1.02] group-hover/ar:shadow-brand-accent/20">
               <img 
-                src="https://images.unsplash.com/photo-1534073828943-f801091bb18c?auto=format&fit=crop&q=80&w=1200" 
+                src="https://images.unsplash.com/photo-1520923642038-b4259ace9439?auto=format&fit=crop&q=80&w=1200" 
                 alt="AR Technology Preview" 
                 className="w-full h-full object-cover opacity-80 group-hover/ar:scale-110 transition-transform duration-1000"
                 referrerPolicy="no-referrer"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-80 group-hover/ar:opacity-60 transition-opacity" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-60 group-hover/ar:opacity-40 transition-opacity" />
               
               {/* Product Overlay Mockup */}
               <motion.div 
@@ -75,16 +75,18 @@ export default function ARTeaser() {
                   repeat: Infinity,
                   ease: "easeInOut"
                 }}
-                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-56 h-56 pointer-events-none"
+                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 pointer-events-none"
               >
-                 <img 
-                    src="https://images.unsplash.com/photo-1534073828943-f801091bb18c?auto=format&fit=crop&q=80&w=800" 
-                    alt="Floating Product"
-                    className="w-full h-full object-contain drop-shadow-[0_40px_60px_rgba(0,0,0,0.6)] filter brightness-110"
-                    referrerPolicy="no-referrer"
-                 />
-                 <div className="absolute top-0 right-0 p-3 bg-brand-accent rounded-full text-white shadow-2xl animate-pulse">
-                    <Smartphone className="w-5 h-5" />
+                 <div className="w-full h-full bg-yellow-200/40 backdrop-blur-md rounded-2xl p-4 border border-white/40 shadow-2xl transform rotate-3 flex items-center justify-center">
+                    <img 
+                        src="https://images.unsplash.com/photo-1534073828943-f801091bb18c?auto=format&fit=crop&q=80&w=800" 
+                        alt="Floating Product"
+                        className="w-full h-full object-contain drop-shadow-[0_20px_30px_rgba(0,0,0,0.3)] filter brightness-110"
+                        referrerPolicy="no-referrer"
+                    />
+                    <div className="absolute -top-4 -right-4 p-4 bg-brand-accent rounded-full text-white shadow-2xl animate-pulse">
+                        <Smartphone className="w-6 h-6" />
+                    </div>
                  </div>
               </motion.div>
               

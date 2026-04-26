@@ -3,13 +3,14 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useProducts } from '../ProductContext';
 import { formatPrice, cn } from '../lib/utils';
 import { useState, useEffect } from 'react';
-import { Star, Truck, ShieldCheck, RefreshCw, ShoppingBag, Plus, Minus, ArrowRight, Zap, Play, CheckCircle2, Smartphone, Bell } from 'lucide-react';
+import { Star, Truck, ShieldCheck, RefreshCw, ShoppingBag, Plus, Minus, ArrowRight, Zap, Play, CheckCircle2, Smartphone, Bell, Sparkles } from 'lucide-react';
 import { motion, AnimatePresence, useScroll, useTransform } from 'motion/react';
 import ProductCard from './ProductCard';
 import QuickViewModal from './QuickViewModal';
 import ProductViewer360 from './ProductViewer360';
 import ARTryOnModal from './ARTryOnModal';
 import VideoShowcaseModal from './VideoShowcaseModal';
+import ReviewForm from './ReviewForm';
 import { useCart } from '../CartContext';
 import { useLanguage } from '../LanguageContext';
 import { useNotifications } from '../NotificationContext';
@@ -18,7 +19,7 @@ import { Product } from '../types';
 export default function ProductPage() {
   const { slug } = useParams();
   const navigate = useNavigate();
-  const { products, loading: productsLoading } = useProducts();
+  const { products, reviews, loading: productsLoading } = useProducts();
   const { t, lang } = useLanguage();
   const { addNotification } = useNotifications();
   const galleryRef = useRef<HTMLDivElement>(null);
@@ -27,6 +28,7 @@ export default function ProductPage() {
   const [viewMode, setViewMode] = useState<'standard' | '360' | 'video'>('standard');
   const [isAROpen, setIsAROpen] = useState(false);
   const [isVideoShowcaseOpen, setIsVideoShowcaseOpen] = useState(false);
+  const [isReviewFormOpen, setIsReviewFormOpen] = useState(false);
   
   const { scrollYProgress } = useScroll({
     target: galleryRef,
@@ -95,6 +97,12 @@ export default function ProductPage() {
 
   const currentDisplayImage = selectedVariantData?.image || product.images[activeImage];
   const upsellProducts = products.filter(p => product.upsellIds?.includes(p.id));
+
+  const productReviews = reviews.filter(r => r.productId === product.id);
+  const averageRating = productReviews.length > 0 
+    ? (productReviews.reduce((acc, r) => acc + r.rating, 0) / productReviews.length).toFixed(1)
+    : '5.0';
+  const totalReviewsCount = productReviews.length;
 
   return (
     <div className="pt-24 pb-24 bg-brand-bg text-neutral-900">
@@ -314,6 +322,12 @@ export default function ProductPage() {
                context={product.description}
                type="product"
             />
+
+            <ReviewForm
+               productId={product.id}
+               isOpen={isReviewFormOpen}
+               onClose={() => setIsReviewFormOpen(false)}
+            />
             
             {/* Design Note */}
             <div className="bg-neutral-50 border border-neutral-100 p-8 rounded-3xl">
@@ -365,9 +379,11 @@ export default function ProductPage() {
                     <p className="text-3xl font-light text-brand-accent tracking-tight">{formatPrice(product.price)}</p>
                     <div className="flex items-center gap-2 h-full border-l border-neutral-100 pl-6">
                       <div className="flex text-brand-accent">
-                        {[...Array(5)].map((_, i) => <Star key={i} className="w-3.5 h-3.5 fill-current" />)}
+                        {[...Array(5)].map((_, i) => <Star key={i} className={cn("w-3.5 h-3.5", i < Math.round(Number(averageRating)) ? "fill-current" : "text-neutral-200")} />)}
                       </div>
-                      <span className="text-[10px] text-neutral-400 font-bold uppercase tracking-widest leading-none">({lang === 'BN' ? '১২৮ টি প্রিমিয়াম রিভিউ' : '128 Premium Reviews'})</span>
+                      <span className="text-[10px] text-neutral-400 font-bold uppercase tracking-widest leading-none">
+                        ({totalReviewsCount} {lang === 'BN' ? 'টি প্রিমিয়াম রিভিউ' : 'Premium Reviews'})
+                      </span>
                     </div>
                   </div>
                   <p className="text-neutral-600 font-light leading-relaxed mb-10 text-sm">{product.description}</p>
@@ -579,22 +595,18 @@ export default function ProductPage() {
               </div>
               <div className="flex flex-col items-end gap-2">
                 <div className="flex text-brand-accent gap-1">
-                  {[...Array(5)].map((_, i) => <Star key={i} className="w-5 h-5 fill-current" />)}
+                  {[...Array(5)].map((_, i) => <Star key={i} className={cn("w-5 h-5", i < Math.round(Number(averageRating)) ? "fill-current" : "text-neutral-200")} />)}
                 </div>
-                <p className="text-[10px] font-bold uppercase tracking-widest text-neutral-400">4.9 {lang === 'BN' ? 'গড় রেটিং ১২৮ টি রিভিউয়ের ভিত্তিতে' : 'Average Based on 128 Reviews'}</p>
+                <p className="text-[10px] font-bold uppercase tracking-widest text-neutral-400">
+                  {averageRating} {lang === 'BN' ? `গড় রেটিং ${totalReviewsCount} টি রিভিউয়ের ভিত্তিতে` : `Average Based on ${totalReviewsCount} Reviews`}
+                </p>
               </div>
            </div>
 
            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-              {[
-                { name: "Sophia Martinez", rating: 5, date: "Mar 15, 2024", comment: "The attention to detail is breathtaking. The finish on this piece is unlike anything I've seen in retail stores. Truly artisan quality." },
-                { name: "James Wilson", rating: 5, date: "Mar 10, 2024", comment: "Fast shipping to London and excellent customer support. The packaging itself was a work of art. Highly recommended for luxury decor." },
-                { name: "Elena Rossi", rating: 5, date: "Feb 22, 2024", comment: "Fits perfectly in my minimalist living room. The warm glow it provides is exactly what I was looking for. A masterpiece." },
-                { name: "Marcus Thorne", rating: 4, date: "Feb 05, 2024", comment: "Exquisite design. One minor scratch on delivery but the support team replaced it within 48 hours without any hassle. Amazing service." },
-                { name: "Aria Vance", rating: 5, date: "Jan 28, 2024", comment: "Buying lighting online is always a risk, but Nexa made it seamless. The live preview was accurate and the real product exceeds expectations." }
-              ].map((review, i) => (
+              {productReviews.slice(0, 5).map((review, i) => (
                 <motion.div 
-                  key={i}
+                  key={review.id}
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
@@ -603,7 +615,7 @@ export default function ProductPage() {
                 >
                   <div className="flex justify-between items-start mb-6">
                     <div className="flex flex-col gap-1">
-                      <span className="text-[11px] font-bold uppercase tracking-widest text-neutral-900">{review.name}</span>
+                      <span className="text-[11px] font-bold uppercase tracking-widest text-neutral-900">{review.userName}</span>
                       <span className="text-[9px] font-bold text-neutral-300 uppercase tracking-widest">{review.date}</span>
                     </div>
                     <div className="flex text-brand-accent gap-0.5">
@@ -613,15 +625,20 @@ export default function ProductPage() {
                   <p className="text-sm font-light text-neutral-500 italic leading-relaxed group-hover:text-neutral-700 transition-colors">
                     "{review.comment}"
                   </p>
-                  <div className="mt-8 pt-6 border-t border-neutral-50 flex items-center gap-2">
-                    <div className="w-1.5 h-1.5 rounded-full bg-green-500" />
-                    <span className="text-[8px] font-bold uppercase tracking-[0.2em] text-neutral-300">{t('verifiedCollector')}</span>
-                  </div>
+                  {review.verified && (
+                    <div className="mt-8 pt-6 border-t border-neutral-50 flex items-center gap-2">
+                      <div className="w-1.5 h-1.5 rounded-full bg-green-500" />
+                      <span className="text-[8px] font-bold uppercase tracking-[0.2em] text-neutral-300">{t('verifiedCollector')}</span>
+                    </div>
+                  )}
                 </motion.div>
               ))}
               
               {/* Write a Review Teaser */}
-              <div className="bg-brand-surface p-10 rounded-[2rem] border border-dashed border-neutral-200 flex flex-col items-center justify-center text-center group cursor-pointer hover:bg-white hover:border-brand-accent transition-all">
+              <div 
+                onClick={() => setIsReviewFormOpen(true)}
+                className="bg-brand-surface p-10 rounded-[2rem] border border-dashed border-neutral-200 flex flex-col items-center justify-center text-center group cursor-pointer hover:bg-white hover:border-brand-accent transition-all"
+              >
                 <div className="w-12 h-12 rounded-full bg-white flex items-center justify-center mb-6 group-hover:bg-brand-accent group-hover:text-white transition-colors shadow-sm">
                   <Star className="w-5 h-5" />
                 </div>

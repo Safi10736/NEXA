@@ -1,18 +1,39 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { supabase } from './lib/supabase';
-import { Product } from './types';
-import { PRODUCTS as INITIAL_PRODUCTS } from './constants';
+import { Product, Review } from './types';
+import { PRODUCTS as INITIAL_PRODUCTS, REVIEWS as INITIAL_REVIEWS } from './constants';
 
 interface ProductContextType {
   products: Product[];
+  reviews: Review[];
   loading: boolean;
+  addReview: (review: Omit<Review, 'id' | 'date' | 'verified'>) => Promise<void>;
 }
 
 const ProductContext = createContext<ProductContextType | undefined>(undefined);
 
 export function ProductProvider({ children }: { children: React.ReactNode }) {
   const [products, setProducts] = useState<Product[]>(INITIAL_PRODUCTS);
+  const [reviews, setReviews] = useState<Review[]>(INITIAL_REVIEWS);
   const [loading, setLoading] = useState(true);
+
+  const addReview = async (newReview: Omit<Review, 'id' | 'date' | 'verified'>) => {
+    const review: Review = {
+      ...newReview,
+      id: Math.random().toString(36).substr(2, 9),
+      date: new Date().toISOString().split('T')[0],
+      verified: true 
+    };
+    
+    setReviews(prev => [review, ...prev]);
+    
+    // Optional: Sync to Supabase if table exists
+    try {
+       await supabase.from('reviews').insert([review]);
+    } catch (e) {
+       console.log("Supabase reviews table might not exist, keeping local state only");
+    }
+  };
 
   useEffect(() => {
     // Listen to live products from Supabase
@@ -57,7 +78,7 @@ export function ProductProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   return (
-    <ProductContext.Provider value={{ products, loading }}>
+    <ProductContext.Provider value={{ products, reviews, loading, addReview }}>
       {children}
     </ProductContext.Provider>
   );

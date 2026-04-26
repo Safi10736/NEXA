@@ -142,6 +142,7 @@ export const PRODUCTS: Product[] = [
 export const REVIEWS: Review[] = [
   {
     id: 'r1',
+    productId: '1',
     userName: 'Sophia Martinez',
     rating: 5,
     comment: 'The Aurelia lamp is even more beautiful in person. The gold finish is subtle and expensive-looking.',
@@ -150,6 +151,7 @@ export const REVIEWS: Review[] = [
   },
   {
     id: 'r2',
+    productId: '1',
     userName: 'James Wilson',
     rating: 5,
     comment: 'Fast shipping to London. The Eco-friendly packaging was a very nice touch.',

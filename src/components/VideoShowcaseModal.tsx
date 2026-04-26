@@ -54,11 +54,12 @@ export default function VideoShowcaseModal({ isOpen, onClose, title, context, ty
   const handleStartGeneration = async () => {
     try {
       setStatus('checking_key');
-      const hasKey = await window.aistudio.hasSelectedApiKey();
       
-      if (!hasKey) {
+      const hasAistudio = typeof window !== 'undefined' && !!window.aistudio;
+      const hasKey = hasAistudio ? await window.aistudio.hasSelectedApiKey() : true;
+      
+      if (!hasKey && hasAistudio) {
         await window.aistudio.openSelectKey();
-        // After opening dialog, we assume they selected or we retry
       }
 
       setStatus('generating');
@@ -70,7 +71,7 @@ export default function VideoShowcaseModal({ isOpen, onClose, title, context, ty
 
       // Polling
       let currentOp = operation;
-      const apiKey = process.env.GEMINI_API_KEY || (process.env as any).API_KEY;
+      const apiKey = process.env.GEMINI_API_KEY || (process.env as any).API_KEY || '';
       const ai = new GoogleGenAI({ apiKey });
 
       while (!currentOp.done) {
@@ -92,7 +93,9 @@ export default function VideoShowcaseModal({ isOpen, onClose, title, context, ty
       console.error(err);
       if (err.message?.includes("Requested entity was not found")) {
         setErrorMessage(lang === 'BN' ? "API কী রি-সিলেক্ট করুন" : "Please re-select your API key");
-        await window.aistudio.openSelectKey();
+        if (typeof window !== 'undefined' && window.aistudio) {
+          await window.aistudio.openSelectKey();
+        }
       } else {
         setErrorMessage(err.message || "Failed to generate video");
       }
@@ -276,7 +279,13 @@ export default function VideoShowcaseModal({ isOpen, onClose, title, context, ty
                     )}
                     
                     <button 
-                        onClick={async () => await window.aistudio.openSelectKey()}
+                        onClick={async () => {
+                            if (typeof window !== 'undefined' && window.aistudio) {
+                                await window.aistudio.openSelectKey();
+                            } else {
+                                alert(lang === 'BN' ? "এই ফিচারটি প্রিভিউ মুডে কাজ করে" : "This feature requires AI Studio Preview environment");
+                            }
+                        }}
                         className="w-full py-4 text-neutral-400 hover:text-neutral-900 dark:hover:text-white transition-colors text-[9px] font-bold uppercase tracking-widest flex items-center justify-center gap-2"
                     >
                         <Key className="w-3.5 h-3.5" />
