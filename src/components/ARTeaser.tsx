@@ -52,47 +52,58 @@ export default function ARTeaser() {
           </Link>
         </div>
         
-        <div className="flex-1 relative">
-           <div className="relative z-10 aspect-[4/5] bg-neutral-100 dark:bg-neutral-900 rounded-[3rem] overflow-hidden border border-neutral-200 dark:border-white/5 shadow-2xl">
+        <Link 
+          to="/product/aurelia-table-lamp"
+          className="flex-1 relative block group/ar cursor-pointer"
+        >
+           <div className="relative z-10 aspect-[4/5] bg-neutral-100 dark:bg-neutral-900 rounded-[3rem] overflow-hidden border border-neutral-200 dark:border-white/5 shadow-2xl transition-all duration-700 group-hover/ar:scale-[1.02] group-hover/ar:shadow-brand-accent/20">
               <img 
-                src="https://images.unsplash.com/photo-1618221195710-dd6b41fa33a8?auto=format&fit=crop&q=80&w=1200" 
+                src="https://images.unsplash.com/photo-1534073828943-f801091bb18c?auto=format&fit=crop&q=80&w=1200" 
                 alt="AR Technology Preview" 
-                className="w-full h-full object-cover opacity-80"
+                className="w-full h-full object-cover opacity-80 group-hover/ar:scale-110 transition-transform duration-1000"
                 referrerPolicy="no-referrer"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-80 group-hover/ar:opacity-60 transition-opacity" />
               
               {/* Product Overlay Mockup */}
               <motion.div 
                 animate={{ 
-                  y: [0, -10, 0],
+                  y: [0, -20, 0],
                 }}
                 transition={{ 
                   duration: 4, 
                   repeat: Infinity,
                   ease: "easeInOut"
                 }}
-                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 pointer-events-none"
+                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-56 h-56 pointer-events-none"
               >
                  <img 
-                    src="https://images.unsplash.com/photo-1540932239986-30128078f3c5?auto=format&fit=crop&q=80&w=800" 
+                    src="https://images.unsplash.com/photo-1534073828943-f801091bb18c?auto=format&fit=crop&q=80&w=800" 
                     alt="Floating Product"
-                    className="w-full h-full object-contain drop-shadow-[0_20px_40px_rgba(0,0,0,0.5)]"
+                    className="w-full h-full object-contain drop-shadow-[0_40px_60px_rgba(0,0,0,0.6)] filter brightness-110"
                     referrerPolicy="no-referrer"
                  />
-                 <div className="absolute -top-4 -right-4 p-2 bg-brand-accent rounded-full text-white shadow-xl">
-                    <Smartphone className="w-4 h-4" />
+                 <div className="absolute top-0 right-0 p-3 bg-brand-accent rounded-full text-white shadow-2xl animate-pulse">
+                    <Smartphone className="w-5 h-5" />
                  </div>
               </motion.div>
               
+              {/* View Indicator */}
+              <div className="absolute bottom-12 left-1/2 -translate-x-1/2 flex flex-col items-center gap-3 w-full px-10">
+                <div className="px-6 py-3 bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20 shadow-2xl transform transition-all duration-500 group-hover/ar:scale-110 flex items-center gap-3">
+                  <div className="w-2 h-2 rounded-full bg-brand-accent animate-ping" />
+                  <p className="text-[9px] font-black uppercase tracking-[0.2em] text-white whitespace-nowrap">Click to Preview in AR</p>
+                </div>
+              </div>
+
               {/* Pulse Indicator */}
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 border border-white/40 rounded-full animate-ping" />
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 border border-brand-accent/30 rounded-full animate-ping pointer-events-none" />
            </div>
            
            {/* Decorative elements */}
-           <div className="absolute -top-10 -right-10 w-40 h-40 bg-brand-accent/10 rounded-full blur-[80px]" />
-           <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-brand-gold/10 rounded-full blur-[80px]" />
-        </div>
+           <div className="absolute -top-10 -right-10 w-60 h-60 bg-brand-accent/5 rounded-full blur-[100px] animate-pulse" />
+           <div className="absolute -bottom-10 -left-10 w-60 h-60 bg-brand-gold/5 rounded-full blur-[100px] animate-pulse" />
+        </Link>
       </div>
     </section>
   );
