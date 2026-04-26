@@ -21,7 +21,7 @@ export class VideoShowcaseService {
   private async getAI() {
     const apiKey = process.env.GEMINI_API_KEY || (process.env as any).API_KEY;
     if (!apiKey) {
-      throw new Error("Gemini API key is missing. Please select one in the settings.");
+      throw new Error("Gemini API key is missing. Please select one from the settings menu or the bottom of the modal.");
     }
     return new GoogleGenAI({ apiKey });
   }

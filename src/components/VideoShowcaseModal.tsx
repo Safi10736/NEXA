@@ -91,11 +91,10 @@ export default function VideoShowcaseModal({ isOpen, onClose, title, context, ty
       setProgress(100);
     } catch (err: any) {
       console.error(err);
-      if (err.message?.includes("Requested entity was not found")) {
-        setErrorMessage(lang === 'BN' ? "API কী রি-সিলেক্ট করুন" : "Please re-select your API key");
-        if (typeof window !== 'undefined' && window.aistudio) {
-          await window.aistudio.openSelectKey();
-        }
+      if (err.message?.includes("API key is missing") || err.message?.includes("Not Found")) {
+        setErrorMessage(lang === 'BN' 
+          ? "এপিআই কী খুঁজে পাওয়া যাচ্ছে না। অনুগ্রহ করে নিচের 'CHANGE AI KEY' বাটনে ক্লিক করে একটি কী সিলেক্ট করুন।" 
+          : "API key is missing. Please click the 'CHANGE AI KEY' button below to select one.");
       } else {
         setErrorMessage(err.message || "Failed to generate video");
       }
