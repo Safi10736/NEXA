@@ -1,15 +1,17 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, useMotionValue, useSpring, useTransform } from 'motion/react';
-import { Box, ArrowRight, Expand, Move } from 'lucide-react';
+import { Box, ArrowRight, Expand, Move, Sparkles } from 'lucide-react';
 import { useProducts } from '../ProductContext';
 import { useLanguage } from '../LanguageContext';
 import { formatPrice, cn } from '../lib/utils';
 import { Link } from 'react-router-dom';
+import VideoShowcaseModal from './VideoShowcaseModal';
 
 export default function VirtualShowroom() {
   const { products } = useProducts();
   const { lang, t } = useLanguage();
   const containerRef = useRef<HTMLDivElement>(null);
+  const [isVideoOpen, setIsVideoOpen] = useState(false);
   
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
@@ -50,11 +52,28 @@ export default function VirtualShowroom() {
             Virtual <br /> Showroom
           </h2>
         </div>
-        <div className="hidden md:flex items-center gap-4 text-neutral-400 dark:text-neutral-600">
-          <Move className="w-5 h-5" />
-          <span className="text-[9px] font-bold uppercase tracking-widest italic">Move mouse to explore space</span>
+        <div className="hidden md:flex items-center gap-6 text-neutral-400 dark:text-neutral-600">
+          <button 
+            onClick={() => setIsVideoOpen(true)}
+            className="flex items-center gap-3 px-6 py-3 bg-brand-accent text-white rounded-full text-[10px] font-black uppercase tracking-[0.2em] shadow-xl shadow-brand-accent/20 hover:scale-105 transition-all group"
+          >
+            <Sparkles className="w-4 h-4 group-hover:rotate-12 transition-transform" />
+            AI walkthrough
+          </button>
+          <div className="flex items-center gap-4">
+            <Move className="w-5 h-5" />
+            <span className="text-[9px] font-bold uppercase tracking-widest italic">Move mouse to explore space</span>
+          </div>
         </div>
       </div>
+
+      <VideoShowcaseModal 
+        isOpen={isVideoOpen}
+        onClose={() => setIsVideoOpen(false)}
+        title="NEXA Virtual Showroom"
+        context="A futuristic, floating digital gallery with white minimalist architecture."
+        type="gallery"
+      />
 
       <div 
         ref={containerRef}

@@ -9,6 +9,7 @@ import ProductCard from './ProductCard';
 import QuickViewModal from './QuickViewModal';
 import ProductViewer360 from './ProductViewer360';
 import ARTryOnModal from './ARTryOnModal';
+import VideoShowcaseModal from './VideoShowcaseModal';
 import { useCart } from '../CartContext';
 import { useLanguage } from '../LanguageContext';
 import { useNotifications } from '../NotificationContext';
@@ -25,6 +26,7 @@ export default function ProductPage() {
   const [isAdded, setIsAdded] = useState(false);
   const [viewMode, setViewMode] = useState<'standard' | '360' | 'video'>('standard');
   const [isAROpen, setIsAROpen] = useState(false);
+  const [isVideoShowcaseOpen, setIsVideoShowcaseOpen] = useState(false);
   
   const { scrollYProgress } = useScroll({
     target: galleryRef,
@@ -281,6 +283,13 @@ export default function ProductPage() {
                     </button>
                   )}
                   <button 
+                    onClick={() => setIsVideoShowcaseOpen(true)}
+                    className="px-4 py-2 bg-brand-accent/10 hover:bg-brand-accent/20 backdrop-blur-md border border-brand-accent/20 text-brand-accent rounded-full text-[8px] font-bold uppercase tracking-widest transition-all flex items-center gap-2"
+                  >
+                    <Sparkles className="w-3 h-3" />
+                    AI Showcase
+                  </button>
+                  <button 
                     onClick={() => setIsAROpen(true)}
                     className="px-4 py-2 bg-white/10 hover:bg-white/40 backdrop-blur-md border border-white/20 text-neutral-900 rounded-full text-[8px] font-bold uppercase tracking-widest transition-all flex items-center gap-2"
                   >
@@ -296,6 +305,14 @@ export default function ProductPage() {
               product={product} 
               isOpen={isAROpen} 
               onClose={() => setIsAROpen(false)} 
+            />
+
+            <VideoShowcaseModal 
+               isOpen={isVideoShowcaseOpen}
+               onClose={() => setIsVideoShowcaseOpen(false)}
+               title={product.name}
+               context={product.description}
+               type="product"
             />
             
             {/* Design Note */}
