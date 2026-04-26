@@ -35,19 +35,38 @@ export default function ARTryOnModal({ product, isOpen, onClose }: ARTryOnModalP
 
   const startCamera = async () => {
     setHasCamera(null);
-    // Small delay to ensure UI transition is visible
-    setTimeout(async () => {
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
-        if (videoRef.current) {
-          videoRef.current.srcObject = stream;
+    
+    // Check for browser support
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      console.error("Camera API not supported");
+      setHasCamera(false);
+      return;
+    }
+
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ 
+        video: { 
+          facingMode: 'environment',
+          width: { ideal: 1280 },
+          height: { ideal: 720 }
+        } 
+      });
+      
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+        // Wait for the video to actually start playing
+        videoRef.current.onloadedmetadata = () => {
           setHasCamera(true);
-        }
-      } catch (err) {
-        console.error("Camera error:", err);
-        setHasCamera(false);
+        };
+      } else {
+        // Fallback if ref is missing
+        setHasCamera(true);
       }
-    }, 500);
+    } catch (err) {
+      console.error("Camera error:", err);
+      // Explicitly set to false to show the error UI with "Try Again" button
+      setHasCamera(false);
+    }
   };
 
   const stopCamera = () => {
