@@ -115,7 +115,11 @@ export default function VideoShowcaseModal({ isOpen, onClose, title, context, ty
       setProgress(100);
     } catch (err: any) {
       console.error(err);
-      if (err.message?.includes("API key is missing") || err.message?.includes("Not Found")) {
+      if (err.message?.includes("429") || err.message?.includes("RESOURCE_EXHAUSTED") || err.message?.includes("quota")) {
+        setErrorMessage(lang === 'BN' 
+          ? "আপনার এপিআই কোটা শেষ হয়ে গেছে। অনুগ্রহ করে অন্য একটি কী ব্যবহার করুন বা কিছুক্ষণ পর চেষ্টা করুন।" 
+          : "API Quota exceeded. Please use a different key or try again later.");
+      } else if (err.message?.includes("API key is missing") || err.message?.includes("Not Found")) {
         setErrorMessage(lang === 'BN' 
           ? "এপিআই কী খুঁজে পাওয়া যাচ্ছে না। অনুগ্রহ করে নিচের 'CHANGE AI KEY' বাটনে ক্লিক করে একটি কী সিলেক্ট করুন।" 
           : "API key is missing. Please click the 'CHANGE AI KEY' button below to select one.");
