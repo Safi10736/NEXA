@@ -19,9 +19,14 @@ export class VideoShowcaseService {
   }
 
   private async getAI() {
-    const apiKey = process.env.GEMINI_API_KEY || (process.env as any).API_KEY;
+    let apiKey = process.env.GEMINI_API_KEY || (process.env as any).API_KEY;
+    
+    if (!apiKey && typeof window !== 'undefined') {
+      apiKey = localStorage.getItem('CUSTOM_GEMINI_API_KEY');
+    }
+
     if (!apiKey) {
-      throw new Error("Gemini API key is missing. Please select one from the settings menu or the bottom of the modal.");
+      throw new Error("Gemini API key missing. Please provide a key in the settings or add GEMINI_API_KEY to your environment variables.");
     }
     return new GoogleGenAI({ apiKey });
   }
@@ -81,7 +86,10 @@ export class VideoShowcaseService {
   }
 
   public async fetchVideoBlob(uri: string) {
-     const apiKey = process.env.GEMINI_API_KEY || (process.env as any).API_KEY;
+     let apiKey = process.env.GEMINI_API_KEY || (process.env as any).API_KEY;
+     if (!apiKey && typeof window !== 'undefined') {
+       apiKey = localStorage.getItem('CUSTOM_GEMINI_API_KEY');
+     }
      const response = await fetch(uri, {
         method: 'GET',
         headers: {

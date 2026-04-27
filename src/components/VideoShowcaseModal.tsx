@@ -29,6 +29,18 @@ export default function VideoShowcaseModal({ isOpen, onClose, title, context, ty
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [loadingMessage, setLoadingMessage] = useState("");
+  const [customKey, setCustomKey] = useState("");
+  const [showKeyInput, setShowKeyInput] = useState(false);
+
+  useEffect(() => {
+    const savedKey = localStorage.getItem('CUSTOM_GEMINI_API_KEY');
+    if (savedKey) setCustomKey(savedKey);
+  }, []);
+
+  const saveKey = () => {
+    localStorage.setItem('CUSTOM_GEMINI_API_KEY', customKey);
+    setShowKeyInput(false);
+  };
   
   const messages = [
     lang === 'BN' ? "AI আপনার সীন কম্পোজ করছে..." : "AI is composing your scene...",
@@ -56,10 +68,18 @@ export default function VideoShowcaseModal({ isOpen, onClose, title, context, ty
       setStatus('checking_key');
       
       const hasAistudio = typeof window !== 'undefined' && !!window.aistudio;
-      const hasKey = hasAistudio ? await window.aistudio.hasSelectedApiKey() : true;
+      const hasKey = hasAistudio 
+        ? await window.aistudio.hasSelectedApiKey() 
+        : !!localStorage.getItem('CUSTOM_GEMINI_API_KEY') || !!process.env.GEMINI_API_KEY;
       
-      if (!hasKey && hasAistudio) {
-        await window.aistudio.openSelectKey();
+      if (!hasKey) {
+        if (hasAistudio) {
+          await window.aistudio.openSelectKey();
+        } else {
+          setShowKeyInput(true);
+          setStatus('idle');
+          return;
+        }
       }
 
       setStatus('generating');
@@ -71,7 +91,11 @@ export default function VideoShowcaseModal({ isOpen, onClose, title, context, ty
 
       // Polling
       let currentOp = operation;
-      const apiKey = process.env.GEMINI_API_KEY || (process.env as any).API_KEY || '';
+      let apiKey = process.env.GEMINI_API_KEY || (process.env as any).API_KEY || '';
+      if (!apiKey && typeof window !== 'undefined') {
+        apiKey = localStorage.getItem('CUSTOM_GEMINI_API_KEY') || '';
+      }
+      
       const ai = new GoogleGenAI({ apiKey });
 
       while (!currentOp.done) {
@@ -211,12 +235,70 @@ export default function VideoShowcaseModal({ isOpen, onClose, title, context, ty
                      <AlertCircle className="w-16 h-16 text-white mb-6" />
                      <h3 className="text-xl font-bold text-white mb-2 uppercase tracking-widest">{lang === 'BN' ? 'গেনারেশন ব্যর্থ হয়েছে' : 'Generation Failed'}</h3>
                      <p className="text-sm text-white/80 mb-8 max-w-xs">{errorMessage}</p>
-                     <button 
-                        onClick={handleStartGeneration}
-                        className="px-8 py-3 bg-white text-red-600 rounded-full font-bold text-[10px] uppercase tracking-widest hover:bg-neutral-900 hover:text-white transition-all shadow-2xl"
+                     
+                     <div className="flex flex-col gap-3 w-full max-w-xs">
+                        <button 
+                            onClick={handleStartGeneration}
+                            className="w-full py-3 bg-white text-red-600 rounded-full font-bold text-[10px] uppercase tracking-widest hover:bg-neutral-900 hover:text-white transition-all shadow-2xl"
+                        >
+                            {lang === 'BN' ? 'আবার চেষ্টা করুন' : 'Try Again'}
+                        </button>
+                        
+                        {!window.aistudio && (
+                            <button 
+                                onClick={() => setShowKeyInput(true)}
+                                className="w-full py-3 bg-white/10 text-white border border-white/20 rounded-full font-bold text-[10px] uppercase tracking-widest hover:bg-white/20 transition-all"
+                            >
+                                {lang === 'BN' ? 'এপিআই কী সেট করুন' : 'Set API Key Manually'}
+                            </button>
+                        )}
+                     </div>
+                </div>
+              )}
+
+              {showKeyInput && (
+                <div className="absolute inset-0 bg-neutral-900/95 backdrop-blur-xl flex flex-col items-center justify-center p-12 text-center z-[40]">
+                     <Key className="w-16 h-16 text-brand-accent mb-6" />
+                     <h3 className="text-xl font-bold text-white mb-2 uppercase tracking-widest">
+                        {lang === 'BN' ? 'এপিআই কী প্রয়োজন' : 'API Key Required'}
+                     </h3>
+                     <p className="text-sm text-neutral-400 mb-8 max-w-xs">
+                        {lang === 'BN' 
+                          ? 'ভিডিও তৈরির জন্য গুগল এআই স্টুডিওর এপিআই কী সেট করুন।' 
+                          : 'Please provide your Google AI Studio API key to generate videos.'}
+                     </p>
+                     
+                     <input 
+                        type="password"
+                        value={customKey}
+                        onChange={(e) => setCustomKey(e.target.value)}
+                        placeholder="ENTER GEMINI API KEY"
+                        className="w-full max-w-sm bg-white/10 border border-white/20 rounded-2xl px-6 py-4 text-white text-center mb-6 focus:border-brand-accent transition-colors outline-none"
+                     />
+
+                     <div className="flex flex-col gap-3 w-full max-w-xs">
+                        <button 
+                            onClick={saveKey}
+                            className="w-full py-4 bg-brand-accent text-white rounded-full font-bold text-[10px] uppercase tracking-widest hover:bg-white hover:text-neutral-900 transition-all shadow-2xl"
+                        >
+                            {lang === 'BN' ? 'কী সেভ করুন' : 'Save Key'}
+                        </button>
+                        <button 
+                            onClick={() => setShowKeyInput(false)}
+                            className="text-[10px] text-neutral-500 hover:text-white uppercase tracking-widest transition-colors"
+                        >
+                            {lang === 'BN' ? 'বাদ দিন' : 'Cancel'}
+                        </button>
+                     </div>
+                     
+                     <a 
+                        href="https://aistudio.google.com/app/apikey" 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="mt-8 text-[9px] text-brand-accent hover:underline uppercase tracking-widest"
                      >
-                        {lang === 'BN' ? 'আবার চেষ্টা করুন' : 'Try Again'}
-                     </button>
+                        {lang === 'BN' ? 'এখান থেকে কী পাবেন' : 'Get a key from AI Studio'}
+                     </a>
                 </div>
               )}
             </div>
@@ -282,7 +364,7 @@ export default function VideoShowcaseModal({ isOpen, onClose, title, context, ty
                             if (typeof window !== 'undefined' && window.aistudio) {
                                 await window.aistudio.openSelectKey();
                             } else {
-                                alert(lang === 'BN' ? "এই ফিচারটি প্রিভিউ মুডে কাজ করে" : "This feature requires AI Studio Preview environment");
+                                setShowKeyInput(true);
                             }
                         }}
                         className="w-full py-4 text-neutral-400 hover:text-neutral-900 dark:hover:text-white transition-colors text-[9px] font-bold uppercase tracking-widest flex items-center justify-center gap-2"
