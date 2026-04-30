@@ -77,6 +77,21 @@ export default function AuthPage() {
   });
 
   useEffect(() => {
+    // Check for OAuth errors in the URL
+    const params = new URLSearchParams(window.location.search);
+    const error = params.get('error');
+    const errorDescription = params.get('error_description');
+
+    if (error === 'server_error' && errorDescription?.includes('external_provider')) {
+      setAuthError(
+        lang === 'BN' 
+          ? 'এক্সটার্নাল প্রোভাইডার (FB/Google) থেকে তথ্য পাওয়া যায়নি। অনুগ্রহ করে আপনার অ্যাপের সেটিংস (Facebook/Supabase Dashboard) চেক করুন।' 
+          : 'Failed to retrieve profile from external provider. Please check your OAuth configuration in Facebook/Supabase Dashboard.'
+      );
+    } else if (errorDescription) {
+      setAuthError(errorDescription);
+    }
+
     if (user) {
       setDisplayName(user.user_metadata?.full_name || user.user_metadata?.display_name || '');
       setPhotoURL(user.user_metadata?.avatar_url || '');
@@ -161,14 +176,17 @@ export default function AuthPage() {
     setAuthError(null);
     setIsAuthenticating(true);
     try {
+      const isInsideIframe = typeof window !== 'undefined' && window.self !== window.top;
+
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
           redirectTo: window.location.origin + '/profile',
-          skipBrowserRedirect: true // Get the URL instead of redirecting
+          skipBrowserRedirect: isInsideIframe
         }
       });
       if (error) throw error;
+
       if (data?.url) {
         // Open in a popup
         const width = 600;
@@ -198,14 +216,18 @@ export default function AuthPage() {
     setAuthError(null);
     setIsAuthenticating(true);
     try {
+      const isInsideIframe = typeof window !== 'undefined' && window.self !== window.top;
+      
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'facebook',
         options: {
           redirectTo: window.location.origin + '/profile',
-          skipBrowserRedirect: true // Get the URL instead of redirecting
+          skipBrowserRedirect: isInsideIframe // Use popup only if inside iframe (like AI Studio)
         }
       });
       if (error) throw error;
+      
+      // If we got a URL (skipBrowserRedirect was true), open popup
       if (data?.url) {
         // Open in a popup
         const width = 600;
