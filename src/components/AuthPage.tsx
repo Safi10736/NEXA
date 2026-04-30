@@ -161,13 +161,31 @@ export default function AuthPage() {
     setAuthError(null);
     setIsAuthenticating(true);
     try {
-      const { error } = await supabase.auth.signInWithOAuth({
+      const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-           redirectTo: window.location.origin + '/profile',
+          redirectTo: window.location.origin + '/profile',
+          skipBrowserRedirect: true // Get the URL instead of redirecting
         }
       });
       if (error) throw error;
+      if (data?.url) {
+        // Open in a popup
+        const width = 600;
+        const height = 700;
+        const left = window.screenX + (window.outerWidth - width) / 2;
+        const top = window.screenY + (window.outerHeight - height) / 2;
+        
+        const popup = window.open(
+          data.url,
+          'google_login_popup',
+          `width=${width},height=${height},left=${left},top=${top}`
+        );
+
+        if (!popup) {
+          throw new Error(lang === 'BN' ? 'পপআপ ব্লক করা হয়েছে। অনুগ্রহ করে পপআপ এনাবল করুন।' : 'Popup was blocked. Please enable popups for this site.');
+        }
+      }
     } catch (error: any) {
       console.error(error);
       setAuthError(error.message);
@@ -180,13 +198,31 @@ export default function AuthPage() {
     setAuthError(null);
     setIsAuthenticating(true);
     try {
-      const { error } = await supabase.auth.signInWithOAuth({
+      const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'facebook',
         options: {
-           redirectTo: window.location.origin + '/profile',
+          redirectTo: window.location.origin + '/profile',
+          skipBrowserRedirect: true // Get the URL instead of redirecting
         }
       });
       if (error) throw error;
+      if (data?.url) {
+        // Open in a popup
+        const width = 600;
+        const height = 700;
+        const left = window.screenX + (window.outerWidth - width) / 2;
+        const top = window.screenY + (window.outerHeight - height) / 2;
+        
+        const popup = window.open(
+          data.url,
+          'facebook_login_popup',
+          `width=${width},height=${height},left=${left},top=${top}`
+        );
+
+        if (!popup) {
+          throw new Error(lang === 'BN' ? 'পপআপ ব্লক করা হয়েছে। অনুগ্রহ করে পপআপ এনাবল করুন।' : 'Popup was blocked. Please enable popups for this site.');
+        }
+      }
     } catch (error: any) {
       console.error(error);
       if (error.message?.includes('provider is not enabled')) {
