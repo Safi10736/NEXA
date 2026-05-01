@@ -58,12 +58,11 @@ function FeaturedCollections() {
       if (data && data.length > 0) {
         setItems(data);
       } else {
-        // Fallbacks
         setItems([
-          { title: 'Explore CupEco', image_url: 'https://images.unsplash.com/photo-1544787210-22c66d137f6d?auto=format&fit=crop&q=80&w=800' },
-          { title: 'Explore Tealyvory', image_url: 'https://images.unsplash.com/photo-1563245372-f21724e3856d?auto=format&fit=crop&q=80&w=800' },
-          { title: 'Explore NatureSip', image_url: 'https://images.unsplash.com/photo-1610631880197-484c399c922c?auto=format&fit=crop&q=80&w=800' },
-          { title: 'Explore FreshPitcher', image_url: 'https://images.unsplash.com/photo-1574672280600-4accfa5b6f98?auto=format&fit=crop&q=80&w=800' },
+          { title: 'Fine Jewelry', image_url: 'https://images.unsplash.com/photo-1515562141207-7a88fb0ce338?auto=format&fit=crop&q=80&w=800' },
+          { title: 'Elegant Timepieces', image_url: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&q=80&w=800' },
+          { title: 'Luxury Accessories', image_url: 'https://images.unsplash.com/photo-1544787210-22c66d137f6d?auto=format&fit=crop&q=80&w=800' },
+          { title: 'Heritage Collection', image_url: 'https://images.unsplash.com/photo-1610631880197-484c399c922c?auto=format&fit=crop&q=80&w=800' },
         ]);
       }
     };
@@ -71,21 +70,27 @@ function FeaturedCollections() {
   }, []);
 
   return (
-    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 px-6 mt-12 mb-24">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 px-4 md:px-12 -mt-20 md:-mt-32 mb-40 relative z-30">
       {items.map((item, i) => (
         <motion.div
           key={i}
-          initial={{ opacity: 0, scale: 0.95 }}
-          whileInView={{ opacity: 1, scale: 1 }}
-          transition={{ delay: i * 0.1 }}
-          className="relative h-72 rounded-3xl overflow-hidden group cursor-pointer shadow-sm hover:shadow-xl transition-all"
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ delay: i * 0.1, duration: 1 }}
+          className="relative h-[450px] md:h-[550px] rounded-sm overflow-hidden group shadow-2xl border border-white/5"
         >
-          <img src={item.image_url} referrerPolicy="no-referrer" className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" />
-          <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-colors" />
-          <div className="absolute inset-x-4 bottom-6 text-center">
-            <h4 className="text-white text-[10px] font-bold uppercase tracking-[0.3em] mb-4 opacity-90 group-hover:opacity-100">{item.title}</h4>
-            <Link to="/shop" className="inline-block bg-white/95 backdrop-blur-md px-6 py-2 rounded-full text-[8px] font-bold uppercase tracking-widest text-neutral-900 group-hover:bg-brand-accent group-hover:text-white transition-all shadow-xl">
-              Shop Now
+          <img src={item.image_url} referrerPolicy="no-referrer" className="w-full h-full object-cover transition-transform duration-[3000ms] group-hover:scale-110 grayscale-[0.2] group-hover:grayscale-0" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#080808] via-transparent to-transparent opacity-80" />
+          <div className="absolute inset-x-8 bottom-12">
+            <span className="text-[9px] display tracking-[0.4em] text-[#d4af37] mb-4 block uppercase font-light">Collection</span>
+            <h4 className="text-white text-3xl md:text-4xl serif italic mb-8 tracking-tighter leading-tight group-hover:translate-x-2 transition-transform duration-700">{item.title}</h4>
+            <Link 
+              to="/shop" 
+              className="group/link flex items-center gap-4 text-white hover:text-brand-gold text-[10px] display tracking-[0.3em] transition-all uppercase"
+            >
+              The Curated List
+              <div className="h-px w-8 bg-brand-gold/40 group-hover/link:w-12 transition-all duration-500" />
             </Link>
           </div>
         </motion.div>
@@ -107,26 +112,26 @@ function BestsellingSection() {
   };
 
   return (
-    <section id="bestsellers" className="py-24 px-6 bg-brand-bg relative overflow-hidden">
+    <section id="bestsellers" className="py-32 px-6 bg-brand-bg relative overflow-hidden">
       <div className="max-w-7xl mx-auto">
-        <div className="flex justify-between items-end mb-12">
+        <div className="flex flex-col md:flex-row justify-between items-center md:items-end mb-20 text-center md:text-left gap-8">
           <div>
-            <span className="text-[10px] font-bold tracking-[0.43em] uppercase text-brand-muted mb-4 block">Eco Essentials Planet-Friendly</span>
-            <h2 className="text-4xl md:text-5xl font-bold text-neutral-900 tracking-tighter uppercase">
+            <span className="text-[11px] display tracking-[0.4em] text-brand-gold mb-6 block">Exquisite Selection</span>
+            <h2 className="text-5xl md:text-7xl serif text-brand-accent leading-none">
                {lang === 'BN' ? (
-                 <>সেরা <span className="font-bold text-brand-accent">পণ্য</span></>
+                 <>সেরা <span className="italic">কালেকশন</span></>
                ) : (
-                 <>Bestselling <span className="font-bold text-brand-accent">Products</span></>
+                 <>Featured <span className="italic">Collection</span></>
                )}
             </h2>
           </div>
-          <Link to="/shop" className="flex items-center gap-2 text-[9px] font-bold uppercase tracking-[0.2em] text-neutral-900 border-b border-neutral-200 pb-1 hover:border-brand-accent transition-all group">
-            {lang === 'BN' ? 'আরও পণ্য' : 'More products'}
-            <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+          <Link to="/shop" className="flex items-center gap-4 text-[11px] display text-brand-accent group pb-2 border-b border-brand-gold/20 hover:border-brand-gold transition-all">
+            {lang === 'BN' ? 'সব দেখুন' : 'Explore All'}
+            <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-2" />
           </Link>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-4 md:gap-x-8 gap-y-12 md:gap-y-16">
           {products.slice(0, 8).map((p) => (
              <ProductCard key={p.id} product={p} onQuickView={handleQuickView} />
           ))}
@@ -200,18 +205,20 @@ function SecondaryTeasers() {
 
         {/* Brand Commitment Teaser */}
         <div className="flex flex-col justify-center">
-           <h3 className="text-4xl font-bold text-neutral-900 tracking-tighter mb-8 leading-tight">
-             {lang === 'BN' ? 'চিন্তাশীল, গ্রহ-বান্ধব আইডিয়া এবং অনুপ্রেরণা গ্যালারি' : 'Thoughtful, Planet-Prioritizing Ideas and Inspiration Gallery'}
+           <span className="text-[10px] display tracking-[0.5em] text-[#d4af37] mb-8 block uppercase">Our Heritage</span>
+           <h3 className="text-5xl md:text-6xl serif italic text-brand-accent tracking-tighter mb-8 leading-[1.1]">
+             {lang === 'BN' ? 'আভিজাত্য এবং স্থায়িত্বের এক অনন্য সংমিশ্রণ' : 'Crafting A Greener Narrative Of Prestige'}
            </h3>
-           <p className="text-sm text-neutral-500 font-light leading-relaxed mb-10 max-w-sm">
-             {lang === 'BN' ? 'টেকসই উপকরণ, কম-প্রভাব উৎপাদন এবং নৈতিক উৎস অংশীদারিত্বের প্রতি আমাদের প্রতিশ্রুতি আবিষ্কার করুন।' : 'Discover our commitment to sustainable materials, low-impact production, and ethical sourcing partnerships — all crafted to support a healthier planet and a greener lifestyle.'}
+           <p className="text-base text-neutral-500 font-light leading-relaxed mb-12 max-w-md serif italic">
+             {lang === 'BN' ? 'টেকসই উপকরণ এবং নৈতিক আভিজাত্যের প্রতি আমাদের প্রতিশ্রুতি আবিষ্কার করুন।' : 'Discover our unwavering commitment to sustainable materials and ethical artisan partnerships — crafted for those who value the legacy of true luxury.'}
            </p>
            <div className="flex gap-4">
               <Link 
                 to="/about"
-                className="px-8 py-3 bg-neutral-900 text-white rounded-full text-[9px] font-bold uppercase tracking-widest hover:bg-brand-accent transition-all inline-block"
+                className="group relative px-12 py-5 bg-brand-accent text-white rounded-sm text-[9px] display tracking-[0.3em] overflow-hidden"
               >
-                {lang === 'BN' ? 'আরও জানুন' : 'Learn More'}
+                <div className="absolute inset-0 bg-brand-gold translate-y-[101%] group-hover:translate-y-0 transition-transform duration-500" />
+                <span className="relative z-10">{lang === 'BN' ? 'আমাদের গল্প' : 'THE LEGACY'}</span>
               </Link>
            </div>
         </div>
@@ -221,35 +228,87 @@ function SecondaryTeasers() {
 }
 
 function EnhancedReviewSection() {
+  const { lang, t } = useLanguage();
+  
+  const reviews = [
+    {
+      name: "Sophia L.",
+      title: "Design Critic",
+      content: lang === 'BN' ? "চমৎকার ডিজাইন এবং কোয়ালিটি। প্রতিটি পণ্য একটি শিল্পের মতো সুন্দর।" : "Beyond excellence. Each piece feels like a bespoke artifact curated specifically for my lifestyle.",
+      rating: 5,
+      image: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100&h=100&fit=crop"
+    },
+    {
+      name: "Marcus Aurelius",
+      title: "Artisan Collector",
+      content: lang === 'BN' ? "সাধারণ জিনিসের মধ্যে অসাধারণ কিছু খুঁজে পেয়েছি। নেক্সা সত্যিই অনন্য।" : "The architectural integrity of their designs is unparalleled. A masterclass in luxury minimalism.",
+      rating: 5,
+      image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop"
+    }
+  ];
+
   return (
-    <section className="py-24 px-6 bg-brand-bg">
-      <div className="max-w-7xl mx-auto">
-        <div className="grid lg:grid-cols-4 gap-12 items-start">
-          {/* Big Rating Card */}
-          <div className="lg:col-span-1 bg-white border border-neutral-100 p-10 rounded-[2.5rem] shadow-sm flex flex-col items-center text-center">
-             <span className="text-6xl font-light text-neutral-900 tracking-tighter mb-4">4.9<span className="text-2xl text-neutral-300">/5</span></span>
-             <div className="flex text-brand-gold mb-4">
-                {[...Array(5)].map((_, i) => <Star key={i} className="w-4 h-4 fill-current" />)}
-             </div>
-             <p className="text-[8px] font-bold uppercase tracking-[0.2em] text-neutral-400">9k+ User Reviews For Our Award Winning Eco Products</p>
+    <section className="py-40 px-6 bg-[#080808] text-white overflow-hidden relative">
+      <div className="absolute inset-0 opacity-10 pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]" />
+      <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-brand-bg to-transparent" />
+      
+      <div className="max-w-7xl mx-auto relative z-10">
+        <div className="flex flex-col lg:flex-row gap-24 items-start">
+          {/* Rating Header */}
+          <div className="lg:w-2/5">
+            <span className="text-brand-gold text-[10px] display tracking-[0.6em] mb-8 block uppercase">The Member Narrative</span>
+            <h2 className="text-6xl md:text-8xl serif italic mb-10 leading-[0.9] tracking-tighter">Voices Of <br/> Prestige</h2>
+            
+            <div className="flex items-center gap-8 mb-12">
+               <div className="text-6xl serif text-brand-gold italic">4.9</div>
+               <div className="h-16 w-px bg-white/10" />
+               <div className="space-y-3">
+                  <div className="flex text-brand-gold gap-1.5">
+                    {[...Array(5)].map((_, i) => <Star key={i} className="w-3.5 h-3.5 fill-current" />)}
+                  </div>
+                  <p className="text-[10px] display text-white/40 tracking-[0.3em] uppercase">Validated Global Score</p>
+               </div>
+            </div>
+            
+            <p className="text-neutral-400 text-lg serif italic font-light leading-relaxed max-w-sm mb-12">
+              "To be a Nexa member is to appreciate the nuance of fine craftsmanship and the silence of true luxury."
+            </p>
+
+            <Link to="/gallery" className="group inline-flex items-center gap-4 text-[10px] display tracking-[0.4em] text-white/60 hover:text-brand-gold transition-all uppercase">
+               Explore Gallery <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-3" />
+            </Link>
           </div>
 
-          {/* Individual Reviews */}
-          <div className="lg:col-span-3 grid md:grid-cols-2 gap-8">
-            {REVIEWS.map((review) => (
-              <div key={review.id} className="p-8 bg-brand-surface rounded-2xl border border-neutral-100">
-                <div className="flex text-brand-gold mb-6">
-                   {[...Array(5)].map((_, i) => <Star key={i} className={cn("w-3 h-3 fill-current", i >= review.rating && "text-neutral-200")} />)}
-                </div>
-                <p className="text-sm font-light text-neutral-600 italic leading-relaxed mb-8">"{review.comment}"</p>
-                <div className="flex items-center gap-3">
-                   <div className="w-8 h-8 rounded-full bg-neutral-200 flex items-center justify-center text-[10px] font-bold uppercase">{review.userName[0]}</div>
+          {/* Testimonial Cards */}
+          <div className="lg:w-3/5 grid gap-8">
+            {reviews.map((review, i) => (
+              <motion.div 
+                key={i}
+                initial={{ opacity: 0, x: 50 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                transition={{ delay: i * 0.1 }}
+                className="group p-10 bg-[#121212] border border-white/5 rounded-sm hover:border-brand-gold/30 transition-all duration-700 relative overflow-hidden"
+              >
+                <div className="absolute top-0 right-0 w-32 h-32 bg-brand-gold/2 blur-[60px] opacity-0 group-hover:opacity-100 transition-opacity" />
+                
+                <div className="flex flex-col md:flex-row gap-8 items-start relative z-10">
+                   <div className="w-16 h-16 rounded-full overflow-hidden border border-white/10 flex-shrink-0 grayscale group-hover:grayscale-0 transition-all duration-700">
+                      <img src={review.image} className="w-full h-full object-cover" />
+                   </div>
                    <div>
-                      <h4 className="text-[10px] font-bold text-neutral-900 uppercase tracking-tight">{review.userName}</h4>
-                      <p className="text-[8px] text-green-600 font-bold uppercase">Verified Buyer</p>
+                      <div className="flex gap-1.5 mb-4 opacity-50 group-hover:opacity-100 transition-opacity">
+                         {[...Array(review.rating)].map((_, i) => <Star key={i} className="w-2.5 h-2.5 fill-brand-gold text-brand-gold" />)}
+                      </div>
+                      <p className="text-lg md:text-xl serif italic text-white/90 leading-relaxed mb-6 group-hover:text-white transition-colors">
+                        "{review.content}"
+                      </p>
+                      <div className="flex flex-col">
+                        <span className="text-[11px] display tracking-widest text-[#d4af37] uppercase">{review.name}</span>
+                        <span className="text-[9px] display tracking-[0.2em] text-white/30 uppercase mt-1">{review.title}</span>
+                      </div>
                    </div>
                 </div>
-              </div>
+              </motion.div>
             ))}
           </div>
         </div>
@@ -259,157 +318,120 @@ function EnhancedReviewSection() {
 }
 
 function Footer() {
-  const [openSection, setOpenSection] = useState<string | null>(null);
   const { t, lang } = useLanguage();
-
-  const toggleSection = (id: string) => {
-    setOpenSection(openSection === id ? null : id);
-  };
 
   const sections = [
     {
       id: 'help',
-      title: t('help'),
+      title: 'Customer Care',
       links: [
-        { label: t('shipping'), to: '/support#shipping' },
-        { label: t('returns'), to: '/support#returns' },
-        { label: lang === 'BN' ? 'প্রাইভেসি পলিসি' : 'Privacy Policy', to: '/support#privacy' },
-        { label: lang === 'BN' ? 'শর্তাবলী' : 'Terms & Conditions', to: '/support#terms' }
+        { label: 'Shipping & Delivery', to: '/support#shipping' },
+        { label: 'Returns & Exchanges', to: '/support#returns' },
+        { label: 'Privacy Policy', to: '/support#privacy' },
+        { label: 'Terms of Service', to: '/support#terms' }
       ]
     },
     {
       id: 'about',
-      title: t('about'),
+      title: 'Our World',
       links: [
-        { label: lang === 'BN' ? 'আমাদের সম্পর্কে' : 'About Us', to: '/about' },
-        { label: lang === 'BN' ? 'আমাদের যাত্রা' : 'Our Story', to: '/about' },
-        { label: lang === 'BN' ? 'ক্যারিয়ার' : 'Career', to: '#' }
+        { label: 'About Nexa', to: '/about' },
+        { label: 'Our Heritage', to: '/about' },
+        { label: 'Artisan Process', to: '/about' },
+        { label: 'Sustainability', to: '#' }
       ]
     },
     {
-      id: 'account',
-      title: t('accountKey'),
+      id: 'services',
+      title: 'Services',
       links: [
-        { label: t('login'), to: '/profile' },
-        { label: lang === 'BN' ? 'নিবন্ধন' : 'Register', to: '/profile' },
-        { label: lang === 'BN' ? 'অ্যাডমিন ড্যাশবোর্ড' : 'Admin Dashboard', to: '/admin' }
+        { label: 'Book an Appointment', to: '/contact' },
+        { label: 'Bespoke Jewelry', to: '/contact' },
+        { label: 'Care & Repairs', to: '/contact' },
+        { label: 'Store Locator', to: '#' }
       ]
     },
     {
       id: 'contact',
-      title: t('contact'),
+      title: 'The Atelier',
       content: (
-        <div className="text-[10px] text-neutral-400 font-bold uppercase tracking-widest leading-loose text-left">
-          <p className="text-neutral-900 border-b border-neutral-100 mb-2 pb-1 inline-block">{t('dhakaOffice')}</p>
-          <p>Nexa Luxury Atelier, Level-5</p>
-          <p>Banani Crescent, Road No-12</p>
-          <p>Gulshan-02, Dhaka-1212</p>
-          <p className="mt-2 text-neutral-600">{t('phone')}: +880 1234 567 890</p>
-          <p className="text-neutral-400 font-medium">(10 AM - 8 PM)</p>
-          <p className="text-neutral-400 font-medium italic">({lang === 'BN' ? 'সরকারি ছুটির দিনে বন্ধ' : 'Closed on Govt. Holidays'})</p>
-          <p className="mt-2 text-neutral-600">{t('email')}: concierge@nexastore.com</p>
+        <div className="text-[11px] display text-white/50 tracking-wide leading-[2] text-left">
+          <p className="text-[#d4af37] serif italic text-base mb-6">Dhaka Headquarters</p>
+          <p>Level 5, Banani Crescent</p>
+          <p>Gulshan 2, Dhaka 1212</p>
+          <p className="mt-8 text-white/30">T: +880 1234 567 890</p>
+          <p className="text-white/30">E: concierge@nexastore.com</p>
         </div>
       )
-    },
-    {
-       id: 'stores',
-       title: lang === 'BN' ? 'স্টোর লোকেশন' : 'Store Locations',
-       links: [{ label: lang === 'BN' ? 'ঢাকা' : 'Dhaka', to: '#' }, { label: lang === 'BN' ? 'চট্টগ্রাম' : 'Chittagong', to: '#' }]
     }
   ];
 
   return (
-    <footer className="bg-white pt-24 pb-12 px-6 border-t border-neutral-100 flex flex-col items-center">
-      {/* Follow Us */}
-      <div className="flex flex-col items-center mb-16">
-        <h3 className="text-[10px] font-bold uppercase tracking-[0.4em] mb-10 text-neutral-900">{t('followUs')}</h3>
-        <div className="flex gap-5">
-          {[
-            { icon: <Facebook className="w-5 h-5" />, href: "https://www.facebook.com/share/1CiNRxyy6M/" },
-            { icon: <Instagram className="w-5 h-5" />, href: "https://www.instagram.com/nexa_124?igsh=MXBoN2N3ZnJyenh1bw==" },
-            { icon: <Linkedin className="w-5 h-5" />, href: "#" },
-            { icon: <Youtube className="w-5 h-5" />, href: "#" }
-          ].map((social, i) => (
-            <a 
-              key={i} 
-              href={social.href} 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="w-12 h-12 rounded-full border border-neutral-200 flex items-center justify-center text-neutral-900 hover:bg-neutral-900 hover:text-white transition-all duration-500 shadow-sm hover:shadow-xl"
-            >
-              {social.icon}
-            </a>
-          ))}
-        </div>
-        <p className="mt-10 text-[10px] text-neutral-300 font-bold uppercase tracking-[0.3em]">TRAD/DNCC/021994/2026</p>
-      </div>
-
-      {/* Main Sections - Mobile Accordion / Desktop Grid */}
-      <div className="max-w-7xl w-full mx-auto md:grid md:grid-cols-5 md:gap-12 py-10 border-t border-b border-neutral-50">
-        {sections.map((section) => (
-          <div key={section.id} className="border-b md:border-b-0 border-neutral-50 last:border-b-0">
-            <button 
-              onClick={() => toggleSection(section.id)}
-              className="w-full flex justify-between items-center py-7 md:py-0 md:mb-10 text-left group"
-            >
-              <h4 className="text-[11px] font-bold uppercase tracking-[0.3em] text-neutral-900 group-hover:text-brand-accent transition-colors">{section.title}</h4>
-              <div className="md:hidden transition-transform duration-300" style={{ transform: openSection === section.id ? 'rotate(180deg)' : 'rotate(0deg)' }}>
-                {openSection === section.id ? <Minus className="w-4 h-4 text-neutral-400" /> : <Plus className="w-4 h-4 text-neutral-400" />}
+    <footer className="bg-[#0a0a0a] pt-40 pb-20 px-6 border-t border-white/5 overflow-hidden text-white mt-24">
+      <div className="max-w-7xl mx-auto">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-20 lg:gap-12 mb-32">
+          {/* Logo & Intro */}
+          <div className="lg:col-span-4 max-w-sm">
+            <Link to="/" className="text-4xl md:text-5xl serif text-white tracking-widest mb-10 block italic">NEXA</Link>
+            <p className="text-white/40 text-base font-light leading-relaxed mb-12 italic serif">
+              "We believe true luxury is silent. It is the harmony between artisan heritage and the modern pursuit of perfection."
+            </p>
+            <div className="flex gap-4">
+              <div className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center hover:border-[#d4af37] hover:text-[#d4af37] transition-all cursor-pointer">
+                <span className="text-[10px] display">IG</span>
               </div>
-            </button>
-            
-            <div className={cn(
-              "md:block transition-all duration-500 overflow-hidden",
-              openSection === section.id ? "block pb-8" : "hidden md:block"
-            )}>
-               <div className="flex flex-col gap-5 text-[10px] font-bold uppercase tracking-[0.2em] text-neutral-400">
-                 {section.links?.map((link, i) => (
-                   <Link 
-                    key={i} 
-                    to={link.to} 
-                    className="hover:text-brand-accent transition-all cursor-pointer hover:pl-2 flex items-center group"
-                   >
-                     <span className="w-0 h-px bg-brand-accent group-hover:w-5 transition-all mr-0 group-hover:mr-2"></span>
-                     {link.label}
-                   </Link>
-                 ))}
-                 {section.content}
-               </div>
+              <div className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center hover:border-[#d4af37] hover:text-[#d4af37] transition-all cursor-pointer">
+                <span className="text-[10px] display">FB</span>
+              </div>
             </div>
           </div>
-        ))}
-      </div>
 
-      {/* Subscribe */}
-      <div className="max-w-2xl w-full mx-auto text-center py-24 px-6">
-        <h3 className="text-[12px] font-bold uppercase tracking-[0.5em] mb-6 text-neutral-900 underline underline-offset-[12px] decoration-neutral-100">{t('subscribe')}</h3>
-        <p className="text-neutral-400 text-[10px] font-bold uppercase tracking-[0.2em] mb-12">{t('subscribeDesc')}</p>
-        <div className="flex flex-col sm:flex-row gap-0 border border-neutral-100 p-1 rounded-sm focus-within:border-neutral-900 transition-colors">
-          <input 
-            type="email" 
-            placeholder={lang === 'BN' ? 'আপনার ইমেইল ঠিকানা দিন...' : 'Enter your email address...'}
-            className="flex-1 px-8 py-5 focus:outline-none text-[10px] font-bold uppercase tracking-widest text-neutral-900 placeholder:text-neutral-300"
-          />
-          <button className="bg-neutral-900 text-white px-12 py-5 text-[10px] font-bold uppercase tracking-[0.3em] hover:bg-brand-accent transition-all">
-            {t('signUp')}
-          </button>
+          <div className="lg:col-span-8 grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-12">
+            {sections.map((section) => (
+              <div key={section.id} className="space-y-8">
+                <h4 className="text-[11px] display tracking-[0.4em] text-[#d4af37] uppercase">{section.title}</h4>
+                {section.links ? (
+                  <ul className="space-y-4">
+                    {section.links.map((link) => (
+                      <li key={link.label}>
+                        <Link to={link.to} className="text-[11px] display text-white/40 hover:text-white transition-colors tracking-widest uppercase">{link.label}</Link>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  section.content
+                )}
+              </div>
+            ))}
+          </div>
         </div>
-      </div>
 
-      {/* Payment & Copyright */}
-      <div className="max-w-7xl w-full mx-auto flex flex-col items-center gap-12 border-t border-neutral-50 pt-16">
-        <div className="flex flex-wrap justify-center items-center gap-10 opacity-30 grayscale hover:grayscale-0 transition-all duration-1000">
-          <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg" alt="Visa" className="h-4" referrerPolicy="no-referrer" />
-          <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" alt="Mastercard" className="h-7" referrerPolicy="no-referrer" />
-          <img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" alt="PayPal" className="h-4" referrerPolicy="no-referrer" />
-          <img src="https://upload.wikimedia.org/wikipedia/commons/b/b7/Google_Pay_Logo.svg" alt="Google Pay" className="h-5" referrerPolicy="no-referrer" />
-          <img src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_Pay_logo.svg" alt="Apple Pay" className="h-6" referrerPolicy="no-referrer" />
-          <img src="https://upload.wikimedia.org/wikipedia/commons/4/41/Stripe_logo%2C_revised_2016.svg" alt="Stripe" className="h-10" referrerPolicy="no-referrer" />
+        <div className="py-24 border-y border-white/5 flex flex-col lg:flex-row items-center justify-between gap-12">
+          <div className="max-w-md text-center lg:text-left">
+            <h3 className="text-3xl serif text-white italic mb-2">Join the Atelier</h3>
+            <p className="text-[10px] display text-white/30 tracking-[0.3em] uppercase">Receive exclusive updates and private collection previews.</p>
+          </div>
+          <div className="flex-1 max-w-md w-full relative">
+            <input 
+              type="email" 
+              placeholder="YOUR EMAIL" 
+              className="w-full bg-transparent px-0 py-6 text-[11px] display tracking-[0.4em] text-white focus:outline-none border-b border-white/10 focus:border-[#d4af37] transition-all placeholder:text-white/20 uppercase"
+            />
+            <button className="absolute right-0 top-1/2 -translate-y-1/2 text-[10px] display tracking-[0.3em] text-[#d4af37] hover:text-white uppercase font-bold pr-2 transition-colors">
+              Subscribe
+            </button>
+          </div>
         </div>
-        <p className="text-[9px] text-neutral-300 uppercase tracking-[0.4em] font-bold text-center leading-loose">
-          © 2026 Nexa Luxury Store — Handcrafted with obsession. All rights reserved.
-          <Link to="/admin" className="ml-4 text-neutral-200 hover:text-brand-accent transition-colors underline underline-offset-4">Admin Access</Link>
-        </p>
+
+        <div className="pt-12 flex flex-col md:flex-row justify-between items-center gap-8">
+          <p className="text-[9px] display tracking-[0.3em] text-white/20 uppercase">
+             © {new Date().getFullYear()} Nexa Store. All Rights Reserved. Crafted for the Exceptional.
+          </p>
+          <div className="flex gap-10 items-center opacity-20 grayscale brightness-200">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/e/e1/Visa_Logo.png" className="h-2" />
+            <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" className="h-4" />
+          </div>
+        </div>
       </div>
     </footer>
   );

@@ -182,7 +182,8 @@ export default function AuthPage() {
         provider: 'google',
         options: {
           redirectTo: window.location.origin + '/profile',
-          skipBrowserRedirect: isInsideIframe
+          skipBrowserRedirect: isInsideIframe,
+          scopes: 'openid profile email'
         }
       });
       if (error) throw error;
@@ -222,14 +223,13 @@ export default function AuthPage() {
         provider: 'facebook',
         options: {
           redirectTo: window.location.origin + '/profile',
-          skipBrowserRedirect: isInsideIframe // Use popup only if inside iframe (like AI Studio)
+          skipBrowserRedirect: true, // ALWAYS use popup for FB in AI Studio environment
+          scopes: 'public_profile email'
         }
       });
       if (error) throw error;
       
-      // If we got a URL (skipBrowserRedirect was true), open popup
       if (data?.url) {
-        // Open in a popup
         const width = 600;
         const height = 700;
         const left = window.screenX + (window.outerWidth - width) / 2;
@@ -244,14 +244,18 @@ export default function AuthPage() {
         if (!popup) {
           throw new Error(lang === 'BN' ? 'পপআপ ব্লক করা হয়েছে। অনুগ্রহ করে পপআপ এনাবল করুন।' : 'Popup was blocked. Please enable popups for this site.');
         }
+
+        // Monitoring the popup
+        const timer = setInterval(() => {
+          if (popup.closed) {
+            clearInterval(timer);
+            setIsAuthenticating(false);
+          }
+        }, 1000);
       }
     } catch (error: any) {
       console.error(error);
-      if (error.message?.includes('provider is not enabled')) {
-        setAuthError(lang === 'BN' ? 'ফেসবুক লগইন এই প্রোজেক্টে এখনো চালু করা হয়নি। দয়া করে Supabase ড্যাশবোর্ড থেকে এটি Enable করুন।' : 'Facebook login is not enabled in this project. Please enable it from the Supabase dashboard.');
-      } else {
-        setAuthError(error.message);
-      }
+      setAuthError(error.message);
     } finally {
       setIsAuthenticating(false);
     }
@@ -1255,69 +1259,67 @@ export default function AuthPage() {
         </div>
 
         {/* Right Side - Form */}
-        <div className="p-12 md:p-16 flex flex-col justify-center bg-white relative overflow-hidden">
-          <div className="absolute top-0 right-0 p-8 opacity-5">
-             <ShieldCheck className="w-32 h-32 text-brand-accent rotate-12" />
+        <div className="p-12 md:p-20 flex flex-col justify-center bg-white relative overflow-hidden">
+          <div className="absolute top-0 right-0 p-12 opacity-5">
+             <ShieldCheck className="w-48 h-48 text-brand-gold rotate-12" />
           </div>
           
-          <div className="mb-12 text-center md:text-left relative z-10">
-            <div className="inline-block px-3 py-1 bg-brand-surface border border-brand-accent/20 rounded-full mb-6">
-              <span className="text-[8px] font-black text-brand-accent uppercase tracking-[0.3em]">NEXA_VOID Authentication</span>
-            </div>
-            <h3 className="text-4xl font-light text-neutral-900 tracking-tighter mb-3 serif italic">
-              {isLogin ? t('protocolActivation') : t('identitySynthesis')}
+          <div className="mb-16 relative z-10">
+            <span className="text-[10px] display tracking-[0.4em] text-brand-gold mb-4 block">Secure Access</span>
+            <h3 className="text-4xl md:text-5xl serif text-brand-accent italic mb-6">
+              {isLogin ? 'Welcome Back' : 'Create Account'}
             </h3>
-            <p className="text-[10px] text-neutral-300 font-bold uppercase tracking-widest leading-relaxed max-w-sm">
+            <p className="text-sm text-neutral-400 font-light leading-loose max-w-sm">
               {isLogin 
-                ? (lang === 'BN' ? 'আপনার অ্যাকাউন্টে লগইন করে চমৎকার অভিজ্ঞতা উপভোগ করুন।' : 'Resume your curated researcher journey across the digital NEXA network.') 
-                : (lang === 'BN' ? 'নতুন অ্যাকাউন্ট তৈরি করে আমাদের প্রিমিয়াম সেবার অংশ হন।' : 'Establish your unique biometric designation and access global clearances.')}
+                ? (lang === 'BN' ? 'আপনার অ্যাকাউন্টে লগইন করে চমৎকার অভিজ্ঞতা উপভোগ করুন।' : 'Please enter your credentials to access your private salon and collections.') 
+                : (lang === 'BN' ? 'নতুন অ্যাকাউন্ট তৈরি করে আমাদের প্রিমিয়াম সেবার অংশ হন।' : 'Join our inner circle for exclusive access to heritage pieces and bespoke services.')}
             </p>
           </div>
 
-          <form onSubmit={handleEmailAuth} className="flex flex-col gap-6 relative z-10">
-            <div className="space-y-4">
+          <form onSubmit={handleEmailAuth} className="flex flex-col gap-8 relative z-10">
+            <div className="space-y-6">
               {!isLogin && (
-                <div className="space-y-2.5">
-                  <label className="text-[9px] font-black text-neutral-900 uppercase tracking-widest ml-1 opacity-40">{t('identityDesignation')}</label>
+                <div className="space-y-3">
+                  <label className="text-[10px] display tracking-widest text-neutral-400">Full Name</label>
                   <div className="relative group">
-                    <User className="absolute left-6 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-200 group-focus-within:text-brand-accent transition-colors" />
+                    <User className="absolute left-0 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-300 group-focus-within:text-brand-gold transition-colors" />
                     <input 
                       type="text" 
                       value={fullName}
                       onChange={(e) => setFullName(e.target.value)}
-                      placeholder="RESEARCHER NAME" 
-                      className="w-full pl-16 pr-6 py-5 bg-neutral-50/50 border border-neutral-100 rounded-2xl text-[11px] font-bold tracking-widest uppercase text-neutral-900 placeholder:text-neutral-200 focus:outline-none focus:bg-white focus:border-brand-accent transition-all duration-300"
+                      placeholder="Jane Doe" 
+                      className="w-full pl-8 py-3 bg-transparent border-b border-neutral-100 text-[13px] text-brand-accent placeholder:text-neutral-200 focus:outline-none focus:border-brand-gold transition-all"
                       required={!isLogin}
                     />
                   </div>
                 </div>
               )}
               
-              <div className="space-y-2.5">
-                <label className="text-[9px] font-black text-neutral-900 uppercase tracking-widest ml-1 opacity-40">{t('digitalHub')}</label>
+              <div className="space-y-3">
+                <label className="text-[10px] display tracking-widest text-neutral-400">Email Address</label>
                 <div className="relative group">
-                  <Mail className="absolute left-6 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-200 group-focus-within:text-brand-accent transition-colors" />
+                  <Mail className="absolute left-0 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-300 group-focus-within:text-brand-gold transition-colors" />
                   <input 
                     type="email" 
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="USERNAME@NEXA.COM" 
-                    className="w-full pl-16 pr-6 py-5 bg-neutral-50/50 border border-neutral-100 rounded-2xl text-[11px] font-bold tracking-widest uppercase text-neutral-900 placeholder:text-neutral-200 focus:outline-none focus:bg-white focus:border-brand-accent transition-all duration-300"
+                    placeholder="email@example.com" 
+                    className="w-full pl-8 py-3 bg-transparent border-b border-neutral-100 text-[13px] text-brand-accent placeholder:text-neutral-200 focus:outline-none focus:border-brand-gold transition-all"
                     required
                   />
                 </div>
               </div>
 
-              <div className="space-y-2.5">
-                <label className="text-[9px] font-black text-neutral-900 uppercase tracking-widest ml-1 opacity-40">{t('clearanceKey')}</label>
+              <div className="space-y-3">
+                <label className="text-[10px] display tracking-widest text-neutral-400">Password</label>
                 <div className="relative group">
-                  <Lock className="absolute left-6 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-200 group-focus-within:text-brand-accent transition-colors" />
+                  <Lock className="absolute left-0 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-300 group-focus-within:text-brand-gold transition-colors" />
                   <input 
                     type="password" 
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    placeholder="••••••••••••" 
-                    className="w-full pl-16 pr-6 py-5 bg-neutral-50/50 border border-neutral-100 rounded-2xl text-[11px] font-bold tracking-widest uppercase text-neutral-900 placeholder:text-neutral-200 focus:outline-none focus:bg-white focus:border-brand-accent transition-all duration-300"
+                    placeholder="••••••••" 
+                    className="w-full pl-8 py-3 bg-transparent border-b border-neutral-100 text-[13px] text-brand-accent placeholder:text-neutral-200 focus:outline-none focus:border-brand-gold transition-all"
                     required
                   />
                 </div>
@@ -1325,27 +1327,23 @@ export default function AuthPage() {
             </div>
 
             {authError && (
-              <div className="p-4 bg-red-50 border border-red-100 rounded-2xl flex items-center gap-3 text-red-500 text-[9px] font-bold uppercase tracking-widest shadow-sm">
-                <AlertCircle className="w-4 h-4" />
+              <div className="p-4 bg-red-50 text-red-500 text-[10px] display tracking-widest flex items-center gap-3">
+                <AlertCircle className="w-4 h-4 flex-shrink-0" />
                 {authError}
               </div>
             )}
 
-            <div className="pt-6">
-              <button 
-                type="submit"
-                disabled={isAuthenticating}
-                className="group relative w-full py-6 bg-neutral-900 text-white font-bold uppercase text-[10px] tracking-[.4em] flex items-center justify-center gap-4 hover:bg-brand-accent transition-all duration-500 shadow-2xl rounded-2xl disabled:opacity-50 overflow-hidden"
-              >
-                <div className="absolute inset-0 bg-white/10 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 skew-x-12"></div>
-                {isAuthenticating ? (lang === 'BN' ? 'যাচাই হচ্ছে...' : 'SYNCHRONIZING...') : (isLogin ? t('activateProtocol') : t('synthesizeIdentity'))} 
-                <ArrowRight className="w-4 h-4 group-hover:translate-x-2 transition-transform" />
-              </button>
-            </div>
+            <button 
+              type="submit"
+              disabled={isAuthenticating}
+              className="w-full py-5 bg-brand-accent text-white text-[11px] display tracking-[0.3em] hover:bg-brand-gold transition-all luxury-shadow disabled:opacity-50"
+            >
+              {isAuthenticating ? 'Authenticating...' : (isLogin ? 'Sign In' : 'Create Account')} 
+            </button>
             
             <div className="relative flex items-center gap-4 py-4">
               <div className="flex-1 h-px bg-neutral-100" />
-              <span className="text-[9px] text-neutral-200 font-bold uppercase tracking-[0.3em]">External Nodes</span>
+              <span className="text-[9px] display tracking-widest text-neutral-300 uppercase">Or Continue With</span>
               <div className="flex-1 h-px bg-neutral-100" />
             </div>
 
@@ -1354,18 +1352,18 @@ export default function AuthPage() {
                 type="button"
                 onClick={handleGoogleSignIn}
                 disabled={isAuthenticating}
-                className="py-5 border-2 border-neutral-50 rounded-2xl flex items-center justify-center gap-3 text-[10px] font-bold uppercase tracking-widest text-neutral-900 hover:bg-neutral-50 transition-all duration-300 disabled:opacity-50"
+                className="py-4 border border-neutral-100 rounded-sm flex items-center justify-center gap-3 text-[10px] display tracking-widest text-brand-accent hover:bg-neutral-50 transition-all disabled:opacity-50"
               >
-                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" className="w-5 h-5 opacity-80" alt="Google" />
+                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" className="w-4 h-4" alt="Google" />
                 Google
               </button>
               <button 
                 type="button"
                 onClick={handleFacebookSignIn}
                 disabled={isAuthenticating}
-                className="py-5 border-2 border-neutral-50 rounded-2xl flex items-center justify-center gap-3 text-[10px] font-bold uppercase tracking-widest text-neutral-900 hover:bg-neutral-50 transition-all duration-300 disabled:opacity-50"
+                className="py-4 border border-neutral-100 rounded-sm flex items-center justify-center gap-3 text-[10px] display tracking-widest text-brand-accent hover:bg-neutral-50 transition-all disabled:opacity-50"
               >
-                <svg className="w-5 h-5 text-[#1877F2]" fill="currentColor" viewBox="0 0 24 24">
+                <svg className="w-4 h-4 text-[#1877F2]" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
                 </svg>
                 Facebook
@@ -1373,20 +1371,18 @@ export default function AuthPage() {
             </div>
           </form>
 
-          <div className="mt-12 pt-10 border-t border-neutral-100 text-center relative z-10">
+          <div className="mt-12 text-center relative z-10">
             <button 
               onClick={() => setIsLogin(!isLogin)}
-              className="text-[10px] font-bold tracking-[0.2em] uppercase text-neutral-400 hover:text-brand-accent transition-colors"
+              className="text-[10px] display tracking-widest text-neutral-400 hover:text-brand-gold transition-colors"
             >
-              {isLogin 
-                ? t('newResearcher') 
-                : t('existingIdentity')}
+              {isLogin ? 'Need an account? Request invitation' : 'Already have an account? Sign in'}
             </button>
           </div>
 
-          <div className="mt-8 flex items-center justify-center gap-2 text-[8px] font-bold uppercase tracking-[.25em] text-neutral-300 relative z-10">
-            <div className="w-1 h-1 rounded-full bg-brand-accent animate-pulse" />
-            Secure & Encrypted Nexa Data Stream
+          <div className="mt-8 flex items-center justify-center gap-2 text-[9px] display tracking-[0.2em] text-neutral-300 relative z-10">
+            <ShieldCheck className="w-3 h-3 text-brand-gold" />
+            Nexa Secure Gateway
           </div>
         </div>
       </div>

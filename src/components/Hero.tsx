@@ -10,58 +10,91 @@ export default function Hero() {
   const { settings } = useAppearance();
 
   return (
-    <section className="relative h-[85vh] flex items-center justify-center overflow-hidden bg-brand-surface dark:bg-black">
+    <section className="relative h-[90vh] flex items-center justify-center overflow-hidden bg-brand-accent">
       {/* Background with Professional Overlay */}
       <div className="absolute inset-0 z-0">
-        <div className="absolute inset-0 bg-black/40 dark:bg-black/60 z-10" />
+        <div className="absolute inset-0 bg-black/40 z-10" />
         <img 
           src={settings.heroBannerUrl} 
-          alt="Luxury Eco Home" 
-          className="w-full h-full object-cover scale-105 animate-slow-zoom"
+          alt="Luxury Jewelry" 
+          className="w-full h-full object-cover scale-105 animate-slow-zoom brightness-[0.7]"
           referrerPolicy="no-referrer"
         />
-        {/* Animated Neon Bubbles for futuristic vibe */}
-        <div className="absolute top-1/4 -left-20 w-96 h-96 bg-brand-accent/20 rounded-full blur-[120px] animate-pulse" />
-        <div className="absolute bottom-1/4 -right-20 w-96 h-96 bg-brand-gold/10 rounded-full blur-[120px] animate-pulse delay-700" />
+        {/* Subtle Luxury Gradients */}
+        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-brand-gold/10 rounded-full blur-[150px] mix-blend-screen animate-pulse" />
+        <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-brand-gold/5 rounded-full blur-[100px] mix-blend-screen animate-pulse delay-1000" />
       </div>
 
-      <div className="relative z-20 text-center px-6 max-w-5xl mx-auto pt-12">
+      <div className="relative z-20 text-center px-6 max-w-7xl mx-auto w-full">
         <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
+          initial={{ opacity: 0, scale: 0.98 }}
           animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
-          className="bg-white/5 backdrop-blur-2xl p-10 md:p-20 rounded-[4rem] border border-white/10 shadow-[0_32px_64px_rgba(0,0,0,0.2)]"
+          transition={{ duration: 1.5, ease: [0.22, 1, 0.36, 1] }}
+          className="flex flex-col items-center"
         >
-          <div className="flex items-center justify-center gap-4 mb-6">
-            <span className="h-[1px] w-8 bg-white/40" />
-            <span className="text-[9px] font-bold tracking-[0.4em] uppercase text-brand-gold">The Future of Space</span>
-            <span className="h-[1px] w-8 bg-white/40" />
-          </div>
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3, duration: 1 }}
+            className="flex items-center justify-center gap-6 mb-12"
+          >
+            <span className="h-px w-10 md:w-20 bg-brand-gold/40" />
+            <span className="text-[11px] display tracking-[0.6em] text-brand-gold">{lang === 'BN' ? 'আভিজাত্যের প্রতীক' : 'The Epitome of Elegance'}</span>
+            <span className="h-px w-10 md:w-20 bg-brand-gold/40" />
+          </motion.div>
 
-          <h1 className="text-4xl md:text-7xl font-black text-white tracking-tight mb-8 leading-[1.05] uppercase serif italic">
-             {t('heroTitlePart1')} <br />
-             <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-gold to-white">{t('heroTitlePart2')}</span> <br />
-             {t('heroTitlePart3')}
-          </h1>
+          <motion.h1 
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5, duration: 1.2 }}
+            className="text-5xl sm:text-7xl md:text-[100px] lg:text-[120px] serif text-white tracking-tight mb-12 leading-[1.1] md:leading-[0.9] md:px-0"
+          >
+             {lang === 'BN' ? (
+               <>অপূর্ব সুন্দর <br className="hidden md:block" /> <span className="italic text-brand-gold">গহনা</span> সংগ্রহ</>
+             ) : (
+               <>Exquisite <br className="hidden md:block" /> <span className="italic text-brand-gold">Gems & Jewelry</span></>
+             )}
+          </motion.h1>
           
-          <p className="text-xs md:text-sm text-white/60 font-medium mb-12 max-w-xl mx-auto leading-relaxed uppercase tracking-[0.2em] italic">
-            {t('heroDesc')}
-          </p>
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.8, duration: 1 }}
+            className="text-sm md:text-base text-white/70 font-light mb-16 max-w-2xl mx-auto leading-loose tracking-wide"
+          >
+            {lang === 'BN' ? 'প্রতিটি পিস ভালোবাসার সাথে এবং নিঁখুতভাবে কারুশিল্পীদের দ্বারা তৈরি।' : 'Every piece is a masterpiece, handcrafted with passion and precision to celebrate your most precious moments.'}
+          </motion.p>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-8">
-            <Link to="/shop" className="group relative px-14 py-6 bg-white text-black rounded-full text-[10px] font-black uppercase tracking-[0.2em] hover:bg-brand-accent hover:text-white transition-all duration-700 shadow-[0_20px_40px_rgba(0,0,0,0.3)] overflow-hidden glow-hover dark:bg-brand-accent dark:text-white">
-              <span className="relative z-10 flex items-center gap-3">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 1, duration: 1 }}
+            className="flex flex-col sm:flex-row items-center justify-center gap-10"
+          >
+            <Link to="/shop" className="group relative px-12 py-5 bg-brand-gold text-white rounded-sm text-[11px] display tracking-[0.3em] overflow-hidden transition-all duration-700 hover:scale-105 active:scale-95 luxury-shadow">
+              <span className="relative z-10 flex items-center gap-4">
                 {t('shopNow')}
-                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-2 transition-transform" />
               </span>
             </Link>
-            <Link to="/gallery" className="group flex items-center gap-3 text-[10px] font-bold uppercase tracking-[0.2em] text-white/80 hover:text-white transition-all py-3">
-              <span className="w-10 h-px bg-white/20 transition-all group-hover:w-16 group-hover:bg-brand-gold" />
-              Explore Our Story
+            <Link to="/gallery" className="group flex items-center gap-4 text-[11px] display tracking-[0.2em] text-white/80 hover:text-white transition-all py-3 border-b border-white/0 hover:border-white/20">
+              {lang === 'BN' ? 'গ্যালারি দেখুন' : 'Explore Collections'}
+              <ArrowRight className="w-4 h-4 -rotate-45 group-hover:rotate-0 transition-transform" />
             </Link>
-          </div>
+          </motion.div>
         </motion.div>
       </div>
+
+      {/* Hero Scroll Indicator */}
+      <motion.div 
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 1.5, duration: 1 }}
+        className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-4"
+      >
+        <span className="text-[9px] display tracking-[0.4em] text-white/30 uppercase">Scroll</span>
+        <div className="w-px h-12 bg-gradient-to-b from-brand-gold to-transparent" />
+      </motion.div>
     </section>
   );
 }

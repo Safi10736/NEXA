@@ -1,9 +1,10 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@1,400;1,500;1,700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Montserrat:wght@300;400;500;600&display=swap');
 @import "tailwindcss";
 
 @theme {
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
-  --font-serif: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Playfair Display", serif;
+  --font-display: "Montserrat", sans-serif;
   
   --color-brand-bg: var(--brand-bg);
   --color-brand-surface: var(--brand-surface);
@@ -25,18 +26,18 @@
 }
 
 :root {
-  --brand-bg: #ffffff;
-  --brand-surface: #f9fbf9;
-  --brand-accent: #1b4d3e;
-  --brand-gold: #b8911d;
-  --brand-muted: #6b7280;
-  --eco-green: #3a7d44;
+  --brand-bg: #fdfaf7; /* Warm luxury off-white */
+  --brand-surface: #ffffff;
+  --brand-accent: #0f1c18; /* Deep elegant dark green/black */
+  --brand-gold: #c5a059; /* Refined luxury gold */
+  --brand-muted: #8e8e8e;
+  --eco-green: #2d5a3a;
 }
 
 .dark {
   --brand-bg: #0a0a0a;
   --brand-surface: #121212;
-  --brand-accent: #2d8a6e;
+  --brand-accent: #ffffff;
   --brand-gold: #d4af37;
   --brand-muted: #9ca3af;
   --eco-green: #4ade80;
@@ -44,20 +45,25 @@
 
 @layer base {
   .serif {
-    font-family: var(--font-sans);
-    font-weight: 800;
-    font-style: normal !important;
+    font-family: var(--font-serif);
+    font-weight: 400;
+  }
+  .display {
+    font-family: var(--font-display);
     text-transform: uppercase;
-    letter-spacing: -0.02em;
+    letter-spacing: 0.1em;
   }
 }
 
 @layer utilities {
   .glass {
-    @apply bg-white/10 backdrop-blur-md border border-white/20;
+    @apply bg-white/40 backdrop-blur-xl border border-white/30;
   }
   .glass-dark {
-    @apply bg-black/20 backdrop-blur-md border border-white/10;
+    @apply bg-black/40 backdrop-blur-xl border border-white/10;
+  }
+  .luxury-shadow {
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.05);
   }
   .neon-glow {
     box-shadow: 0 0 15px var(--color-brand-accent);
@@ -69,20 +75,17 @@
     transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
   }
   .glow-hover:hover {
-    box-shadow: 0 0 20px rgba(27, 77, 62, 0.3);
+    box-shadow: 0 0 30px rgba(197, 160, 89, 0.2);
     transform: translateY(-2px);
   }
   .custom-scrollbar::-webkit-scrollbar {
-    width: 6px;
+    width: 4px;
   }
   .custom-scrollbar::-webkit-scrollbar-track {
     background: transparent;
   }
   .custom-scrollbar::-webkit-scrollbar-thumb {
-    background: #e5e5e5;
+    background: #c5a059;
     border-radius: 10px;
-  }
-  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-    background: #d4d4d4;
   }
 }

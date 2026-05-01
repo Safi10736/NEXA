@@ -31,239 +31,178 @@ export default function Navbar() {
   }, []);
 
   const isDarkPage = location.pathname === '/';
-  const showDarkNav = isScrolled || !isDarkPage;
+  const isTransparent = !isScrolled && isDarkPage;
 
   return (
     <nav
       className={cn(
-        'fixed top-0 left-0 right-0 z-50 transition-all duration-300 px-6 py-4 flex items-center justify-between',
-        showDarkNav 
-          ? 'bg-brand-bg/80 backdrop-blur-xl border-b border-white/10 py-3 shadow-[0_8px_32px_rgba(0,0,0,0.05)]' 
-          : 'bg-transparent'
+        'fixed top-0 left-0 right-0 z-50 transition-all duration-500 px-6 md:px-12 py-6 flex items-center justify-between',
+        !isTransparent
+          ? 'bg-white/90 backdrop-blur-xl border-b border-neutral-100 py-4 shadow-sm' 
+          : 'bg-transparent text-white'
       )}
     >
-      <div className="flex items-center gap-8">
+      <div className="flex items-center gap-12">
         <button
           onClick={() => setIsMenuOpen(true)}
           className={cn(
             "p-2 rounded-full transition-colors",
-            showDarkNav ? "hover:bg-white/10 text-neutral-900" : "hover:bg-white/10 text-neutral-900"
+            isTransparent ? "hover:bg-white/10 text-white" : "hover:bg-neutral-100 text-brand-accent"
           )}
         >
           <Menu className="w-6 h-6" />
         </button>
 
-        <Link to="/" className="group flex items-center gap-2">
-          <span className={cn(
-            'text-2xl font-bold tracking-[0.2em] uppercase transition-all duration-500 serif italic',
-            showDarkNav ? 'text-brand-accent' : 'text-neutral-900'
-          )}>
-            Nexa
-          </span>
-          {!showDarkNav && <div className="w-1.5 h-1.5 rounded-full bg-brand-accent animate-pulse" />}
-        </Link>
+        <div className={cn(
+          "hidden lg:flex items-center gap-10 text-[10px] display tracking-[0.2em]",
+          isTransparent ? "text-white/80" : "text-neutral-500"
+        )}>
+          {['Lighting', 'Decor', 'Kitchen', 'Essentials'].map((item) => (
+            <Link
+              key={item}
+              to="/shop"
+              className={cn(
+                "hover:text-brand-gold transition-colors relative group py-2",
+                !isTransparent && "hover:text-brand-accent"
+              )}
+            >
+              {item}
+              <span className="absolute bottom-0 left-0 w-0 h-px bg-brand-gold transition-all group-hover:w-full" />
+            </Link>
+          ))}
+        </div>
       </div>
 
-      <div className={cn(
-        "hidden md:flex items-center gap-10 font-medium tracking-[0.15em] text-[10px] uppercase",
-        showDarkNav ? "text-neutral-900/70" : "text-neutral-900/70"
-      )}>
-        {[
-          { label: t('lighting'), id: 'Lighting' },
-          { label: t('decor'), id: 'Decor' },
-          { label: t('kitchen'), id: 'Kitchen' },
-          { label: t('essentials'), id: 'Essentials' }
-        ].map((item) => (
-          <Link
-            key={item.id}
-            to="/shop"
-            className="hover:text-brand-accent transition-colors relative group"
-          >
-            {item.label}
-            <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-brand-accent transition-all group-hover:w-full" />
-          </Link>
-        ))}
-      </div>
+      <Link to="/" className="absolute left-1/2 -translate-x-1/2 group">
+        <span className={cn(
+          'text-3xl font-normal tracking-[0.1em] transition-all duration-500 serif',
+          isTransparent ? 'text-white' : 'text-brand-accent'
+        )}>
+          NEXA
+        </span>
+      </Link>
 
-      <div className="flex items-center gap-4">
-        <button
-          onClick={toggleTheme}
-          className={cn(
-            "p-2 rounded-full transition-all duration-500 hover:scale-110",
-            showDarkNav ? "bg-white/5 text-neutral-900" : "bg-white/10 text-neutral-900"
-          )}
-          aria-label="Toggle theme"
-        >
-          {settings.theme === 'dark' ? (
-            <Sun className="w-5 h-5 text-brand-gold" />
-          ) : (
-            <Moon className="w-5 h-5 text-brand-accent" />
-          )}
-        </button>
-
+      <div className="flex items-center gap-2 md:gap-6">
         <button
           onClick={() => setLang(l => l === 'EN' ? 'BN' : 'EN')}
           className={cn(
-            "flex items-center gap-1.5 text-[10px] font-medium tracking-[.15em] border rounded-full px-4 py-1.5 transition-colors uppercase",
-            showDarkNav ? "border-white/10 text-neutral-900 hover:border-brand-accent shadow-sm" : "border-neutral-200 text-neutral-900 hover:border-brand-accent"
+            "hidden sm:flex items-center gap-2 text-[10px] display tracking-widest px-4 py-2 transition-all rounded-sm",
+            isTransparent ? "text-white/80 border-white/20 hover:bg-white/10" : "text-neutral-500 border-neutral-100 hover:bg-neutral-50"
           )}
         >
-          <Globe className="w-3.5 h-3.5" />
+          <Globe className="w-3 h-3" />
           {lang}
         </button>
         
-        <button 
-          onClick={() => setIsSearchOpen(true)}
-          className={cn("p-2 rounded-full transition-colors", "hover:bg-neutral-100 text-neutral-900", isSearchOpen && "scale-110 bg-neutral-100")}
-        >
-          <Search className="w-5 h-5" />
-        </button>
+        <div className="flex items-center gap-1 md:gap-4">
+          <button 
+            onClick={() => setIsSearchOpen(true)}
+            className={cn(
+              "p-2 rounded-full transition-colors",
+              isTransparent ? "text-white hover:bg-white/10" : "text-brand-accent hover:bg-neutral-100"
+            )}
+          >
+            <Search className="w-5 h-5" />
+          </button>
 
-        <Link 
-          to="/shop" 
-          className={cn(
-            "relative p-2 rounded-full transition-colors",
-            "hover:bg-neutral-100 text-neutral-900"
-          )}
-          title="Wishlist"
-        >
-          <Heart className={cn("w-5 h-5", wishlist.length > 0 && "fill-red-500 text-red-500")} />
-          {wishlist.length > 0 && (
-            <span className="absolute top-1 right-1 w-4 h-4 bg-red-500 text-white text-[9px] flex items-center justify-center rounded-full font-bold">
-              {wishlist.length}
-            </span>
-          )}
-        </Link>
+          <Link 
+            to="/profile" 
+            className={cn(
+              "p-2 rounded-full transition-colors",
+              isTransparent ? "text-white hover:bg-white/10" : "text-brand-accent hover:bg-neutral-100"
+            )}
+          >
+            {user?.user_metadata?.avatar_url ? (
+              <img src={user.user_metadata.avatar_url} className="w-5 h-5 rounded-full object-cover border border-brand-gold/30" alt="Profile" />
+            ) : (
+              <User className="w-5 h-5" />
+            )}
+          </Link>
 
-        <Link to="/profile" className={cn("p-2 rounded-full transition-colors overflow-hidden", "hover:bg-neutral-100")}>
-          {user?.photoURL ? (
-            <img src={user.photoURL} className="w-5 h-5 rounded-full object-cover" alt="Profile" />
-          ) : (
-            <User className={cn("w-5 h-5", "text-neutral-900")} />
-          )}
-        </Link>
-
-        <button 
-          id="cart-icon"
-          onClick={() => setIsCartOpen(true)}
-          className={cn(
-            "relative p-2 rounded-full transition-all duration-500",
-            showDarkNav ? "hover:bg-neutral-100 text-neutral-900" : "hover:bg-neutral-100 text-neutral-900",
-            isDraggingProduct && "scale-125 bg-brand-accent text-white shadow-[0_0_30px_rgba(212,175,55,0.4)]"
-          )}
-        >
-          <motion.div
-            animate={isDraggingProduct ? { scale: [1, 1.2, 1], rotate: [0, 5, -5, 0] } : {}}
-            transition={{ repeat: Infinity, duration: 1 }}
+          <button 
+            id="cart-icon"
+            onClick={() => setIsCartOpen(true)}
+            className={cn(
+              "relative p-2 rounded-full transition-all duration-500",
+              isTransparent ? "text-white hover:bg-white/10" : "text-brand-accent hover:bg-neutral-100",
+              isDraggingProduct && "scale-110 bg-brand-gold text-white shadow-xl"
+            )}
           >
             <ShoppingBag className="w-5 h-5" />
-          </motion.div>
-          {cartCount > 0 && !isDraggingProduct && (
-            <span className={cn(
-              "absolute top-1 right-1 w-4 h-4 text-[9px] flex items-center justify-center rounded-full font-bold",
-              showDarkNav ? "bg-neutral-900 text-white" : "bg-brand-accent text-white"
-            )}>
-              {cartCount}
-            </span>
-          )}
-          {isDraggingProduct && (
-             <span className="absolute -top-8 left-1/2 -translate-x-1/2 text-[8px] font-bold uppercase tracking-widest text-brand-accent whitespace-nowrap animate-bounce">
-               Drop Here
-             </span>
-          )}
-        </button>
+            {cartCount > 0 && (
+              <span className="absolute top-0 right-0 w-4 h-4 bg-brand-gold text-white text-[8px] flex items-center justify-center rounded-full font-bold">
+                {cartCount}
+              </span>
+            )}
+          </button>
+        </div>
       </div>
 
-      {/* Mobile Menu Overlay */}
       <AnimatePresence>
         {isMenuOpen && (
-          <motion.div
-            initial={{ opacity: 0, x: -100 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -100 }}
-            className="fixed inset-0 bg-white z-[999] p-8 sm:p-12 flex flex-col justify-between h-screen w-screen overflow-y-auto"
-          >
-            <div className="flex justify-between items-start mb-8">
-              <span className="text-3xl font-bold tracking-tighter uppercase text-neutral-900 italic serif">
-                Nexa
-              </span>
-              <button 
-                onClick={() => setIsMenuOpen(false)}
-                className="p-2 hover:bg-neutral-100 rounded-full transition-colors"
-                aria-label="Close menu"
-              >
-                <X className="w-8 h-8 text-neutral-900" />
-              </button>
-            </div>
-
-            <div className="flex flex-col gap-8 text-5xl md:text-7xl font-light tracking-tighter text-neutral-900 mb-12">
-              {['New Arrivals', 'Lighting', 'Decor', 'Kitchen', 'Essentials'].map((item, i) => (
-                <motion.div
-                  key={item}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.1 + i * 0.1 }}
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsMenuOpen(false)}
+              className="fixed inset-0 bg-brand-accent/40 backdrop-blur-sm z-[99]"
+            />
+            <motion.div
+              initial={{ x: '-100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '-100%' }}
+              transition={{ type: 'spring', damping: 28, stiffness: 220 }}
+              className="fixed top-0 left-0 bottom-0 w-screen md:w-[450px] bg-white z-[100] px-12 md:px-20 py-16 shadow-2xl flex flex-col"
+            >
+              <div className="flex justify-between items-center mb-32">
+                <Link to="/" onClick={() => setIsMenuOpen(false)} className="text-3xl serif text-brand-accent tracking-widest italic">NEXA</Link>
+                <button 
+                  onClick={() => setIsMenuOpen(false)}
+                  className="w-10 h-10 flex items-center justify-center bg-neutral-50 rounded-full text-brand-accent hover:rotate-90 transition-all duration-500"
                 >
-                  <Link
-                    to="/shop"
-                    onClick={() => setIsMenuOpen(false)}
-                    className="hover:translate-x-4 transition-transform duration-500 serif italic hover:text-brand-accent block"
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              <div className="flex flex-col gap-12 mb-auto">
+                {[
+                  { label: lang === 'BN' ? 'কালেকশন' : 'Collections', to: '/shop' },
+                  { label: lang === 'BN' ? 'গ্যালারি' : 'The Gallery', to: '/gallery' },
+                  { label: lang === 'BN' ? 'আমাদের গল্প' : 'Heritage', to: '/about' },
+                  { label: lang === 'BN' ? 'যোগাযোগ' : 'Concierge', to: '/contact' }
+                ].map((item, i) => (
+                  <motion.div
+                    key={item.label}
+                    initial={{ opacity: 0, x: -30 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.2 + i * 0.1 }}
                   >
-                    {item}
-                  </Link>
-                </motion.div>
-              ))}
-            </div>
-
-            <div className="flex flex-col gap-10 mt-auto">
-              <div className="h-px bg-neutral-100 w-full" />
-              
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
-                <div className="space-y-4">
-                  <h4 className="text-[10px] font-bold uppercase tracking-[0.3em] text-neutral-400">Follow Our Journey</h4>
-                  <div className="flex gap-4">
-                    <a href="https://www.facebook.com/share/1CiNRxyy6M/" target="_blank" rel="noopener noreferrer" className="p-3 border border-neutral-100 rounded-full transition-all hover:bg-neutral-900 hover:text-white group hover:shadow-xl">
-                      <Facebook className="w-5 h-5 text-neutral-900 group-hover:text-white" />
-                    </a>
-                    <a href="https://www.instagram.com/nexa_124?igsh=MXBoN2N3ZnJyenh1bw==" target="_blank" rel="noopener noreferrer" className="p-3 border border-neutral-100 rounded-full transition-all hover:bg-neutral-900 hover:text-white group hover:shadow-xl">
-                      <Instagram className="w-5 h-5 text-neutral-900 group-hover:text-white" />
-                    </a>
-                    <a href="#" target="_blank" rel="noopener noreferrer" className="p-3 border border-neutral-100 rounded-full transition-all hover:bg-neutral-900 hover:text-white group hover:shadow-xl">
-                      <Linkedin className="w-5 h-5 text-neutral-900 group-hover:text-white" />
-                    </a>
-                    <a href="#" target="_blank" rel="noopener noreferrer" className="p-3 border border-neutral-100 rounded-full transition-all hover:bg-neutral-900 hover:text-white group hover:shadow-xl">
-                      <Youtube className="w-5 h-5 text-neutral-900 group-hover:text-white" />
-                    </a>
-                  </div>
-                </div>
-
-                <div className="space-y-4">
-                  <h4 className="text-[10px] font-bold uppercase tracking-[0.3em] text-neutral-400">Language</h4>
-                  <div className="flex gap-4 text-[10px] font-bold uppercase tracking-widest">
-                    <button 
-                      onClick={() => setLang('EN')}
-                      className={cn("transition-colors", lang === 'EN' ? "text-neutral-900 underline underline-offset-4" : "text-neutral-300")}
+                    <Link
+                      to={item.to}
+                      onClick={() => setIsMenuOpen(false)}
+                      className="text-4xl md:text-5xl serif text-brand-accent hover:text-brand-gold transition-all flex items-center gap-6 group"
                     >
-                      EN
-                    </button>
-                    <span className="text-neutral-100">|</span>
-                    <button 
-                       onClick={() => setLang('BN')}
-                       className={cn("transition-colors", lang === 'BN' ? "text-neutral-900 underline underline-offset-4" : "text-neutral-300")}
-                    >
-                      BN
-                    </button>
-                  </div>
-                </div>
+                      <span className="text-[10px] display opacity-0 group-hover:opacity-100 transition-all -translate-x-4 group-hover:translate-x-0">0{i+1}</span>
+                      {item.label}
+                    </Link>
+                  </motion.div>
+                ))}
               </div>
 
-              <div className="flex justify-between items-center text-[10px] font-bold text-neutral-400 uppercase tracking-[0.3em] pb-4">
-                <Link to="/contact" onClick={() => setIsMenuOpen(false)} className="hover:text-neutral-900 transition-colors">Contact</Link>
-                <Link to="/support#shipping" onClick={() => setIsMenuOpen(false)} className="hover:text-neutral-900 transition-colors">Shipping</Link>
-                <Link to="/support#returns" onClick={() => setIsMenuOpen(false)} className="hover:text-neutral-900 transition-colors">Returns</Link>
+              <div className="mt-auto pt-16 border-t border-neutral-100">
+                <div className="flex items-center gap-10 mb-12">
+                   {[Instagram, Facebook, Twitter].map((Icon, i) => (
+                     <Icon key={i} className="w-5 h-5 text-neutral-400 hover:text-brand-gold cursor-pointer transition-colors" />
+                   ))}
+                </div>
+                <div className="flex flex-col gap-2">
+                  <p className="text-[10px] display tracking-widest text-brand-accent">Nexa Atelier — Banani Crescent</p>
+                  <p className="text-[9px] display tracking-widest text-neutral-400">Available Daily 10 AM — 8 PM</p>
+                </div>
               </div>
-            </div>
-          </motion.div>
+            </motion.div>
+          </>
         )}
       </AnimatePresence>
 
