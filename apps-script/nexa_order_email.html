@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NEXA — Order Received</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Playfair+Display:ital,wght@1,500;1,600&display=swap" rel="stylesheet">
+</head>
+<body style="background-color: #030303; margin: 0; padding: 0; -webkit-text-size-adjust: none; text-size-adjust: none;">
+  <table width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color: #030303; padding: 48px 16px;">
+    <tr>
+      <td align="center">
+        <!-- Card Container -->
+        <table class="content-table" width="100%" max-width="600" border="0" cellspacing="0" cellpadding="0" style="max-width: 600px; background-color: #0c0c0c; border: 1px solid #1c1c1c; border-radius: 32px; overflow: hidden; padding: 48px;">
+          
+          <!-- Logo & Header -->
+          <tr>
+            <td align="center" style="padding-bottom: 40px; border-bottom: 1px solid #161616;">
+              <div style="font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 700; letter-spacing: 0.5em; color: #d4af37; text-transform: uppercase; margin-bottom: 12px;">⚜️ NEXA ⚜️</div>
+              <div style="font-family: 'Playfair Display', serif; font-style: italic; font-size: 32px; font-weight: 500; color: #ffffff; letter-spacing: -0.02em; margin-bottom: 8px;">Order Confirmed</div>
+              <div style="font-family: 'Inter', sans-serif; font-size: 9px; font-weight: 700; color: #666666; letter-spacing: 0.2em; text-transform: uppercase;">Thank you for your acquisition</div>
+            </td>
+          </tr>
+
+          <!-- Summary Body Card -->
+          <tr>
+            <td style="padding-top: 40px; padding-bottom: 32px;">
+              <p style="font-family: 'Inter', sans-serif; font-size: 11px; font-weight: 400; line-height: 2; color: #a3a3a3; letter-spacing: 0.05em; text-transform: uppercase; text-align: center; margin: 0 0 24px 0;">
+                Greetings, <strong style="color: #ffffff; font-weight: 700;">{{Customer Name}}</strong>. We have securely registered your purchase and are preparing your curated selection. Below is the itemized breakdown of your transaction:
+              </p>
+            </td>
+          </tr>
+
+          <!-- Transaction details -->
+          <tr>
+            <td style="background-color: #070707; border: 1px solid #121212; border-radius: 20px; padding: 24px; margin-bottom: 32px;">
+              <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                <tr>
+                  <td style="padding-bottom: 12px; font-family: 'Inter', sans-serif; font-size: 9px; font-weight: 700; color: #555555; letter-spacing: 0.15em; text-transform: uppercase;">Shipping Destination</td>
+                  <td style="padding-bottom: 12px; font-family: 'Inter', sans-serif; font-size: 9px; font-weight: 700; color: #555555; letter-spacing: 0.15em; text-transform: uppercase; text-align: right;">Contact Details</td>
+                </tr>
+                <tr>
+                  <td style="font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 700; color: #ffffff; letter-spacing: 0.02em; line-height: 1.6; vertical-align: top;">
+                    {{Address, City, Zip}}
+                  </td>
+                  <td style="font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 700; color: #ffffff; letter-spacing: 0.02em; line-height: 1.6; text-align: right; vertical-align: top;">
+                    {{Phone Number}}
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Items Table -->
+          <tr>
+            <td style="padding-top: 32px;">
+              <div style="font-family: 'Inter', sans-serif; font-size: 10px; font-weight: 700; color: #d4af37; letter-spacing: 0.3em; uppercase; border-bottom: 1px solid #1a1a1a; padding-bottom: 12px; text-transform: uppercase; margin-bottom: 16px;">Acquired Selections</div>
+              <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                
+                <!-- REPEAT THIS ROW PER ITEM -->
+                
+              </table>
+            </td>
+          </tr>
+
+          <!-- Financial Breakdown -->
+          <tr>
+            <td style="padding-top: 32px; border-top: 1px solid #1a1a1a; margin-top: 16px;">
+              <table width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color: #070707; border-radius: 16px; padding: 24px;">
+                <tr>
+                  <td style="padding-bottom: 12px; font-family: 'Inter', sans-serif; font-size: 11px; font-weight: bold; color: #888888; text-transform: uppercase; letter-spacing: 0.1em;">Payment Method</td>
+                  <td style="padding-bottom: 12px; font-family: 'Inter', sans-serif; font-size: 11px; font-weight: bold; color: #ffffff; text-transform: uppercase; letter-spacing: 0.1em; text-align: right;">{{COD / bKash / Stripe}}</td>
+                </tr>
+                <tr style="border-bottom: 1px dashed #222222;">
+                  <td style="padding-bottom: 12px; font-family: 'Inter', sans-serif; font-size: 11px; font-weight: bold; color: #888888; text-transform: uppercase; letter-spacing: 0.1em;">Transaction ID</td>
+                  <td style="padding-bottom: 12px; font-family: 'Inter', sans-serif; font-size: 11px; font-weight: bold; color: #d4af37; font-family: 'SF Mono', monospace; text-align: right;">{{TXN_ID}}</td>
+                </tr>
+                <tr>
+                  <td style="padding-top: 16px; font-family: 'Inter', sans-serif; font-size: 13px; font-weight: bold; color: #ffffff; text-transform: uppercase; letter-spacing: 0.15em;">Total Settlement</td>
+                  <td style="padding-top: 16px; font-family: 'Inter', sans-serif; font-size: 18px; font-weight: bold; color: #d4af37; text-align: right;">{{Total Amount}}</td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Footer with brand message -->
+          <tr>
+            <td align="center" style="padding-top: 48px; border-top: 1px solid #151515; margin-top: 40px; text-align: center;">
+              <p style="font-family: 'Playfair Display', serif; font-style: italic; font-size: 14px; color: #7f7f7f; margin-bottom: 16px; line-height: 1.8;">
+                "Crafting high-contrast luxury experiences for exceptional minds."
+              </p>
+              <p style="font-family: 'Inter', sans-serif; font-size: 8px; font-weight: 700; color: #444444; letter-spacing: 0.25em; text-transform: uppercase; margin: 0;">
+                © 2026 NEXA Luxury Curations. All rights reserved.
+              </p>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>

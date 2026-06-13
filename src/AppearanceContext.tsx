@@ -5,6 +5,9 @@ interface AppearanceSettings {
   heroBannerUrl: string;
   loginSidebarUrl: string;
   theme: 'light' | 'dark';
+  orderEmailEnabled?: boolean;
+  appsScriptUrl?: string;
+  orderNotificationEmail?: string;
 }
 
 interface AppearanceContextType {
@@ -17,7 +20,10 @@ interface AppearanceContextType {
 const DEFAULT_SETTINGS: AppearanceSettings = {
   heroBannerUrl: 'https://images.unsplash.com/photo-1620808461872-9cc911043900?auto=format&fit=crop&q=85&w=2400',
   loginSidebarUrl: 'https://images.unsplash.com/photo-1560393464-5c69a73c5770?auto=format&fit=crop&q=80&w=800',
-  theme: 'light'
+  theme: 'light',
+  orderEmailEnabled: true,
+  appsScriptUrl: '',
+  orderNotificationEmail: 'MdSafi2008@gmail.com'
 };
 
 const AppearanceContext = createContext<AppearanceContextType | undefined>(undefined);

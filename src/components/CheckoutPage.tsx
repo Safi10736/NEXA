@@ -8,6 +8,7 @@ import { useCart } from '../CartContext';
 import { useProducts } from '../ProductContext';
 import { formatPrice, cn } from '../lib/utils';
 import { useLanguage } from '../LanguageContext';
+import { useAppearance } from '../AppearanceContext';
 
 export default function CheckoutPage() {
   const navigate = useNavigate();
@@ -16,6 +17,7 @@ export default function CheckoutPage() {
   const { cart, cartTotal, clearCart, setIsCartOpen } = useCart();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { t, lang } = useLanguage();
+  const { settings } = useAppearance();
   
   // Close cart on mount
   useEffect(() => {
@@ -114,6 +116,43 @@ export default function CheckoutPage() {
       const { error } = await supabase.from('orders').insert(orderData);
       
       if (error) throw error;
+
+      // Trigger Email Role/Notification via Custom Deployed Google Apps Script
+      if (settings?.orderEmailEnabled !== false && settings?.appsScriptUrl) {
+        try {
+          const finalTxnId = orderData.transaction_id;
+          const finalAddress = `${orderData.shipping_details.address}, ${orderData.shipping_details.city}, ${orderData.shipping_details.zip}`;
+          const formattedTotal = `${orderData.total.toLocaleString()} BDT`;
+
+          const payload = {
+            name: orderData.customer,
+            email: orderData.email,
+            phone: orderData.phone,
+            address: finalAddress,
+            total: formattedTotal,
+            payment: orderData.method,
+            txnId: finalTxnId,
+            items: orderData.items.map(item => ({
+              name: item.name,
+              qty: item.quantity,
+              price: `${(item.price * item.quantity).toLocaleString()} BDT`
+            })),
+            adminNotificationEmail: settings.orderNotificationEmail || "MdSafi2008@gmail.com"
+          };
+
+          // Request dispatched securely using standard CORS fallback mode
+          fetch(settings.appsScriptUrl, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+          }).catch(err => console.warn("Background notification delivered with CORS warnings:", err));
+        } catch (scriptErr) {
+          console.error("Failed to compile order notification structure:", scriptErr);
+        }
+      }
       
       clearCart();
       navigate('/success');
